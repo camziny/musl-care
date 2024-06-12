@@ -64,7 +64,11 @@ export function TopNav() {
             <FaLinkedin size={24} />
           </Link>
           <SignedOut>
-            <SignInButton />
+            <SignInButton>
+              <button className="bg-slate-600 text-white text-sm font-semibold rounded-md px-6 py-2 shadow-md hover:bg-slate-500 transition-all duration-300 ease-in-out">
+                Sign In
+              </button>
+            </SignInButton>
           </SignedOut>
           <SignedIn>
             <UserButton />
@@ -144,7 +148,11 @@ export function TopNav() {
             </div>
             <div className="flex flex-row items-center gap-4">
               <SignedOut>
-                <SignInButton />
+                <SignInButton>
+                  <button className="bg-slate-600 text-white text-sm font-semibold rounded-md px-6 py-2 shadow-md hover:bg-slate-500 transition-all duration-300 ease-in-out">
+                    Sign In
+                  </button>
+                </SignInButton>
               </SignedOut>
               <SignedIn>
                 <UserButton />
