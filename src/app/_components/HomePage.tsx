@@ -20,14 +20,14 @@ export default function HomePage() {
           <div className="p-2">
             <Link href="/care-seeker">
               <button className="w-64 bg-stone-500 text-white rounded-lg px-6 py-3 shadow-md hover:bg-stone-400 transition-all duration-300 text-center">
-                I'm looking for care
+                I&apos;m looking for care
               </button>
             </Link>
           </div>
           <div className="p-2">
             <Link href="/care-giver">
               <button className="w-64 bg-stone-500 text-white rounded-lg px-6 py-3 shadow-md hover:bg-stone-400 transition-all duration-300 text-center">
-                I'm a care giver
+                I&apos;m a care giver
               </button>
             </Link>
           </div>
