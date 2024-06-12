@@ -11,13 +11,11 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex flex-col items-center justify-center min-h-[50vh] py-12 px-4">
-        <h1 className="text-2xl font-bold p-4">(Name of App)</h1>
-        <h3 className="text-lg font-semibold p-4">
-          Connecting care-seekers with dedicated, background checked Muslim
-          caregivers for a harmonious home.
-        </h3>
-        <div className="relative w-full max-w-md mb-8">
+      <div className="flex flex-col items-center justify-center min-h-[50vh] py-8 px-4 md:py-12 md:px-6">
+        <h1 className="text-2xl font-bold p-2 md:p-4 text-center">
+          [App Name]
+        </h1>
+        <div className="relative w-full max-w-md mb-4 md:mb-8">
           <Image
             src={logoUrl}
             alt="Logo"
@@ -27,17 +25,21 @@ export default function HomePage() {
             className="object-contain rounded-lg"
           />
         </div>
-        <div className="flex justify-center p-4 space-x-4">
-          <div className="p-2">
+        <h3 className="text-lg font-semibold p-2 md:p-4 text-center">
+          Connecting care-seekers with dedicated, background checked Muslim
+          caregivers for a harmonious home.
+        </h3>
+        <div className="flex flex-col md:flex-row justify-center p-2 md:p-4 space-y-2 md:space-y-0 md:space-x-4">
+          <div className="w-full md:w-auto">
             <Link href="/care-seeker">
-              <button className="w-64 bg-stone-500 text-white rounded-lg px-6 py-3 shadow-md hover:bg-stone-400 transition-all duration-300 text-center">
+              <button className="w-full md:w-64 bg-slate-800 text-white rounded-full px-6 py-3 shadow-lg hover:bg-slate-500 hover:shadow-xl transition-all duration-300 ease-in-out text-center">
                 I&apos;m looking for care
               </button>
             </Link>
           </div>
-          <div className="p-2">
+          <div className="w-full md:w-auto">
             <Link href="/care-giver">
-              <button className="w-64 bg-stone-500 text-white rounded-lg px-6 py-3 shadow-md hover:bg-stone-400 transition-all duration-300 text-center">
+              <button className="w-full md:w-64 bg-slate-800 text-white rounded-full px-6 py-3 shadow-lg hover:bg-slate-500 hover:shadow-xl transition-all duration-300 ease-in-out text-center">
                 I&apos;m a care giver
               </button>
             </Link>

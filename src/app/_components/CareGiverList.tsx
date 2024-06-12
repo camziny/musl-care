@@ -16,7 +16,7 @@ export default async function CareGiverList() {
             key={careGiver.id}
             className="bg-white rounded-lg shadow-md overflow-hidden"
           >
-            <Link href={`/careGiver/${careGiver.id}`}>
+            <Link href={`/caregivers/${careGiver.id}`}>
               <Image
                 src={careGiver.image}
                 alt={careGiver.image}

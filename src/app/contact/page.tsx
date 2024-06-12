@@ -1,7 +1,7 @@
 export default function Contact() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 py-12 px-4">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-stone-200 py-12 px-4">
         <div className="max-w-3xl w-full bg-white p-8 shadow-lg rounded-lg">
           <h1 className="text-4xl font-bold text-center text-gray-900 mb-6">
             Contact Us
@@ -85,23 +85,23 @@ export default function Contact() {
           <div className="mt-5"></div>
           <div className="flex flex-col justify-center items-center mt-4 bg-white shadow-md p-6">
             <div className="text-lg font-semibold text-center mb-4">
-              Operating Hours
+              Operating Hours (EST)
             </div>
             <ul className="space-y-2 text-gray-700 text-center">
               <li>
-                <span className="font-semibold">Monday:</span> 7 AM to 4 PM
+                <span className="font-semibold">Monday:</span> 9 am to 5 pm
               </li>
               <li>
-                <span className="font-semibold">Tuesday:</span> 7 AM to 4 PM
+                <span className="font-semibold">Tuesday:</span> 9 am to 5 pm
               </li>
               <li>
-                <span className="font-semibold">Wednesday:</span> 7 AM to 4 PM
+                <span className="font-semibold">Wednesday:</span> 9 am to 5 pm
               </li>
               <li>
-                <span className="font-semibold">Thursday:</span> 7 AM to 4 PM
+                <span className="font-semibold">Thursday:</span> 9 am to 5 pm
               </li>
               <li>
-                <span className="font-semibold">Friday:</span> 7 AM to 4 PM
+                <span className="font-semibold">Friday:</span> 9 am to 5 pm
               </li>
               <li>
                 <span className="font-semibold">Saturday:</span> Closed

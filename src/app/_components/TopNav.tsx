@@ -9,6 +9,7 @@ import {
   FaHome,
 } from "react-icons/fa";
 import { FaSquareFacebook } from "react-icons/fa6";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,12 +30,15 @@ export function TopNav() {
             <Link href="/caregivers" className="hover:text-gray-600">
               Caregivers
             </Link>
+            <Link href="/testimonials" className="hover:text-gray-600">
+              Testimonials
+            </Link>
             <Link href="/contact" className="hover:text-gray-600">
               Contact
             </Link>
           </div>
         </div>
-        <div className="hidden md:flex space-x-4">
+        <div className="hidden md:flex items-center space-x-4">
           <Link
             href=""
             target="blank"
@@ -59,6 +63,12 @@ export function TopNav() {
           >
             <FaLinkedin size={24} />
           </Link>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
         <div className="md:hidden">
           <button onClick={() => setIsOpen(!isOpen)}>
@@ -71,7 +81,6 @@ export function TopNav() {
           <div className="flex flex-col items-center space-y-4">
             <Link
               href="/"
-              target="blank"
               className="hover:text-gray-600"
               onClick={() => setIsOpen(false)}
             >
@@ -79,27 +88,31 @@ export function TopNav() {
             </Link>
             <Link
               href="/about"
-              target="blank"
               className="hover:text-gray-600"
               onClick={() => setIsOpen(false)}
             >
               About
             </Link>
             <Link
-              href="/contact"
-              target="blank"
-              className="hover:text-gray-600"
-              onClick={() => setIsOpen(false)}
-            >
-              Contact
-            </Link>
-            <Link
               href="/caregivers"
-              target="blank"
               className="hover:text-gray-600"
               onClick={() => setIsOpen(false)}
             >
               Caregivers
+            </Link>
+            <Link
+              href="/testimonials"
+              className="hover:text-gray-600"
+              onClick={() => setIsOpen(false)}
+            >
+              Testimonials
+            </Link>
+            <Link
+              href="/contact"
+              className="hover:text-gray-600"
+              onClick={() => setIsOpen(false)}
+            >
+              Contact
             </Link>
             <div className="flex space-x-4">
               <Link
@@ -128,6 +141,14 @@ export function TopNav() {
               >
                 <FaLinkedin size={24} />
               </Link>
+            </div>
+            <div className="flex flex-row items-center gap-4">
+              <SignedOut>
+                <SignInButton />
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
             </div>
           </div>
         </div>
