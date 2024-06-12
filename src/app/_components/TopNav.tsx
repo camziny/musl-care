@@ -33,7 +33,7 @@ export function TopNav() {
         </div>
         <div className="hidden md:flex space-x-4">
           <Link
-            href="https://www.facebook.com/route9landscapeproducts/"
+            href=""
             target="blank"
             className="hover:text-gray-600"
             aria-label="Facebook"
@@ -41,7 +41,7 @@ export function TopNav() {
             <FaSquareFacebook size={24} />
           </Link>
           <Link
-            href="https://www.instagram.com/route9landscapeproducts/"
+            href=""
             target="blank"
             className="hover:text-gray-600"
             aria-label="Instagram"
@@ -49,7 +49,7 @@ export function TopNav() {
             <FaInstagramSquare size={24} />
           </Link>
           <Link
-            href="https://www.linkedin.com/company/rosado-landscape-supplies/"
+            href=""
             target="blank"
             className="hover:text-gray-600"
             aria-label="LinkedIn"
@@ -92,7 +92,7 @@ export function TopNav() {
             </Link>
             <div className="flex space-x-4">
               <Link
-                href="https://www.facebook.com/route9landscapeproducts/"
+                href=""
                 className="hover:text-gray-600"
                 aria-label="Facebook"
                 onClick={() => setIsOpen(false)}
@@ -100,7 +100,7 @@ export function TopNav() {
                 <FaSquareFacebook size={24} />
               </Link>
               <Link
-                href="https://www.instagram.com/route9landscapeproducts/"
+                href=""
                 target="blank"
                 className="hover:text-gray-600"
                 aria-label="Instagram"
@@ -109,7 +109,7 @@ export function TopNav() {
                 <FaInstagramSquare size={24} />
               </Link>
               <Link
-                href="https://www.linkedin.com/company/rosado-landscape-supplies/"
+                href=""
                 target="blank"
                 className="hover:text-gray-600"
                 aria-label="LinkedIn"
