@@ -5,12 +5,24 @@ export default function About() {
   const logoUrl =
     "https://utfs.io/f/90ba1135-a67e-4dd6-9615-71bb5634ec07-hzt98r.jpeg";
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <div className="flex flex-col items-center justify-start min-h-screen bg-gray-50 py-12 px-4 lg:py-24">
+    <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col items-center justify-start min-h-screen bg-stone-200 py-12 px-4 lg:py-24">
         <div className="max-w-3xl w-full bg-white p-8 shadow-lg rounded-lg">
           <h1 className="text-4xl font-bold text-center text-gray-900 mb-6">
-            About Us
+            About [App Name]
           </h1>
+          <div className="flex justify-center">
+            <div className="relative w-full max-w-md mb-4 md:mb-8">
+              <Image
+                src={logoUrl}
+                alt="Logo"
+                layout="responsive"
+                width={200}
+                height={100}
+                className="object-contain rounded-lg"
+              />
+            </div>
+          </div>
           <p className="text-lg text-center text-gray-700 leading-relaxed">
             Welcome to [App Name], your trusted platform for connecting
             care-seekers with dedicated, background-checked Muslim caregivers.
@@ -25,16 +37,6 @@ export default function About() {
             elderly, or loved ones with special needs, [App Name] is here to
             help you find the right match.
           </p>
-        </div>
-        <div className="relative w-full max-w-md py-8">
-          <Image
-            src={logoUrl}
-            alt="Logo"
-            layout="responsive"
-            width={200}
-            height={100}
-            className="object-contain rounded-md"
-          />
         </div>
       </div>
     </div>

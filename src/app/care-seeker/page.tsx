@@ -1,5 +1,5 @@
 import React from "react";
 
 export default function CareSeeker() {
-  return <div>CareSeeker</div>;
+  return <div>Care seeker registration form</div>;
 }
