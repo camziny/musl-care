@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { TopNav } from "./_components/TopNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +17,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={` font-sans ${inter.className} flex flex-col gap-4`}>
+        <div className="grid h-screen grid-rows-[auto,1fr]">
+          <TopNav />
+          <main className="overflow-y-scroll">{children}</main>
+        </div>
+      </body>
     </html>
   );
 }
