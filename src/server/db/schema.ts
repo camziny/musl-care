@@ -23,7 +23,7 @@ export const careGivers = pgTable("careGivers", {
   postalCode: text("postal_code").notNull(),
   country: text("country").notNull(),
   userType: userTypeEnum("user_type").notNull(),
-  userId: text("user_id")
+  userId: serial("user_id")
     .references(() => users.id)
     .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -32,7 +32,7 @@ export const careGivers = pgTable("careGivers", {
 
 export const careSeekers = pgTable("careSeekers", {
   id: serial("id").primaryKey(),
-  userId: text("user_id")
+  userId: serial("user_id")
     .references(() => users.id)
     .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -43,6 +43,7 @@ export const schema = {
   users,
   careGivers,
   careSeekers,
+  userTypeEnum,
 };
 
 export const db = drizzle(sql, { schema });
