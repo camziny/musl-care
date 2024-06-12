@@ -17,7 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={` font-sans ${inter.className} flex flex-col gap-4`}>
+      <body
+        className={` font-sans ${inter.className} flex flex-col gap-4 bg-stone-200`}
+      >
         <div className="grid h-screen grid-rows-[auto,1fr]">
           <TopNav />
           <main className="overflow-y-scroll">{children}</main>

@@ -26,6 +26,9 @@ export function TopNav() {
             <Link href="/about" className="hover:text-gray-600">
               About
             </Link>
+            <Link href="/caregivers" className="hover:text-gray-600">
+              Caregivers
+            </Link>
             <Link href="/contact" className="hover:text-gray-600">
               Contact
             </Link>
@@ -89,6 +92,14 @@ export function TopNav() {
               onClick={() => setIsOpen(false)}
             >
               Contact
+            </Link>
+            <Link
+              href="/caregivers"
+              target="blank"
+              className="hover:text-gray-600"
+              onClick={() => setIsOpen(false)}
+            >
+              Caregivers
             </Link>
             <div className="flex space-x-4">
               <Link
