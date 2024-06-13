@@ -9,7 +9,7 @@ export default function About() {
       <div className="flex flex-col items-center justify-start min-h-screen bg-stone-200 py-12 px-4 lg:py-24">
         <div className="max-w-3xl w-full bg-white p-8 shadow-lg rounded-lg">
           <h1 className="text-4xl font-bold text-center text-gray-900 mb-6">
-            About [App Name]
+            About AyaCare
           </h1>
           <div className="flex justify-center">
             <div className="relative w-full max-w-md mb-4 md:mb-8">
@@ -24,7 +24,7 @@ export default function About() {
             </div>
           </div>
           <p className="text-lg text-center text-gray-700 leading-relaxed">
-            Welcome to [App Name], your trusted platform for connecting
+            Welcome to AyaCare, your trusted platform for connecting
             care-seekers with dedicated, background-checked Muslim caregivers.
             Our mission is to foster harmonious and safe homes by providing a
             reliable way for individuals and families within the Muslim
@@ -34,8 +34,8 @@ export default function About() {
             cultural and religious values. Our caregivers undergo rigorous
             background checks to ensure they meet the highest standards of trust
             and reliability. Whether you are seeking care for children, the
-            elderly, or loved ones with special needs, [App Name] is here to
-            help you find the right match.
+            elderly, or loved ones with special needs, AyaCare is here to help
+            you find the right match.
           </p>
         </div>
       </div>

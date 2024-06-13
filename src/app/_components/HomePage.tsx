@@ -12,9 +12,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-col items-center justify-center min-h-[50vh] py-2 md:py-4 md:px-6">
-        <h1 className="text-2xl font-bold p-2 md:p-4 text-center">
-          [App Name]
-        </h1>
+        <h1 className="text-2xl font-bold p-2 md:p-4 text-center">AyaCare</h1>
         <div className="relative w-full max-w-md mb-4 md:mb-8">
           <Image
             src={logoUrl}
