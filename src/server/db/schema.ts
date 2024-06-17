@@ -2,7 +2,9 @@ import { drizzle } from "drizzle-orm/vercel-postgres";
 import { pgTable, serial, text, timestamp, pgEnum } from "drizzle-orm/pg-core";
 import { sql } from "@vercel/postgres";
 
-const userTypeEnum = pgEnum("UserType", ["caregiver", "careseeker"]);
+export const userTypeEnum = pgEnum("UserType", ["caregiver", "careseeker"]);
+
+export type UserTypeEnum = "caregiver" | "careseeker";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
