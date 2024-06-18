@@ -18,7 +18,6 @@ export const createUserFromClerk = async (data: any) => {
     });
 
     if (existingUser) {
-      console.log("User already exists:", existingUser);
       return existingUser;
     }
 
@@ -31,7 +30,6 @@ export const createUserFromClerk = async (data: any) => {
       })
       .returning();
 
-    console.log("User created:", createdUser);
     return createdUser;
   } catch (error: any) {
     console.error(
@@ -53,7 +51,6 @@ export const createUserFromClerk = async (data: any) => {
 export const deleteUserFromClerk = async (clerkUserId: string) => {
   try {
     await db.delete(users).where(eq(users.clerkUserId, clerkUserId));
-    console.log("User deleted:", clerkUserId);
   } catch (error: any) {
     console.error(`Error in deleting user: ${error.message}`);
     throw error;

@@ -1,5 +1,14 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
-import { pgTable, serial, text, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  pgEnum,
+  numeric,
+  jsonb,
+  boolean,
+} from "drizzle-orm/pg-core";
 import { sql } from "@vercel/postgres";
 
 export const userTypeEnum = pgEnum("UserType", ["caregiver", "careseeker"]);
@@ -28,6 +37,13 @@ export const careGivers = pgTable("careGivers", {
   userId: serial("user_id")
     .references(() => users.id)
     .notNull(),
+  subscribed: boolean("subscribed").notNull().default(false),
+  languages: text("languages").array().notNull().default([]),
+  sect: text("sect").notNull().default(""),
+  ethnicBackground: text("ethnic_background").notNull().default(""),
+  hourlyRate: numeric("hourly_rate").notNull().default("0"),
+  availability: jsonb("availability").notNull().default({}),
+  backgroundChecked: boolean("background_checked").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
