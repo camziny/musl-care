@@ -20,7 +20,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={` font-sans ${inter.className} flex flex-col gap-4 bg-stone-200`}
+          className={` font-sans ${inter.className} flex flex-col gap-4 bg-red-100`}
         >
           <div className="grid h-screen grid-rows-[auto,1fr]">
             <TopNav />
