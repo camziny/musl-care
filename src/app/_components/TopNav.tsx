@@ -15,7 +15,7 @@ export function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-stone-100 border-b border-black p-4">
+    <nav className="bg-stone-100 border-b border-black p-4 text-black">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-8">
           <div className="text-xl font-semibold">

@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "@/server/db/schema";
 import { careGivers } from "@/server/db/schema";
 import type { CareGiver } from "@/utils/types";
+import { SimpleUploadButton } from "../_components/simpleUploadButton";
 
 export default function CareGiverForm() {
   const handleSubmit = async (formData: FormData) => {
@@ -14,7 +15,7 @@ export default function CareGiverForm() {
       description: formData.get("description") as string,
       image: {
         url: formData.get("imageUrl") as string,
-        altText: formData.get("altText") as string,
+        altText: "Profile picture",
       },
       phoneNumber: formData.get("phoneNumber") as string,
       address: formData.get("address") as string,
@@ -111,32 +112,14 @@ export default function CareGiverForm() {
             htmlFor="imageUrl"
             className="block text-sm font-medium text-gray-100 mb-1"
           >
-            Image
+            Profile Picture
           </label>
-          <input
-            type="text"
-            id="imageUrl"
-            name="imageUrl"
-            placeholder="Enter image URL"
-            className="border border-gray-600 bg-stone-100 text-gray-800 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="altText"
-            className="block text-sm font-medium text-gray-100 mb-1"
-          >
-            Alt Text
-          </label>
-          <input
-            type="text"
-            id="altText"
-            name="altText"
-            placeholder="Enter alt text"
-            className="border border-gray-600 bg-stone-100 text-gray-800 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+          <div className="flex flex-col items-center space-y-4">
+            <p className="text-gray-100 tex-center text-sm">
+              Click to upload an image
+            </p>
+            <SimpleUploadButton inputId="imageUrl" />
+          </div>
         </div>
         <div>
           <label

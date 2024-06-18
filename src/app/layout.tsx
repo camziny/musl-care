@@ -3,6 +3,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { TopNav } from "./_components/TopNav";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "sonner";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "./api/uploadthing/core";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,13 +23,14 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body
-          className={` font-sans ${inter.className} flex flex-col gap-4 bg-red-100`}
-        >
+        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+        <body className={`font-sans ${inter.className}`}>
           <div className="grid h-screen grid-rows-[auto,1fr]">
             <TopNav />
             <main className="overflow-y-scroll">{children}</main>
           </div>
+          <div id="modal-root" />
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>
