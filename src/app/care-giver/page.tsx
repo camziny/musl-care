@@ -3,7 +3,10 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "@/server/db/schema";
 import { careGivers } from "@/server/db/schema";
 import type { CareGiver } from "@/utils/types";
+import LanguageSelect from "../_components/LanguageSelect";
 import { SimpleUploadButton } from "../_components/simpleUploadButton";
+import SectSelect from "../_components/SectSelect";
+import EthnicBackgroundSelect from "../_components/EthnicBackgroundSelect";
 
 export default function CareGiverForm() {
   const handleSubmit = async (formData: FormData) => {
@@ -28,7 +31,7 @@ export default function CareGiverForm() {
       subscribed: formData.get("subscribed") === "true",
       languages: (formData.get("languages") as string).split(","),
       sect: formData.get("sect") as string,
-      ethnicBackground: formData.get("ethnicBackground") as string,
+      ethnicBackground: (formData.get("ethnicBackground") as string).split(","),
       hourlyRate: formData.get("hourlyRate") as string,
       availability: JSON.parse(formData.get("availability") as string),
       backgroundChecked: formData.get("backgroundChecked") === "true",
@@ -234,51 +237,39 @@ export default function CareGiverForm() {
         <div>
           <label
             htmlFor="languages"
-            className="block text-sm font-medium text-gray-100 mb-1"
+            className="block text-sm font-medium text-gray-400 mb-1"
           >
             Languages
           </label>
-          <input
-            type="text"
-            id="languages"
-            name="languages"
-            placeholder="Enter languages (comma separated)"
-            className="border border-gray-600 bg-stone-100 text-gray-800 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+          <div>
+            <LanguageSelect inputId="languages" />
+          </div>
         </div>
+        <input type="hidden" id="languages" name="languages" />
         <div>
           <label
-            htmlFor="sect"
-            className="block text-sm font-medium text-gray-100 mb-1"
+            htmlFor="sects"
+            className="block text-sm font-medium text-gray-400 mb-1"
           >
-            Sect
+            Sect of Islam
           </label>
-          <input
-            type="text"
-            id="sect"
-            name="sect"
-            placeholder="Enter sect"
-            className="border border-gray-600 bg-stone-100 text-gray-800 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+          <div>
+            <SectSelect inputId="sects" />
+          </div>
         </div>
+        <input type="hidden" id="sects" name="sects" />
         <div>
           <label
             htmlFor="ethnicBackground"
-            className="block text-sm font-medium text-gray-100 mb-1"
+            className="block text-sm font-medium text-gray-400 mb-1"
           >
             Ethnic Background
           </label>
-          <input
-            type="text"
-            id="ethnicBackground"
-            name="ethnicBackground"
-            placeholder="Enter ethnic background"
-            className="border border-gray-600 bg-stone-100 text-gray-800 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+          <div>
+            <EthnicBackgroundSelect inputId="ethnicBackground" />
+          </div>
         </div>
+        <input type="hidden" id="ethnicBackground" name="ethnicBackground" />
         <div>
           <label
             htmlFor="hourlyRate"

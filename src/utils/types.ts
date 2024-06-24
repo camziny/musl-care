@@ -26,7 +26,7 @@ export type CareGiver = {
   subscribed: boolean;
   languages: string[];
   sect: string;
-  ethnicBackground: string;
+  ethnicBackground: string[];
   hourlyRate: string;
   availability: Availability;
   backgroundChecked: boolean;

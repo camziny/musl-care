@@ -15,6 +15,20 @@
       "when": 1718722778103,
       "tag": "0001_fuzzy_bloodstrike",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1719238916635,
+      "tag": "0002_eminent_maximus",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1719240121473,
+      "tag": "0003_demonic_mastermind",
+      "breakpoints": true
     }
   ]
 }
