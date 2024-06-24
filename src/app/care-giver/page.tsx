@@ -7,6 +7,8 @@ import LanguageSelect from "../_components/LanguageSelect";
 import { SimpleUploadButton } from "../_components/simpleUploadButton";
 import SectSelect from "../_components/SectSelect";
 import EthnicBackgroundSelect from "../_components/EthnicBackgroundSelect";
+import SelectAvailability from "../_components/SelectAvailability";
+import { Availability, DayAvailability } from "@/utils/types";
 
 export default function CareGiverForm() {
   const handleSubmit = async (formData: FormData) => {
@@ -237,7 +239,7 @@ export default function CareGiverForm() {
         <div>
           <label
             htmlFor="languages"
-            className="block text-sm font-medium text-gray-400 mb-1"
+            className="block text-sm font-medium text-gray-100 mb-1"
           >
             Languages
           </label>
@@ -249,7 +251,7 @@ export default function CareGiverForm() {
         <div>
           <label
             htmlFor="sects"
-            className="block text-sm font-medium text-gray-400 mb-1"
+            className="block text-sm font-medium text-gray-100 mb-1"
           >
             Sect of Islam
           </label>
@@ -261,7 +263,7 @@ export default function CareGiverForm() {
         <div>
           <label
             htmlFor="ethnicBackground"
-            className="block text-sm font-medium text-gray-400 mb-1"
+            className="block text-sm font-medium text-gray-100 mb-1"
           >
             Ethnic Background
           </label>
@@ -293,14 +295,8 @@ export default function CareGiverForm() {
           >
             Availability
           </label>
-          <input
-            type="text"
-            id="availability"
-            name="availability"
-            placeholder="Enter availability as JSON"
-            className="border border-gray-600 bg-stone-100 text-gray-800 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+          <SelectAvailability inputId="availability" />
+          <input type="hidden" id="availability" name="availability" />
         </div>
         <div className="flex items-center">
           <input

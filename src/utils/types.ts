@@ -5,10 +5,12 @@ export type ImageData = {
   altText: string;
 };
 
-export type Availability = {
-  days: string[];
+export type DayAvailability = {
+  day: string;
   times: string[];
 };
+
+export type Availability = DayAvailability[];
 
 export type CareGiver = {
   id: number;
