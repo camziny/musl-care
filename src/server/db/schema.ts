@@ -40,7 +40,7 @@ export const careGivers = pgTable("careGivers", {
   subscribed: boolean("subscribed").notNull().default(false),
   languages: text("languages").array().notNull().default([]),
   sect: text("sect").notNull().default(""),
-  ethnicBackground: text("ethnic_background").array().notNull(),
+  ethnicBackground: text("ethnic_background").array().notNull().default([]),
   hourlyRate: numeric("hourly_rate").notNull().default("0"),
   availability: jsonb("availability").notNull().default({}),
   backgroundChecked: boolean("background_checked").notNull().default(false),
