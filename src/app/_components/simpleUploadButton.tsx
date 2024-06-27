@@ -37,11 +37,14 @@ export function SimpleUploadButton({ inputId }: SimpleUploadButtonProps) {
       if (result && result.length > 0) {
         const uploadedUrl = result[0].url;
         setLocalImageUrl(uploadedUrl);
-        const input = document.getElementById(inputId) as HTMLInputElement;
+        const input = document.querySelector(
+          `input[name="${inputId}"]`
+        ) as HTMLInputElement;
         if (input) {
+          console.log(`Setting input value for ${inputId} to ${uploadedUrl}`);
           input.value = uploadedUrl;
         } else {
-          console.error(`Element with id ${inputId} not found.`);
+          console.error(`Element with name ${inputId} not found.`);
         }
       }
 
@@ -57,6 +60,20 @@ export function SimpleUploadButton({ inputId }: SimpleUploadButtonProps) {
       const result = await startUpload(selectedFiles);
 
       console.log("uploaded files", result);
+
+      if (result && result.length > 0) {
+        const uploadedUrl = result[0].url;
+        setLocalImageUrl(uploadedUrl);
+        const input = document.querySelector(
+          `input[name="${inputId}"]`
+        ) as HTMLInputElement;
+        if (input) {
+          console.log(`Setting input value for ${inputId} to ${uploadedUrl}`);
+          input.value = uploadedUrl;
+        } else {
+          console.error(`Element with name ${inputId} not found.`);
+        }
+      }
     } catch (error) {
       console.error("Error during file upload:", error);
     }
