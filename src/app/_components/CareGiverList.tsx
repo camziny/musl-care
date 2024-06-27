@@ -14,17 +14,19 @@ export default async function CareGiverList() {
         {careGivers.map((careGiver) => (
           <div
             key={careGiver.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden"
+            className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col items-center"
           >
             <Link href={`/caregivers/${careGiver.id}`}>
-              <Image
-                src={careGiver.image}
-                alt={careGiver.image}
-                width={192}
-                height={192}
-                className="w-full h-48 object-cover"
-                style={{ objectFit: "cover" }}
-              />
+              <div className="relative w-48 h-48 rounded-full overflow-hidden">
+                <Image
+                  src={careGiver.image}
+                  alt={careGiver.image}
+                  layout="fill"
+                  objectFit="cover"
+                  objectPosition="center"
+                  quality={75}
+                />
+              </div>
             </Link>
             <div className="p-4">
               <h2 className="text-xl text-gray-700 font-semibold mb-2">
