@@ -12,10 +12,12 @@ import { getCountries } from "@/utils/fethCountries";
 
 interface EthnicBackgroundSelectProps {
   inputId: string;
+  selectedEthnicBackground?: string[];
 }
 
 const EthnicBackgroundSelect: React.FC<EthnicBackgroundSelectProps> = ({
   inputId,
+  selectedEthnicBackground = [],
 }) => {
   const [ethnicBackgroundOptions, setEthnicBackgroundOptions] = useState<any[]>(
     []
@@ -27,12 +29,16 @@ const EthnicBackgroundSelect: React.FC<EthnicBackgroundSelectProps> = ({
       try {
         const countries = await getCountries();
         setEthnicBackgroundOptions(countries);
+        const initialSelectedOptions = countries.filter((option) =>
+          selectedEthnicBackground.includes(option.value)
+        );
+        setSelectedOptions(initialSelectedOptions);
       } catch (error) {
         console.error("Error fetching countries:", error);
       }
     };
     loadCountries();
-  }, []);
+  }, [selectedEthnicBackground]);
 
   const handleSelectChange = (value: string) => {
     const selectedOption = ethnicBackgroundOptions.find(

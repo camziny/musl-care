@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Availability, DayAvailability } from "@/utils/types";
 
 const daysOfWeek = [
@@ -16,12 +16,24 @@ const timesOfDay = ["Morning", "Afternoon", "Evening", "Night"];
 
 interface AvailabilitySelectProps {
   inputId: string;
+  selectedAvailability?: Availability;
 }
 
-const SelectAvailability: React.FC<AvailabilitySelectProps> = ({ inputId }) => {
+const SelectAvailability: React.FC<AvailabilitySelectProps> = ({
+  inputId,
+  selectedAvailability = [],
+}) => {
   const [availability, setAvailability] = useState<Record<string, string[]>>(
     {}
   );
+
+  useEffect(() => {
+    const initialAvailability = selectedAvailability.reduce(
+      (acc, { day, times }) => ({ ...acc, [day]: times }),
+      {}
+    );
+    setAvailability(initialAvailability);
+  }, [selectedAvailability]);
 
   const handleDayChange = (day: string, selectedTimes: string[]) => {
     const newAvailability = { ...availability, [day]: selectedTimes };
@@ -39,7 +51,12 @@ const SelectAvailability: React.FC<AvailabilitySelectProps> = ({ inputId }) => {
   return (
     <div>
       {daysOfWeek.map((day) => (
-        <DayAvailabilitySelect key={day} day={day} onChange={handleDayChange} />
+        <DayAvailabilitySelect
+          key={day}
+          day={day}
+          onChange={handleDayChange}
+          selectedAvailability={selectedAvailability}
+        />
       ))}
     </div>
   );
@@ -48,13 +65,22 @@ const SelectAvailability: React.FC<AvailabilitySelectProps> = ({ inputId }) => {
 interface DayAvailabilitySelectProps {
   day: string;
   onChange: (day: string, selectedTimes: string[]) => void;
+  selectedAvailability: Availability;
 }
 
 const DayAvailabilitySelect: React.FC<DayAvailabilitySelectProps> = ({
   day,
   onChange,
+  selectedAvailability,
 }) => {
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
+
+  useEffect(() => {
+    const initialTimes =
+      selectedAvailability.find((avail: DayAvailability) => avail.day === day)
+        ?.times || [];
+    setSelectedTimes(initialTimes);
+  }, [day, selectedAvailability]);
 
   const handleTimeChange = (time: string) => {
     const newSelectedTimes = selectedTimes.includes(time)

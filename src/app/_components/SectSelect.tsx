@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -16,6 +16,7 @@ interface SectOption {
 
 interface SectSelectProps {
   inputId: string;
+  selectedSect?: string;
 }
 
 const sectOptions: SectOption[] = [
@@ -25,19 +26,26 @@ const sectOptions: SectOption[] = [
   { value: "Ahmadiyya", label: "Ahmadiyya" },
 ];
 
-const SectSelect: React.FC<SectSelectProps> = ({ inputId }) => {
-  const [selectedSect, setSelectedSect] = useState<SectOption | null>(null);
+const SectSelect: React.FC<SectSelectProps> = ({
+  inputId,
+  selectedSect = "",
+}) => {
+  const [selectedSectOption, setSelectedSectOption] =
+    useState<SectOption | null>(null);
+
+  useEffect(() => {
+    const initialSelectedSect =
+      sectOptions.find((option) => option.value === selectedSect) || null;
+    setSelectedSectOption(initialSelectedSect);
+  }, [selectedSect]);
 
   const handleSectChange = (value: string) => {
     const input = document.getElementById(inputId) as HTMLInputElement;
-    if (input) {
-      const selectedOption = sectOptions.find(
-        (option) => option.value === value
-      );
-      if (selectedOption) {
-        setSelectedSect(selectedOption);
-        input.value = selectedOption.value;
-      }
+    const selectedOption = sectOptions.find((option) => option.value === value);
+
+    if (selectedOption) {
+      setSelectedSectOption(selectedOption);
+      input.value = selectedOption.value;
     }
   };
 
