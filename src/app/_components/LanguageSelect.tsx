@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -16,6 +16,7 @@ interface LanguageOption {
 
 interface LanguageSelectProps {
   inputId: string;
+  selectedLanguages?: string[];
 }
 
 const languageOptions: LanguageOption[] = [
@@ -25,41 +26,50 @@ const languageOptions: LanguageOption[] = [
   { value: "German", label: "German" },
 ];
 
-const LanguageSelect: React.FC<LanguageSelectProps> = ({ inputId }) => {
-  const [selectedLanguages, setSelectedLanguages] = useState<LanguageOption[]>(
-    []
-  );
+const LanguageSelect: React.FC<LanguageSelectProps> = ({
+  inputId,
+  selectedLanguages = [],
+}) => {
+  const [selectedLanguageOptions, setSelectedLanguageOptions] = useState<
+    LanguageOption[]
+  >([]);
+
+  useEffect(() => {
+    if (selectedLanguages.length > 0) {
+      const initialSelectedLanguages = languageOptions.filter((option) =>
+        selectedLanguages.includes(option.value)
+      );
+      setSelectedLanguageOptions(initialSelectedLanguages);
+    }
+  }, [selectedLanguages]);
 
   const handleLanguageChange = (value: string) => {
     const input = document.getElementById(inputId) as HTMLInputElement;
-    if (input) {
-      const selectedOption = languageOptions.find(
-        (option) => option.value === value
-      );
-      if (selectedOption) {
-        let updatedLanguages;
-        if (selectedLanguages.find((option) => option.value === value)) {
-          updatedLanguages = selectedLanguages.filter(
-            (option) => option.value !== value
-          );
-        } else {
-          updatedLanguages = [...selectedLanguages, selectedOption];
-        }
-        setSelectedLanguages(updatedLanguages);
-        input.value = updatedLanguages.map((option) => option.value).join(",");
+    const selectedOption = languageOptions.find(
+      (option) => option.value === value
+    );
+
+    if (selectedOption) {
+      let updatedLanguages;
+      if (selectedLanguageOptions.find((option) => option.value === value)) {
+        updatedLanguages = selectedLanguageOptions.filter(
+          (option) => option.value !== value
+        );
+      } else {
+        updatedLanguages = [...selectedLanguageOptions, selectedOption];
       }
+      setSelectedLanguageOptions(updatedLanguages);
+      input.value = updatedLanguages.map((option) => option.value).join(",");
     }
   };
 
   const handleRemoveLanguage = (value: string) => {
     const input = document.getElementById(inputId) as HTMLInputElement;
-    if (input) {
-      const updatedLanguages = selectedLanguages.filter(
-        (option) => option.value !== value
-      );
-      setSelectedLanguages(updatedLanguages);
-      input.value = updatedLanguages.map((option) => option.value).join(",");
-    }
+    const updatedLanguages = selectedLanguageOptions.filter(
+      (option) => option.value !== value
+    );
+    setSelectedLanguageOptions(updatedLanguages);
+    input.value = updatedLanguages.map((option) => option.value).join(",");
   };
 
   return (
@@ -77,7 +87,7 @@ const LanguageSelect: React.FC<LanguageSelectProps> = ({ inputId }) => {
         </SelectContent>
       </Select>
       <div className="mt-2 flex flex-wrap gap-2">
-        {selectedLanguages.map((language) => (
+        {selectedLanguageOptions.map((language) => (
           <div
             key={language.value}
             className="flex items-center bg-gray-200 text-gray-800 px-2 py-1 rounded"

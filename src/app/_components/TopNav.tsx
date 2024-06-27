@@ -9,10 +9,17 @@ import {
   FaHome,
 } from "react-icons/fa";
 import { FaSquareFacebook } from "react-icons/fa6";
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 
 export function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useUser();
 
   return (
     <nav className="bg-stone-100 border-b border-black p-4 text-black">
@@ -71,7 +78,17 @@ export function TopNav() {
             </SignInButton>
           </SignedOut>
           <SignedIn>
-            <UserButton />
+            <div className="flex items-center space-x-4">
+              {user && (
+                <Link
+                  href={`/caregiver/${user.id}/profile`}
+                  className="bg-blue-500 text-white text-sm font-semibold rounded-md px-6 py-2 shadow-md hover:bg-blue-400 transition-all duration-300 ease-in-out"
+                >
+                  My Caregiver Profile
+                </Link>
+              )}
+              <UserButton />
+            </div>
           </SignedIn>
         </div>
         <div className="md:hidden">
