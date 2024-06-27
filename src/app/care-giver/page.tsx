@@ -8,11 +8,13 @@ import { SimpleUploadButton } from "../_components/simpleUploadButton";
 import SectSelect from "../_components/SectSelect";
 import EthnicBackgroundSelect from "../_components/EthnicBackgroundSelect";
 import SelectAvailability from "../_components/SelectAvailability";
-import { Availability, DayAvailability } from "@/utils/types";
+import RegisterButton from "../_components/RegisterButton";
 
 export default function CareGiverForm() {
   const handleSubmit = async (formData: FormData) => {
     "use server";
+
+    console.log("Form Data:", Object.fromEntries(formData.entries()));
 
     const data: CareGiver = {
       id: 0,
@@ -71,7 +73,6 @@ export default function CareGiverForm() {
       });
     } catch (error) {
       console.error(error);
-      alert("Failed to register caregiver. Please try again.");
     }
   };
 
@@ -80,7 +81,12 @@ export default function CareGiverForm() {
       <h1 className="text-2xl font-bold text-white mb-6">
         Caregiver Registration Form
       </h1>
-      <form action={handleSubmit} className="space-y-6">
+      <form
+        id="caregiver-form"
+        action="/care-giver"
+        method="post"
+        className="space-y-6"
+      >
         <div>
           <label
             htmlFor="name"
@@ -120,11 +126,12 @@ export default function CareGiverForm() {
             Profile Picture
           </label>
           <div className="flex flex-col items-center space-y-4">
-            <p className="text-gray-100 tex-center text-sm">
+            <p className="text-gray-100 text-center text-sm">
               Click to upload an image
             </p>
             <SimpleUploadButton inputId="imageUrl" />
           </div>
+          <input type="hidden" id="imageUrl" name="imageUrl" />
         </div>
         <div>
           <label
@@ -250,16 +257,16 @@ export default function CareGiverForm() {
         <input type="hidden" id="languages" name="languages" />
         <div>
           <label
-            htmlFor="sects"
+            htmlFor="sect"
             className="block text-sm font-medium text-gray-100 mb-1"
           >
             Sect of Islam
           </label>
           <div>
-            <SectSelect inputId="sects" />
+            <SectSelect inputId="sect" />
           </div>
         </div>
-        <input type="hidden" id="sects" name="sects" />
+        <input type="hidden" id="sect" name="sect" />
         <div>
           <label
             htmlFor="ethnicBackground"
@@ -312,12 +319,7 @@ export default function CareGiverForm() {
             Background Checked
           </label>
         </div>
-        <button
-          type="submit"
-          className="bg-violet-300 text-gray-800 py-3 px-6 rounded hover:bg-violet-400 transition duration-200"
-        >
-          Register
-        </button>
+        <RegisterButton formId="caregiver-form" />
       </form>
     </div>
   );
