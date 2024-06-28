@@ -14,8 +14,6 @@ export default function CareGiverForm() {
   const handleSubmit = async (formData: FormData) => {
     "use server";
 
-    console.log("Form Data:", Object.fromEntries(formData.entries()));
-
     const data: CareGiver = {
       id: 0,
       name: formData.get("name") as string,
