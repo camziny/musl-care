@@ -1,11 +1,29 @@
+// src/app/HomePage.tsx
+
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
 import CareGiverList from "./CareGiverList";
+import { auth } from "@clerk/nextjs/server";
+import { getCaregiverByClerkUserId } from "@/server/db/queries";
 
 export const dynamic = "force-dynamic";
 
-export default function HomePage() {
+const HomePage = async () => {
+  const { userId: clerkUserId } = auth();
+  let caregiverProfileUrl = "/care-giver";
+
+  if (clerkUserId) {
+    try {
+      const caregiver = await getCaregiverByClerkUserId(clerkUserId);
+      if (caregiver) {
+        caregiverProfileUrl = `/caregiver/${caregiver.id}/profile`;
+      }
+    } catch (error) {
+      console.error("Error fetching caregiver profile:", error);
+    }
+  }
+
   const logoUrl =
     "https://utfs.io/f/90ba1135-a67e-4dd6-9615-71bb5634ec07-hzt98r.jpeg";
 
@@ -36,7 +54,7 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="w-full md:w-auto">
-            <Link href="/care-giver">
+            <Link href={caregiverProfileUrl}>
               <button className="w-full md:w-64 bg-slate-800 text-white rounded-full px-6 py-3 shadow-lg hover:bg-slate-500 hover:shadow-xl transition-all duration-300 ease-in-out text-center">
                 I&apos;m a care giver
               </button>
@@ -47,4 +65,6 @@ export default function HomePage() {
       <CareGiverList />
     </div>
   );
-}
+};
+
+export default HomePage;
