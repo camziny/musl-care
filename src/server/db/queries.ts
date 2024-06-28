@@ -48,6 +48,14 @@ export async function createCaregiver(data: CareGiver) {
 
   if (!dbUser) throw new Error("User not found");
 
+  const existingCareGiver = await db.query.careGivers.findFirst({
+    where: (model, { eq }) => eq(model.userId, dbUser.id),
+  });
+
+  if (existingCareGiver) {
+    throw new Error("Caregiver profile already exists for this user");
+  }
+
   await db.insert(careGivers).values({
     name: data.name,
     description: data.description,
