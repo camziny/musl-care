@@ -8,6 +8,7 @@ import {
   numeric,
   jsonb,
   boolean,
+  integer,
 } from "drizzle-orm/pg-core";
 import { sql } from "@vercel/postgres";
 
@@ -53,6 +54,17 @@ export const careSeekers = pgTable("careSeekers", {
   userId: serial("user_id")
     .references(() => users.id)
     .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const jobListings = pgTable("jobListings", {
+  id: serial("id").primaryKey(),
+  careSeekerId: integer("careSeeker_id")
+    .references(() => careSeekers.id)
+    .notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
