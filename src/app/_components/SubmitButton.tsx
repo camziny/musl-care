@@ -32,15 +32,15 @@ export default function SubmitButton({ formId }: RegisterButtonProps) {
       });
 
       if (response.ok) {
-        toast.success("Registration successful!");
+        toast.success("Job listing submitted successfully!");
         router.push("/");
       } else {
-        toast.error("Failed to register caregiver. Please try again.");
+        toast.error("Failed to submit job. Please try again.");
         setIsSubmitting(false);
       }
     } catch (error) {
       console.error("Error during form submission:", error);
-      toast.error("Failed to register caregiver. Please try again.");
+      toast.error("Failed to submit job listing. Please try again.");
       setIsSubmitting(false);
     }
   };

@@ -7,7 +7,7 @@ export default function CareGiverPage({
   params: { id: string };
 }) {
   const idAsNumber = Number(careGiverId);
-  if (Number.isNaN(idAsNumber)) throw new Error("Invalid product id");
+  if (Number.isNaN(idAsNumber)) throw new Error("Invalid caregiver id");
 
   return <FullPageCaregiverView id={idAsNumber} />;
 }

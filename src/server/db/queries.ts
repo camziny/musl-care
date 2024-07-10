@@ -183,13 +183,34 @@ interface JobFormData {
   description: string;
 }
 
-export async function createJobForm(data: JobFormData): Promise<void> {
+export async function createJobForm(data: JobFormData) {
   const { userId: clerkUserId } = auth();
   if (!clerkUserId) {
-    throw new Error("Unauthorized: No user ID found.");
+    console.error("Unauthorized: No user ID found.");
+    throw new Error("Unauthorized");
   }
 
-  const careSeeker = await getOrCreateCareSeekerByClerkUserId(clerkUserId);
+  const user = await db.query.users.findFirst({
+    where: (model, { eq }) => eq(model.clerkUserId, clerkUserId),
+  });
+
+  if (!user) {
+    console.error("User not found for clerkUserId:", clerkUserId);
+    throw new Error("User not found");
+  }
+
+  console.log("Database user found:", user);
+
+  const careSeeker = await db.query.careSeekers.findFirst({
+    where: (model, { eq }) => eq(model.userId, user.id),
+  });
+
+  if (!careSeeker) {
+    console.error("Care Seeker not found for userId:", user.id);
+    throw new Error("Care Seeker not found");
+  }
+
+  console.log("Care Seeker found:", careSeeker);
 
   try {
     await db.insert(jobListings).values({
@@ -197,13 +218,12 @@ export async function createJobForm(data: JobFormData): Promise<void> {
       title: data.title,
       description: data.description,
     });
+
     console.log("Job listing created:", {
       careSeekerId: careSeeker.id,
       title: data.title,
       description: data.description,
     });
-
-    redirect("/");
   } catch (error) {
     console.error("Error inserting job listing:", error);
     throw new Error("Failed to create job listing");
@@ -243,4 +263,20 @@ export async function registerCareSeeker() {
   }
 
   return careSeeker;
+}
+
+export async function getJobListings() {
+  const jobListingList = await db.query.jobListings.findMany({
+    orderBy: (model, { desc }) => desc(model.id),
+  });
+  return jobListingList;
+}
+
+export async function getJobListing(id: number) {
+  const jobListing = await db.query.jobListings.findFirst({
+    where: (model, { eq }) => eq(model.id, id),
+  });
+  if (!jobListing) throw new Error("Job listing not found");
+
+  return jobListing;
 }
