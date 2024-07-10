@@ -74,6 +74,7 @@ export const schema = {
   careGivers,
   careSeekers,
   userTypeEnum,
+  jobListings,
 };
 
 export const db = drizzle(sql, { schema });
