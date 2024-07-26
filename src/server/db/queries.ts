@@ -178,9 +178,12 @@ export async function getOrCreateCareSeekerByClerkUserId(
   return careSeeker;
 }
 
-interface JobFormData {
+export interface JobFormData {
   title: string;
   description: string;
+  creator: string;
+  datePosted: Date;
+  location: string;
 }
 
 export async function createJobForm(data: JobFormData) {
@@ -199,8 +202,6 @@ export async function createJobForm(data: JobFormData) {
     throw new Error("User not found");
   }
 
-  console.log("Database user found:", user);
-
   const careSeeker = await db.query.careSeekers.findFirst({
     where: (model, { eq }) => eq(model.userId, user.id),
   });
@@ -210,13 +211,14 @@ export async function createJobForm(data: JobFormData) {
     throw new Error("Care Seeker not found");
   }
 
-  console.log("Care Seeker found:", careSeeker);
-
   try {
     await db.insert(jobListings).values({
       careSeekerId: careSeeker.id,
       title: data.title,
       description: data.description,
+      creator: data.creator,
+      datePosted: data.datePosted,
+      location: data.location,
     });
 
     console.log("Job listing created:", {

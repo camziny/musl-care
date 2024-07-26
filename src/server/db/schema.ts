@@ -63,8 +63,11 @@ export const jobListings = pgTable("jobListings", {
   careSeekerId: integer("careSeeker_id")
     .references(() => careSeekers.id)
     .notNull(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
+  title: text("title").notNull().default("Untitled Job"),
+  description: text("description").notNull().default("No description provided"),
+  creator: text("creator").notNull().default("Anonymous"),
+  datePosted: timestamp("date_posted").defaultNow().notNull(),
+  location: text("location").notNull().default("Unknown location"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

@@ -1,19 +1,25 @@
 import React from "react";
-import { createJobForm } from "@/server/db/queries";
+import { createJobForm, JobFormData } from "@/server/db/queries";
 import SubmitButton from "../_components/SubmitButton";
+import dynamic from "next/dynamic";
+
+const DatePicker = dynamic(() => import("./DatePicker"), {
+  ssr: false,
+});
 
 export default function CareSeekerForm() {
   const handleSubmit = async (formData: FormData) => {
     "use server";
 
-    console.log("Form data received:", formData);
+    const startDateString = formData.get("datePosted") as string;
 
-    const data = {
+    const data: JobFormData = {
       title: formData.get("title") as string,
       description: formData.get("description") as string,
+      creator: formData.get("creator") as string,
+      datePosted: startDateString ? new Date(startDateString) : new Date(),
+      location: formData.get("location") as string,
     };
-
-    console.log("Parsed form data:", data);
 
     try {
       await createJobForm(data);
@@ -60,6 +66,48 @@ export default function CareSeekerForm() {
             name="description"
             placeholder="Enter job description"
             className="border border-gray-600 bg-stone-100 text-gray-800 p-3 rounded w-full h-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="creator"
+            className="block text-sm font-medium text-gray-100 mb-1"
+          >
+            Your Name
+          </label>
+          <input
+            type="text"
+            id="creator"
+            name="creator"
+            placeholder="Enter your name"
+            className="border border-gray-600 bg-stone-100 text-gray-800 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="datePosted"
+            className="block text-sm font-medium text-gray-100 mb-1"
+          >
+            Date
+          </label>
+          <DatePicker startDateInputId="datePosted" />
+          <input type="hidden" id="datePosted" name="datePosted" />
+        </div>
+        <div>
+          <label
+            htmlFor="location"
+            className="block text-sm font-medium text-gray-100 mb-1"
+          >
+            Location
+          </label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            placeholder="Enter location"
+            className="border border-gray-600 bg-stone-100 text-gray-800 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
