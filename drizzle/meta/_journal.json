@@ -43,6 +43,34 @@
       "when": 1720555072537,
       "tag": "0005_third_wiccan",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1720637141939,
+      "tag": "0006_workable_cassandra_nova",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1720637239806,
+      "tag": "0007_lean_speed",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1720637355101,
+      "tag": "0008_public_songbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1720637486608,
+      "tag": "0009_simple_tag",
+      "breakpoints": true
     }
   ]
 }
