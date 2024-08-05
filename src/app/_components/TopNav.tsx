@@ -26,21 +26,42 @@ export function TopNav() {
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-8">
           <div className="text-xl font-semibold">
-            <Link href="/" className="hover:text-gray-600">
+            <Link
+              href="/"
+              className="hover:text-gray-600 flex items-center justify-center"
+            >
               <FaHome />
             </Link>
           </div>
           <div className="hidden md:flex space-x-8">
-            <Link href="/about" className="hover:text-gray-600">
+            <Link
+              href="/about"
+              className="hover:text-gray-600 flex items-center justify-center"
+            >
               About
             </Link>
-            <Link href="/caregivers" className="hover:text-gray-600">
+            <Link
+              href="/caregivers"
+              className="hover:text-gray-600 flex items-center justify-center"
+            >
               Caregivers
             </Link>
-            <Link href="/testimonials" className="hover:text-gray-600">
+            <Link
+              href="/jobs"
+              className="hover:text-gray-600 flex items-center justify-center"
+            >
+              Jobs
+            </Link>
+            <Link
+              href="/testimonials"
+              className="hover:text-gray-600 flex items-center justify-center"
+            >
               Testimonials
             </Link>
-            <Link href="/contact" className="hover:text-gray-600">
+            <Link
+              href="/contact"
+              className="hover:text-gray-600 flex items-center justify-center"
+            >
               Contact
             </Link>
           </div>
