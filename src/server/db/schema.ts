@@ -66,6 +66,7 @@ export const jobListings = pgTable("jobListings", {
   title: text("title").notNull().default("Untitled Job"),
   description: text("description").notNull().default("No description provided"),
   creator: text("creator").notNull().default("Anonymous"),
+  creatorUserId: text("creator_user_id").notNull(),
   datePosted: timestamp("date_posted").defaultNow().notNull(),
   location: text("location").notNull().default("Unknown location"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

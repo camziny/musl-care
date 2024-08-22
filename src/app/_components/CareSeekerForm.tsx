@@ -2,30 +2,34 @@ import React from "react";
 import { createJobForm, JobFormData } from "@/server/db/queries";
 import SubmitButton from "../_components/SubmitButton";
 import dynamic from "next/dynamic";
+import { currentUser } from "@clerk/nextjs/server";
 
 const DatePicker = dynamic(() => import("./DatePicker"), {
   ssr: false,
 });
 
-export default function CareSeekerForm() {
+export default async function CareSeekerForm() {
+  const user = await currentUser();
+
   const handleSubmit = async (formData: FormData) => {
     "use server";
 
-    const startDateString = formData.get("datePosted") as string;
-
-    const data: JobFormData = {
-      title: formData.get("title") as string,
-      description: formData.get("description") as string,
-      creator: formData.get("creator") as string,
-      datePosted: startDateString ? new Date(startDateString) : new Date(),
-      location: formData.get("location") as string,
-    };
-
     try {
+      const startDateString = formData.get("datePosted") as string;
+
+      const data: JobFormData = {
+        title: formData.get("title") as string,
+        description: formData.get("description") as string,
+        creator: formData.get("creator") as string,
+        creatorUserId: user?.id || "",
+        datePosted: startDateString ? new Date(startDateString) : new Date(),
+        location: formData.get("location") as string,
+      };
+
       await createJobForm(data);
       console.log("Job listing created successfully");
     } catch (error) {
-      console.error("Error creating job listing:", error);
+      console.error("Error during form submission:", error);
     }
   };
 

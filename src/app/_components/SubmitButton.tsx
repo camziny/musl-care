@@ -33,7 +33,7 @@ export default function SubmitButton({ formId }: RegisterButtonProps) {
 
       if (response.ok) {
         toast.success("Job listing submitted successfully!");
-        router.push("/");
+        router.push("/jobs");
       } else {
         toast.error("Failed to submit job. Please try again.");
         setIsSubmitting(false);
