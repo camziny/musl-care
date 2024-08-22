@@ -5,6 +5,7 @@ import { careGivers, users, jobListings, careSeekers } from "./schema";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { CareGiver, ImageData } from "@/utils/types";
+import { currentUser } from "@clerk/nextjs/server";
 
 export async function getCaregivers() {
   const careGiversList = await db.query.careGivers.findMany({
@@ -182,6 +183,7 @@ export interface JobFormData {
   title: string;
   description: string;
   creator: string;
+  creatorUserId: string;
   datePosted: Date;
   location: string;
 }
@@ -217,14 +219,9 @@ export async function createJobForm(data: JobFormData) {
       title: data.title,
       description: data.description,
       creator: data.creator,
+      creatorUserId: clerkUserId,
       datePosted: data.datePosted,
       location: data.location,
-    });
-
-    console.log("Job listing created:", {
-      careSeekerId: careSeeker.id,
-      title: data.title,
-      description: data.description,
     });
   } catch (error) {
     console.error("Error inserting job listing:", error);
@@ -270,6 +267,14 @@ export async function registerCareSeeker() {
 export async function getJobListings() {
   const jobListingList = await db.query.jobListings.findMany({
     orderBy: (model, { desc }) => desc(model.id),
+    columns: {
+      id: true,
+      title: true,
+      description: true,
+      creator: true,
+      creatorUserId: true,
+      careSeekerId: true,
+    },
   });
   return jobListingList;
 }
@@ -281,4 +286,61 @@ export async function getJobListing(id: number) {
   if (!jobListing) throw new Error("Job listing not found");
 
   return jobListing;
+}
+
+export async function updateJobListing(id: number, data: Partial<JobFormData>) {
+  const { userId: clerkUserId } = auth();
+  if (!clerkUserId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+
+  const user = await db.query.users.findFirst({
+    where: (model, { eq }) => eq(model.clerkUserId, clerkUserId),
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const jobListing = await db.query.jobListings.findFirst({
+    where: (model, { eq }) => eq(model.id, id),
+  });
+
+  if (!jobListing || jobListing.careSeekerId !== user.id) {
+    throw new Error("Unauthorized or job not found");
+  }
+
+  await db.update(jobListings).set(data).where(eq(jobListings.id, id));
+
+  console.log("Job listing updated:", { id, ...data });
+}
+
+export async function deleteJobListing(jobId: number) {
+  const user = await currentUser();
+
+  if (!user) {
+    throw new Error("Unauthorized: No user logged in.");
+  }
+
+  const dbUser = await db.query.users.findFirst({
+    where: (model, { eq }) => eq(model.clerkUserId, user.id),
+  });
+
+  if (!dbUser) {
+    throw new Error("User not found.");
+  }
+
+  const jobListing = await db.query.jobListings.findFirst({
+    where: (model, { eq }) => eq(model.id, jobId),
+  });
+
+  if (!jobListing || jobListing.creatorUserId !== dbUser.clerkUserId) {
+    throw new Error(
+      "Forbidden: You do not have permission to delete this job."
+    );
+  }
+
+  await db.delete(jobListings).where(eq(jobListings.id, jobId));
+
+  console.log("Job listing deleted:", { jobId });
 }
