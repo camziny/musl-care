@@ -5,7 +5,7 @@ import { db } from "@/server/db/schema";
 import { careSeekers } from "@/server/db/schema";
 import RegisterCareSeeker from "../_components/RegisterCareSeeker";
 import CareSeekerForm from "../_components/CareSeekerForm";
-
+import LookingForCare from "@/components/LookingForCare";
 export default async function CareSeekerPage() {
   const { userId: clerkUserId } = auth();
   if (!clerkUserId) {
@@ -28,5 +28,5 @@ export default async function CareSeekerPage() {
     return <RegisterCareSeeker />;
   }
 
-  return <CareSeekerForm />;
+  return <LookingForCare />;
 }
