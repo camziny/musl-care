@@ -19,8 +19,8 @@ interface FormData {
   termOfCare: CareLength | "";
 }
 
-const RELIGIONS = ["Muslim", "Sikh", "Hindu", "Buddhist", "Jain", "Christian", "Zoroastrian", "no preference"] as const;
-const MUSLIM_SECTS = ["Sunni", "Shia", "Ahmadiyya", "Ismaili", "Ibadi", "Mahdavia", "Barelvi", "Deobandi", "Alawite", "Druze", "Yazidi", "Alevi", "just Muslim"] as const;
+const RELIGIONS = ["Muslim", "Sikh", "Hindu", "Buddhist", "Jain", "Christian", "Zoroastrian", "no preference"];
+const MUSLIM_SECTS = ["Sunni", "Shia", "Ahmadiyya", "Ismaili", "Ibadi", "Mahdavia", "Barelvi", "Deobandi", "Alawite", "Druze", "Yazidi", "Alevi", "just Muslim"];
 const ETHNICITIES = ["Pakistani", "Indian", "Bangladeshi", "Sri Lankan", "Nepalese", "Afghan", "Bhutanese", "Maldivian", "Arab", "Kurdish", "Indonesian", "Malaysian", "no preference"];
 const LANGUAGES = ["Urdu", "Turkish", "Arabic", "Hindi", "Kurdish", "Punjabi", "Gujarati", "Bangla", "Balochi", "Farsi", "Dari", "Pashto", "Oriya", "Bhojpuri", "Sindhi", "Singhalese", "Marathi", "Tamil", "Telugu", "Malayalam", "Kannada", "Nepali", "Assamese", "Magahi", "Malay", "no preference"];
 const COUNTRIES = ["Pakistan", "India", "Bangladesh", "Nepal", "Bhutan", "Sri Lanka", "Afghanistan", "Maldives", "Palestine", "Lebanon", "Iraq", "Syria", "UAE", "Saudi Arabia", "Qatar", "Kuwait", "Yemen", "Libya", "Bahrain", "Jordan", "Indonesia", "Malaysia", "Djibouti", "Oman", "Tunisia", "Somalia", "Algeria", "Morocco", "Chad", "no preference"];
@@ -79,30 +79,87 @@ export default function LookingForCare() {
     setFormData(prev => ({ ...prev, termOfCare: term }));
   };
 
-  const SelectionButton = ({ 
-    selected = false, 
-    onClick, 
-    children 
+  const SelectionList = ({ 
+    title, 
+    options, 
+    selected, 
+    onSelect, 
+    multiSelect = false 
   }: { 
-    selected?: boolean; 
-    onClick: () => void; 
-    children: React.ReactNode 
-  }) => (
-    <motion.button
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={onClick}
-      className={`
-        px-6 py-3 rounded-lg text-sm font-medium
-        transition-all duration-200 ease-in-out
-        ${selected 
-          ? 'bg-rose-100 text-rose-900 border-2 border-rose-500' 
-          : 'bg-white hover:bg-gray-50 text-gray-800 border border-gray-200'}
-      `}
-    >
-      {children}
-    </motion.button>
-  );
+    title: string;
+    options: string[];
+    selected: string | string[];
+    onSelect: (value: string) => void;
+    multiSelect?: boolean;
+  }) => {
+    const selectedItems = multiSelect 
+      ? selected as string[]
+      : selected ? [selected as string] : [];
+
+    return (
+      <div className="bg-white rounded-lg border p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+        
+        {selectedItems.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-2">
+            {selectedItems.map((item) => (
+              <span
+                key={item}
+                className="inline-flex items-center px-3 py-1 rounded-full 
+                  bg-slate-800 text-white text-sm"
+              >
+                {item}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelect(item);
+                  }}
+                  className="ml-2 hover:text-slate-300 focus:outline-none"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+          {options.map((option) => {
+            const isSelected = multiSelect 
+              ? (selected as string[]).includes(option)
+              : selected === option;
+
+            return (
+              <motion.div
+                key={option}
+                onClick={() => onSelect(option)}
+                className={`
+                  flex items-center p-4 rounded-lg cursor-pointer
+                  transition-all duration-200 ease-in-out
+                  ${isSelected 
+                    ? 'bg-slate-800 text-white' 
+                    : 'hover:bg-slate-50 border border-gray-200'}
+                `}
+                whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="flex-1">{option}</span>
+                {isSelected && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="text-white ml-2"
+                  >
+                    ✓
+                  </motion.span>
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -118,134 +175,132 @@ export default function LookingForCare() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto py-12 px-4">
-        <header className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Find Your Perfect Care Match
-          </h1>
-          <p className="text-gray-600">
-            Tell us your preferences to find the ideal caregiver for your needs
-          </p>
-        </header>
-
-        <div className="space-y-12">
-          <Section>
-            <SectionTitle>What type of care are you looking for?</SectionTitle>
-            <div className="grid grid-cols-3 gap-4">
-              {["Child Care", "Elderly Care", "Both"].map((type) => (
-                <SelectionButton
-                  key={type}
-                  selected={formData.careType === type}
-                  onClick={() => handleCareTypeSelect(type as CareType)}
-                >
-                  {type}
-                </SelectionButton>
-              ))}
+      {/* Header Section */}
+      <div className="w-full bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center space-x-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Find Your Care Match</h1>
+              <p className="text-sm text-gray-600">Tell us your preferences to find the ideal caregiver</p>
             </div>
-          </Section>
+          </div>
+        </div>
+      </div>
 
-          <Section>
-            <SectionTitle>Religious Preference</SectionTitle>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {RELIGIONS.map((religion) => (
-                <SelectionButton
-                  key={religion}
-                  selected={formData.religion === religion}
-                  onClick={() => handleReligionSelect(religion as Religion)}
-                >
-                  {religion}
-                </SelectionButton>
-              ))}
-            </div>
-          </Section>
-
-          {formData.religion === "Muslim" && (
-            <Section>
-              <SectionTitle>Muslim Sect Preference</SectionTitle>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {MUSLIM_SECTS.map((sect) => (
-                  <SelectionButton
-                    key={sect}
-                    selected={formData.muslimSect === sect}
-                    onClick={() => handleMuslimSectSelect(sect as MuslimSect)}
-                  >
-                    {sect}
-                  </SelectionButton>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid md:grid-cols-12 gap-8">
+          {/* Info Panel */}
+          <div className="md:col-span-4 space-y-6">
+            <div className="bg-white rounded-lg border p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">What We&apos;ll Need</h2>
+              <ul className="space-y-4">
+                {[
+                  'Type of care needed',
+                  'Religious preferences',
+                  'Cultural background',
+                  'Language requirements',
+                  'Care duration and schedule'
+                ].map((item, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="text-slate-800 mr-2">•</span>
+                    <span className="text-gray-600">{item}</span>
+                  </li>
                 ))}
+              </ul>
+            </div>
+            
+            <div className="bg-slate-800 rounded-lg p-6 text-white">
+              <h2 className="text-lg font-semibold mb-4">Why These Details Matter</h2>
+              <p className="text-slate-200 mb-4">
+                We use your preferences to match you with caregivers who align with your values and requirements.
+              </p>
+              <div className="flex items-center text-sm text-slate-300 border-t border-slate-700 pt-4 mt-4">
+                <span className="mr-2">ℹ️</span>
+                <span>All matches are verified and background-checked</span>
               </div>
-            </Section>
-          )}
-
-          <Section>
-            <SectionTitle>Ethnicity Preferences</SectionTitle>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {ETHNICITIES.map((ethnicity) => (
-                <SelectionButton
-                  key={ethnicity}
-                  selected={formData.ethnicities.includes(ethnicity)}
-                  onClick={() => handleMultiSelect('ethnicities', ethnicity)}
-                >
-                  {ethnicity}
-                </SelectionButton>
-              ))}
             </div>
-          </Section>
+          </div>
 
-          <Section>
-            <SectionTitle>Language Preferences</SectionTitle>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {LANGUAGES.map((language) => (
-                <SelectionButton
-                  key={language}
-                  selected={formData.languages.includes(language)}
-                  onClick={() => handleMultiSelect('languages', language)}
+          {/* Form Section */}
+          <div className="md:col-span-8">
+            <div className="space-y-6">
+              <SelectionList
+                title="What type of care are you looking for?"
+                options={["Child Care", "Elderly Care", "Both"]}
+                selected={formData.careType}
+                onSelect={(value) => handleCareTypeSelect(value as CareType)}
+              />
+
+              <SelectionList
+                title="Religious Preference"
+                options={RELIGIONS}
+                selected={formData.religion}
+                onSelect={(value) => handleReligionSelect(value as Religion)}
+              />
+
+              {formData.religion === "Muslim" && (
+                <SelectionList
+                  title="Muslim Sect Preference"
+                  options={MUSLIM_SECTS}
+                  selected={formData.muslimSect}
+                  onSelect={(value) => handleMuslimSectSelect(value as MuslimSect)}
+                />
+              )}
+
+              <SelectionList
+                title="Ethnicity Preferences"
+                options={ETHNICITIES}
+                selected={formData.ethnicities}
+                onSelect={(value) => handleMultiSelect('ethnicities', value)}
+                multiSelect
+              />
+
+              <SelectionList
+                title="Language Preferences"
+                options={LANGUAGES}
+                selected={formData.languages}
+                onSelect={(value) => handleMultiSelect('languages', value)}
+                multiSelect
+              />
+
+              <SelectionList
+                title="Country Preferences"
+                options={COUNTRIES}
+                selected={formData.countries}
+                onSelect={(value) => handleMultiSelect('countries', value)}
+                multiSelect
+              />
+
+              <SelectionList
+                title="Age Range of Care Needed"
+                options={AGE_RANGES}
+                selected={formData.agesOfPeople}
+                onSelect={(value) => handleMultiSelect('agesOfPeople', value)}
+                multiSelect
+              />
+
+              <SelectionList
+                title="Care Duration"
+                options={["Long term care", "Short term care"]}
+                selected={formData.termOfCare}
+                onSelect={(value) => handleTermSelect(value as CareLength)}
+              />
+
+              <div className="text-center pt-8">
+                <motion.button
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="px-8 py-4 bg-slate-800 text-white rounded-lg 
+                    hover:bg-slate-700 transition-all duration-200 font-medium text-lg
+                    focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+                  onClick={() => {/* Handle form submission */}}
                 >
-                  {language}
-                </SelectionButton>
-              ))}
+                  Find Matches
+                </motion.button>
+              </div>
             </div>
-          </Section>
-
-          <Section>
-            <SectionTitle>Age Range of Care Needed</SectionTitle>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {AGE_RANGES.map((range) => (
-                <SelectionButton
-                  key={range}
-                  selected={formData.agesOfPeople.includes(range)}
-                  onClick={() => handleMultiSelect('agesOfPeople', range)}
-                >
-                  {range}
-                </SelectionButton>
-              ))}
-            </div>
-          </Section>
-
-          <Section>
-            <SectionTitle>Care Duration</SectionTitle>
-            <div className="grid grid-cols-2 gap-4">
-              {["Long term care", "Short term care"].map((term) => (
-                <SelectionButton
-                  key={term}
-                  selected={formData.termOfCare === term}
-                  onClick={() => handleTermSelect(term as CareLength)}
-                >
-                  {term}
-                </SelectionButton>
-              ))}
-            </div>
-          </Section>
-
-          <Section className="text-center">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-8 py-4 rounded-lg shadow-lg"
-              onClick={() => {/* Handle form submission */}}
-            >
-              Find Matches
-            </motion.button>
-          </Section>
+          </div>
         </div>
       </div>
     </div>

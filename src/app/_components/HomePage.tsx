@@ -24,45 +24,93 @@ const HomePage = async () => {
     }
   }
 
-  const logoUrl =
-    "https://utfs.io/f/90ba1135-a67e-4dd6-9615-71bb5634ec07-hzt98r.jpeg";
+  const logoUrl = "https://utfs.io/f/90ba1135-a67e-4dd6-9615-71bb5634ec07-hzt98r.jpeg";
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex flex-col items-center justify-center min-h-[50vh] py-2 md:py-4 md:px-6">
-        <h1 className="text-2xl font-bold p-2 md:p-4 text-center">AyaCare</h1>
-        <div className="relative w-full max-w-md mb-4 md:mb-8">
-          <Image
-            src={logoUrl}
-            alt="Logo"
-            layout="responsive"
-            width={400}
-            height={200}
-            className="object-contain rounded-lg"
-          />
-        </div>
-        <h3 className="text-lg font-semibold p-2 md:p-4 text-center w-full max-w-screen-sm">
-          Connecting care-seekers with dedicated, background checked Muslim
-          caregivers for a harmonious home.
-        </h3>
-        <div className="flex flex-col md:flex-row justify-center p-2 md:p-4 space-y-2 md:space-y-0 md:space-x-4 w-full">
-          <div className="w-full md:w-auto">
-            <Link href="/care-seeker">
-              <button className="w-full md:w-64 bg-slate-800 text-white rounded-full px-6 py-3 shadow-lg hover:bg-slate-500 hover:shadow-xl transition-all duration-300 ease-in-out text-center">
-                I&apos;m looking for care
-              </button>
-            </Link>
-          </div>
-          <div className="w-full md:w-auto">
-            <Link href={caregiverProfileUrl}>
-              <button className="w-full md:w-64 bg-slate-800 text-white rounded-full px-6 py-3 shadow-lg hover:bg-slate-500 hover:shadow-xl transition-all duration-300 ease-in-out text-center">
-                I&apos;m a care giver
-              </button>
-            </Link>
+    <div className="min-h-screen">
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-4 sm:py-8 md:py-16">
+            <div className="flex flex-col-reverse md:grid md:grid-cols-2 gap-6 md:gap-12 items-center">
+              <div className="space-y-6 text-center md:text-left">
+                <div className="space-y-3">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                    Find Your Perfect Care Match
+                  </h1>
+                  <p className="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto md:mx-0">
+                    Connecting care-seekers with dedicated, background checked Muslim caregivers for a harmonious home.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                  <Link href="/care-seeker" className="w-full sm:w-auto">
+                    <button className="w-full px-6 py-3 bg-slate-800 text-white rounded-lg 
+                      hover:bg-slate-700 transition-all duration-200 font-medium
+                      focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+                      I&apos;m looking for care
+                    </button>
+                  </Link>
+                  <Link href="/care-giver-form" className="w-full sm:w-auto">
+                    <button className="w-full px-6 py-3 bg-white text-slate-800 rounded-lg 
+                      border-2 border-slate-800 hover:bg-slate-50 transition-all duration-200 
+                      font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+                      I&apos;m a care giver
+                    </button>
+                  </Link>
+                </div>
+              </div>
+
+              <div className="relative w-full aspect-square max-w-sm md:max-w-none md:h-[450px] rounded-2xl overflow-hidden">
+                <Image
+                  src={logoUrl}
+                  alt="AyaCare"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <CareGiverList />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {[
+            {
+              title: "Verified Caregivers",
+              description: "Every caregiver undergoes a thorough background check",
+              icon: "🔒"
+            },
+            {
+              title: "Cultural Alignment",
+              description: "Find caregivers who share your values and traditions",
+              icon: "🤝"
+            },
+            {
+              title: "Easy Matching",
+              description: "Our platform makes it simple to find the perfect match",
+              icon: "✨"
+            }
+          ].map((feature, index) => (
+            <div key={index} className="bg-white p-6 rounded-lg border hover:border-slate-300 transition-colors">
+              <div className="text-2xl sm:text-3xl mb-3">{feature.icon}</div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {feature.title}
+              </h3>
+              <p className="text-gray-600 text-sm sm:text-base">
+                {feature.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="border-t bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          <CareGiverList />
+        </div>
+      </div>
     </div>
   );
 };
