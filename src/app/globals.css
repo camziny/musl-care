@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 340, 66%, 89%;
+    /* --background: 340, 66%, 97%;  */
     --foreground: 222.2 84% 4.9%;
 
     --card: 340, 66%, 89%;
@@ -73,4 +73,22 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 3px;
 }

@@ -21,8 +21,8 @@ interface FormData {
 }
 
 
-const RELIGIONS = ["Muslim", "Sikh", "Hindu", "Buddhist", "Jain", "Christian", "Zoroastrian", "no preference"] as const;
-const MUSLIM_SECTS = ["Sunni", "Shia", "Ahmadiyya", "Ismaili", "Ibadi", "Mahdavia", "Barelvi", "Deobandi", "Alawite", "Druze", "Yazidi", "Alevi", "just Muslim"] as const;
+const RELIGIONS = ["Muslim", "Sikh", "Hindu", "Buddhist", "Jain", "Christian", "Zoroastrian", "no preference"];
+const MUSLIM_SECTS = ["Sunni", "Shia", "Ahmadiyya", "Ismaili", "Ibadi", "Mahdavia", "Barelvi", "Deobandi", "Alawite", "Druze", "Yazidi", "Alevi", "just Muslim"];
 const ETHNICITIES = ["Pakistani", "Indian", "Bangladeshi", "Sri Lankan", "Nepalese", "Afghan", "Bhutanese", "Maldivian", "Arab", "Kurdish", "Indonesian", "Malaysian", "no preference"];
 const LANGUAGES = ["Urdu", "Turkish", "Arabic", "Hindi", "Kurdish", "Punjabi", "Gujarati", "Bangla", "Balochi", "Farsi", "Dari", "Pashto", "Oriya", "Bhojpuri", "Sindhi", "Singhalese", "Marathi", "Tamil", "Telugu", "Malayalam", "Kannada", "Nepali", "Assamese", "Magahi", "Malay", "no preference"];
 const COUNTRIES = ["Pakistan", "India", "Bangladesh", "Nepal", "Bhutan", "Sri Lanka", "Afghanistan", "Maldives", "Palestine", "Lebanon", "Iraq", "Syria", "UAE", "Saudi Arabia", "Qatar", "Kuwait", "Yemen", "Libya", "Bahrain", "Jordan", "Indonesia", "Malaysia", "Djibouti", "Oman", "Tunisia", "Somalia", "Algeria", "Morocco", "Chad", "no preference"];
@@ -52,39 +52,87 @@ export default function CareGiverForm() {
 
   const [showBackgroundCheckModal, setShowBackgroundCheckModal] = useState(false);
 
-  // Reuse the same component styles from LookingForCare
-  const SelectionButton = ({ 
-    selected = false, 
-    onClick, 
-    children 
+  const SelectionList = ({ 
+    title, 
+    options, 
+    selected, 
+    onSelect, 
+    multiSelect = false 
   }: { 
-    selected?: boolean; 
-    onClick: () => void; 
-    children: React.ReactNode 
-  }) => (
-    <motion.button
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={onClick}
-      className={`
-        px-6 py-3 rounded-lg text-sm font-medium
-        transition-all duration-200 ease-in-out
-        ${selected 
-          ? 'bg-rose-100 text-rose-900 border-2 border-rose-500' 
-          : 'bg-white hover:bg-gray-50 text-gray-800 border border-gray-200'}
-      `}
-    >
-      {children}
-    </motion.button>
-  );
+    title: string;
+    options: string[];
+    selected: string | string[];
+    onSelect: (value: string) => void;
+    multiSelect?: boolean;
+  }) => {
+    const selectedItems = multiSelect 
+      ? selected as string[]
+      : selected ? [selected as string] : [];
 
-  const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h2 className="text-xl font-semibold text-gray-800 mb-4">{children}</h2>
-  );
+    return (
+      <div className="bg-white rounded-lg border p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+        
+        {selectedItems.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-2">
+            {selectedItems.map((item) => (
+              <span
+                key={item}
+                className="inline-flex items-center px-3 py-1 rounded-full 
+                  bg-slate-800 text-white text-sm"
+              >
+                {item}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelect(item);
+                  }}
+                  className="ml-2 hover:text-slate-300 focus:outline-none"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
 
-  const Section = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
-    <section className={`mb-12 ${className}`}>{children}</section>
-  );
+        <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+          {options.map((option) => {
+            const isSelected = multiSelect 
+              ? (selected as string[]).includes(option)
+              : selected === option;
+
+            return (
+              <motion.div
+                key={option}
+                onClick={() => onSelect(option)}
+                className={`
+                  flex items-center p-4 rounded-lg cursor-pointer
+                  transition-all duration-200 ease-in-out
+                  ${isSelected 
+                    ? 'bg-slate-800 text-white' 
+                    : 'hover:bg-slate-50 border border-gray-200'}
+                `}
+                whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="flex-1">{option}</span>
+                {isSelected && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="text-white ml-2"
+                  >
+                    ✓
+                  </motion.span>
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   const isFormComplete = () => {
     return (
@@ -108,192 +156,152 @@ export default function CareGiverForm() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto py-12 px-4">
-        <header className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Register as a Caregiver
-          </h1>
-          <p className="text-gray-600">
-            Tell us about yourself to match with families in need of care
-          </p>
-        </header>
-
-        <div className="space-y-12">
-          {/* Similar sections as LookingForCare but with caregiver-specific options */}
-          <Section>
-            <SectionTitle>What type of care do you provide?</SectionTitle>
-            <div className="grid grid-cols-3 gap-4">
-              {["Child Care", "Elderly Care", "Both"].map((type) => (
-                <SelectionButton
-                  key={type}
-                  selected={formData.careType === type}
-                  onClick={() => setFormData(prev => ({ ...prev, careType: type as CareType }))}
-                >
-                  {type}
-                </SelectionButton>
-              ))}
+      <div className="w-full bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center space-x-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Become a Caregiver</h1>
+              <p className="text-sm text-gray-600">Tell us about yourself to match with families in need</p>
             </div>
-          </Section>
-
-          {/* Religion Section */}
-          <Section>
-            <SectionTitle>Religious Background</SectionTitle>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {RELIGIONS.map((religion) => (
-                <SelectionButton
-                  key={religion}
-                  selected={formData.religion === religion}
-                  onClick={() => setFormData(prev => ({ ...prev, religion: religion as Religion }))}
-                >
-                  {religion}
-                </SelectionButton>
-              ))}
-            </div>
-          </Section>
-
-          {/* Muslim Sect Section - Conditional */}
-          {formData.religion === "Muslim" && (
-            <Section>
-              <SectionTitle>Muslim Sect</SectionTitle>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {MUSLIM_SECTS.map((sect) => (
-                  <SelectionButton
-                    key={sect}
-                    selected={formData.muslimSect === sect}
-                    onClick={() => setFormData(prev => ({ ...prev, muslimSect: sect as MuslimSect }))}
-                  >
-                    {sect}
-                  </SelectionButton>
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {/* Ethnicity Section */}
-          <Section>
-            <SectionTitle>Ethnicity</SectionTitle>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {ETHNICITIES.map((ethnicity) => (
-                <SelectionButton
-                  key={ethnicity}
-                  selected={formData.ethnicity === ethnicity}
-                  onClick={() => setFormData(prev => ({ ...prev, ethnicity }))}
-                >
-                  {ethnicity}
-                </SelectionButton>
-              ))}
-            </div>
-          </Section>
-
-          {/* Languages Section */}
-          <Section>
-            <SectionTitle>Languages Spoken</SectionTitle>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {LANGUAGES.map((language) => (
-                <SelectionButton
-                  key={language}
-                  selected={formData.languages.includes(language)}
-                  onClick={() => {
-                    const updatedLanguages = formData.languages.includes(language)
-                      ? formData.languages.filter(l => l !== language)
-                      : [...formData.languages, language];
-                    setFormData(prev => ({ ...prev, languages: updatedLanguages }));
-                  }}
-                >
-                  {language}
-                </SelectionButton>
-              ))}
-            </div>
-          </Section>
-
-          {/* Country Section */}
-          <Section>
-            <SectionTitle>Country of Origin</SectionTitle>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {COUNTRIES.map((country) => (
-                <SelectionButton
-                  key={country}
-                  selected={formData.country === country}
-                  onClick={() => setFormData(prev => ({ ...prev, country }))}
-                >
-                  {country}
-                </SelectionButton>
-              ))}
-            </div>
-          </Section>
-
-          {/* Ages Served Section */}
-          <Section>
-            <SectionTitle>Ages You Can Care For</SectionTitle>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {AGE_RANGES.map((range) => (
-                <SelectionButton
-                  key={range}
-                  selected={formData.agesServed.includes(range)}
-                  onClick={() => {
-                    const updatedAges = formData.agesServed.includes(range)
-                      ? formData.agesServed.filter(age => age !== range)
-                      : [...formData.agesServed, range];
-                    setFormData(prev => ({ ...prev, agesServed: updatedAges }));
-                  }}
-                >
-                  {range}
-                </SelectionButton>
-              ))}
-            </div>
-          </Section>
-
-          <Section>
-            <SectionTitle>How many individuals can you care for at once?</SectionTitle>
-            <div className="grid grid-cols-2 gap-4">
-              {["Only one", "Multiple"].map((capacity) => (
-                <SelectionButton
-                  key={capacity}
-                  selected={formData.careCapacity === capacity}
-                  onClick={() => setFormData(prev => ({ ...prev, careCapacity: capacity as CareCapacity }))}
-                >
-                  {capacity}
-                </SelectionButton>
-              ))}
-            </div>
-          </Section>
-
-          {/* Term of Care Section */}
-          <Section>
-            <SectionTitle>Type of Care Commitment</SectionTitle>
-            <div className="grid grid-cols-2 gap-4">
-              {["Long term caregiver", "Short term caregiver"].map((term) => (
-                <SelectionButton
-                  key={term}
-                  selected={formData.termOfCare === term}
-                  onClick={() => setFormData(prev => ({ ...prev, termOfCare: term as CareLength }))}
-                >
-                  {term}
-                </SelectionButton>
-              ))}
-            </div>
-          </Section>
-
-          <Section className="text-center">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              disabled={!isFormComplete()}
-              className={`
-                px-8 py-4 rounded-lg shadow-lg font-semibold
-                ${isFormComplete()
-                  ? 'bg-rose-600 hover:bg-rose-700 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'}
-              `}
-              onClick={handleSubmit}
-            >
-              Complete Registration
-            </motion.button>
-          </Section>
+          </div>
         </div>
       </div>
 
-      {/* Background Check Modal */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid md:grid-cols-12 gap-8">
+          <div className="md:col-span-4 space-y-6">
+            <div className="bg-white rounded-lg border p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">What We&apos;ll Need</h2>
+              <ul className="space-y-4">
+                {[
+                  'Type of care you provide',
+                  'Religious background',
+                  'Cultural background',
+                  'Languages spoken',
+                  'Age groups you can serve',
+                  'Care capacity and schedule'
+                ].map((item, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="text-slate-800 mr-2">•</span>
+                    <span className="text-gray-600">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <div className="bg-slate-800 rounded-lg p-6 text-white">
+              <h2 className="text-lg font-semibold mb-4">Background Check Required</h2>
+              <p className="text-slate-200 mb-4">
+                All caregivers must pass a background check before being matched with families.
+              </p>
+              <div className="flex items-center text-sm text-slate-300 border-t border-slate-700 pt-4 mt-4">
+                <span className="mr-2">ℹ️</span>
+                <span>This helps ensure safety and trust</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-8">
+            <div className="space-y-6">
+              <SelectionList
+                title="What type of care do you provide?"
+                options={["Child Care", "Elderly Care", "Both"]}
+                selected={formData.careType}
+                onSelect={(value) => setFormData(prev => ({ ...prev, careType: value as CareType }))}
+              />
+
+              <SelectionList
+                title="Religious Background"
+                options={RELIGIONS}
+                selected={formData.religion}
+                onSelect={(value) => setFormData(prev => ({ ...prev, religion: value as Religion }))}
+              />
+
+              {formData.religion === "Muslim" && (
+                <SelectionList
+                  title="Muslim Sect"
+                  options={MUSLIM_SECTS}
+                  selected={formData.muslimSect}
+                  onSelect={(value) => setFormData(prev => ({ ...prev, muslimSect: value as MuslimSect }))}
+                />
+              )}
+
+              <SelectionList
+                title="Ethnicity"
+                options={ETHNICITIES}
+                selected={formData.ethnicity}
+                onSelect={(value) => setFormData(prev => ({ ...prev, ethnicity: value }))}
+              />
+
+              <SelectionList
+                title="Languages Spoken"
+                options={LANGUAGES}
+                selected={formData.languages}
+                onSelect={(value) => {
+                  const updatedLanguages = formData.languages.includes(value)
+                    ? formData.languages.filter(l => l !== value)
+                    : [...formData.languages, value];
+                  setFormData(prev => ({ ...prev, languages: updatedLanguages }));
+                }}
+                multiSelect
+              />
+
+              <SelectionList
+                title="Country of Origin"
+                options={COUNTRIES}
+                selected={formData.country}
+                onSelect={(value) => setFormData(prev => ({ ...prev, country: value }))}
+              />
+
+              <SelectionList
+                title="Ages You Can Care For"
+                options={AGE_RANGES}
+                selected={formData.agesServed}
+                onSelect={(value) => {
+                  const updatedAges = formData.agesServed.includes(value)
+                    ? formData.agesServed.filter(age => age !== value)
+                    : [...formData.agesServed, value];
+                  setFormData(prev => ({ ...prev, agesServed: updatedAges }));
+                }}
+                multiSelect
+              />
+
+              <SelectionList
+                title="How many individuals can you care for at once?"
+                options={["Only one", "Multiple"]}
+                selected={formData.careCapacity}
+                onSelect={(value) => setFormData(prev => ({ ...prev, careCapacity: value as CareCapacity }))}
+              />
+
+              <SelectionList
+                title="Type of Care Commitment"
+                options={["Long term caregiver", "Short term caregiver"]}
+                selected={formData.termOfCare}
+                onSelect={(value) => setFormData(prev => ({ ...prev, termOfCare: value as CareLength }))}
+              />
+
+              <div className="text-center pt-8">
+                <motion.button
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  disabled={!isFormComplete()}
+                  className={`
+                    px-8 py-4 rounded-lg font-medium text-lg
+                    focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2
+                    ${isFormComplete()
+                      ? 'bg-slate-800 hover:bg-slate-700 text-white'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
+                  `}
+                  onClick={handleSubmit}
+                >
+                  Complete Registration
+                </motion.button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {showBackgroundCheckModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <motion.div
