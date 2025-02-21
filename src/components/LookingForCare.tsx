@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { FormProgress } from "@/components/ui/FormProgress";
 
 type CareType = "Child Care" | "Elderly Care" | "Both";
 type Religion = "Muslim" | "Sikh" | "Hindu" | "Buddhist" | "Jain" | "Christian" | "Zoroastrian" | "no preference";
@@ -79,6 +81,24 @@ export default function LookingForCare() {
     setFormData(prev => ({ ...prev, termOfCare: term }));
   };
 
+  const calculateCompletedSteps = () => {
+    const steps = [
+      formData.careType !== "",
+      formData.religion !== "",
+      formData.religion === "Muslim" ? formData.muslimSect !== "" : true,
+      formData.ethnicities.length > 0,
+      formData.languages.length > 0,
+      formData.countries.length > 0,
+      formData.agesOfPeople.length > 0,
+      formData.termOfCare !== ""
+    ];
+
+    return steps.filter(Boolean).length;
+  };
+
+  const totalSteps = formData.religion === "Muslim" ? 8 : 7;
+  const completedSteps = calculateCompletedSteps();
+
   const SelectionList = ({ 
     title, 
     options, 
@@ -105,8 +125,8 @@ export default function LookingForCare() {
             {selectedItems.map((item) => (
               <span
                 key={item}
-                className="inline-flex items-center px-3 py-1 rounded-full 
-                  bg-slate-800 text-white text-sm"
+                className="inline-flex items-center px-3 py-1.5 rounded-full 
+                  bg-slate-800 text-white text-sm group"
               >
                 {item}
                 <button
@@ -114,7 +134,7 @@ export default function LookingForCare() {
                     e.stopPropagation();
                     onSelect(item);
                   }}
-                  className="ml-2 hover:text-slate-300 focus:outline-none"
+                  className="ml-2 opacity-60 hover:opacity-100 transition-opacity"
                 >
                   ×
                 </button>
@@ -123,40 +143,42 @@ export default function LookingForCare() {
           </div>
         )}
 
-        <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
-          {options.map((option) => {
-            const isSelected = multiSelect 
-              ? (selected as string[]).includes(option)
-              : selected === option;
+        <ScrollArea className="h-[320px] -mx-2 px-2">
+          <div className="space-y-1.5">
+            {options.map((option) => {
+              const isSelected = multiSelect 
+                ? (selected as string[]).includes(option)
+                : selected === option;
 
-            return (
-              <motion.div
-                key={option}
-                onClick={() => onSelect(option)}
-                className={`
-                  flex items-center p-4 rounded-lg cursor-pointer
-                  transition-all duration-200 ease-in-out
-                  ${isSelected 
-                    ? 'bg-slate-800 text-white' 
-                    : 'hover:bg-slate-50 border border-gray-200'}
-                `}
-                whileHover={{ x: 4 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span className="flex-1">{option}</span>
-                {isSelected && (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="text-white ml-2"
-                  >
-                    ✓
-                  </motion.span>
-                )}
-              </motion.div>
-            );
-          })}
-        </div>
+              return (
+                <motion.div
+                  key={option}
+                  onClick={() => onSelect(option)}
+                  className={`
+                    flex items-center p-3.5 rounded-lg cursor-pointer
+                    transition-all duration-200 ease-in-out
+                    ${isSelected 
+                      ? 'bg-slate-800 text-white shadow-sm' 
+                      : 'hover:bg-slate-50 border border-gray-200'}
+                  `}
+                  whileHover={{ x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span className="flex-1">{option}</span>
+                  {isSelected && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="text-white ml-2"
+                    >
+                      ✓
+                    </motion.span>
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+        </ScrollArea>
       </div>
     );
   };
@@ -175,9 +197,10 @@ export default function LookingForCare() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <div className="w-full bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+      <FormProgress totalSteps={totalSteps} completedSteps={completedSteps} />
+      {/* Fixed Header */}
+      <div className="sticky top-0 z-10 bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center space-x-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Find Your Care Match</h1>
@@ -187,44 +210,46 @@ export default function LookingForCare() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid md:grid-cols-12 gap-8">
-          {/* Info Panel */}
-          <div className="md:col-span-4 space-y-6">
-            <div className="bg-white rounded-lg border p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">What We&apos;ll Need</h2>
-              <ul className="space-y-4">
-                {[
-                  'Type of care needed',
-                  'Religious preferences',
-                  'Cultural background',
-                  'Language requirements',
-                  'Care duration and schedule'
-                ].map((item, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="text-slate-800 mr-2">•</span>
-                    <span className="text-gray-600">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            <div className="bg-slate-800 rounded-lg p-6 text-white">
-              <h2 className="text-lg font-semibold mb-4">Why These Details Matter</h2>
-              <p className="text-slate-200 mb-4">
-                We use your preferences to match you with caregivers who align with your values and requirements.
-              </p>
-              <div className="flex items-center text-sm text-slate-300 border-t border-slate-700 pt-4 mt-4">
-                <span className="mr-2">ℹ️</span>
-                <span>All matches are verified and background-checked</span>
+      {/* Scrollable Content */}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="grid md:grid-cols-12 gap-6">
+          {/* Sticky Info Panel */}
+          <div className="md:col-span-4">
+            <div className="sticky top-[88px] space-y-4">
+              <div className="bg-white rounded-lg border p-4">
+                <h2 className="text-lg font-semibold text-gray-900 mb-3">What We&apos;ll Need</h2>
+                <ul className="space-y-2">
+                  {[
+                    'Type of care needed',
+                    'Religious preferences',
+                    'Cultural background',
+                    'Language requirements',
+                    'Care duration and schedule'
+                  ].map((item, index) => (
+                    <li key={index} className="flex items-center text-sm">
+                      <span className="text-slate-800 mr-2">•</span>
+                      <span className="text-gray-600">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="bg-slate-800 rounded-lg p-4 text-white">
+                <h2 className="text-lg font-semibold mb-3">Why These Details Matter</h2>
+                <p className="text-sm text-slate-200 mb-3">
+                  We use your preferences to match you with caregivers who align with your values and requirements.
+                </p>
+                <div className="flex items-center text-xs text-slate-300 border-t border-slate-700 pt-3">
+                  <span className="mr-2">ℹ️</span>
+                  <span>All matches are verified and background-checked</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Form Section */}
+          {/* Form Section - Scrollable */}
           <div className="md:col-span-8">
-            <div className="space-y-6">
+            <div className="space-y-4">
               <SelectionList
                 title="What type of care are you looking for?"
                 options={["Child Care", "Elderly Care", "Both"]}
@@ -287,14 +312,14 @@ export default function LookingForCare() {
                 onSelect={(value) => handleTermSelect(value as CareLength)}
               />
 
-              <div className="text-center pt-8">
+              <div className="sticky bottom-0 bg-gray-50 pt-4 pb-6">
                 <motion.button
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
-                  className="px-8 py-4 bg-slate-800 text-white rounded-lg 
-                    hover:bg-slate-700 transition-all duration-200 font-medium text-lg
+                  className="w-full px-8 py-3 bg-slate-800 text-white rounded-lg 
+                    hover:bg-slate-700 transition-all duration-200 font-medium
                     focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
-                  onClick={() => {/* Handle form submission */}}
+                  onClick={() => window.location.href = '/matches'}
                 >
                   Find Matches
                 </motion.button>
