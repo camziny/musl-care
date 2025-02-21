@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { FormProgress } from "@/components/ui/FormProgress";
 
 type CareType = "Child Care" | "Elderly Care" | "Both";
 type Religion = "Muslim" | "Sikh" | "Hindu" | "Buddhist" | "Jain" | "Christian" | "Zoroastrian" | "no preference";
@@ -150,155 +151,127 @@ export default function CareGiverForm() {
 
   const handleSubmit = () => {
     if (isFormComplete()) {
-      setShowBackgroundCheckModal(true);
+      window.location.href = '/background-check';
     }
   };
 
+  const calculateCompletedSteps = () => {
+    const steps = [
+      formData.careType !== "",
+      formData.religion !== "",
+      formData.religion === "Muslim" ? formData.muslimSect !== "" : true,
+      formData.ethnicity !== "",
+      formData.languages.length > 0,
+      formData.country !== "",
+      formData.agesServed.length > 0,
+      formData.careCapacity !== "",
+      formData.termOfCare !== ""
+    ];
+
+    return steps.filter(Boolean).length;
+  };
+
+  const totalSteps = formData.religion === "Muslim" ? 9 : 8;
+  const completedSteps = calculateCompletedSteps();
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="w-full bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center space-x-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Become a Caregiver</h1>
-              <p className="text-sm text-gray-600">Tell us about yourself to match with families in need</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="w-full">
+      <FormProgress totalSteps={totalSteps} completedSteps={completedSteps} />
+      
+      <div className="space-y-6">
+        <SelectionList
+          title="What type of care do you provide?"
+          options={["Child Care", "Elderly Care", "Both"]}
+          selected={formData.careType}
+          onSelect={(value) => setFormData(prev => ({ ...prev, careType: value as CareType }))}
+        />
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid md:grid-cols-12 gap-8">
-          <div className="md:col-span-4 space-y-6">
-            <div className="bg-white rounded-lg border p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">What We&apos;ll Need</h2>
-              <ul className="space-y-4">
-                {[
-                  'Type of care you provide',
-                  'Religious background',
-                  'Cultural background',
-                  'Languages spoken',
-                  'Age groups you can serve',
-                  'Care capacity and schedule'
-                ].map((item, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="text-slate-800 mr-2">•</span>
-                    <span className="text-gray-600">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            <div className="bg-slate-800 rounded-lg p-6 text-white">
-              <h2 className="text-lg font-semibold mb-4">Background Check Required</h2>
-              <p className="text-slate-200 mb-4">
-                All caregivers must pass a background check before being matched with families.
-              </p>
-              <div className="flex items-center text-sm text-slate-300 border-t border-slate-700 pt-4 mt-4">
-                <span className="mr-2">ℹ️</span>
-                <span>This helps ensure safety and trust</span>
-              </div>
-            </div>
-          </div>
+        <SelectionList
+          title="Religious Background"
+          options={RELIGIONS}
+          selected={formData.religion}
+          onSelect={(value) => setFormData(prev => ({ ...prev, religion: value as Religion }))}
+        />
 
-          <div className="md:col-span-8">
-            <div className="space-y-6">
-              <SelectionList
-                title="What type of care do you provide?"
-                options={["Child Care", "Elderly Care", "Both"]}
-                selected={formData.careType}
-                onSelect={(value) => setFormData(prev => ({ ...prev, careType: value as CareType }))}
-              />
+        {formData.religion === "Muslim" && (
+          <SelectionList
+            title="Muslim Sect"
+            options={MUSLIM_SECTS}
+            selected={formData.muslimSect}
+            onSelect={(value) => setFormData(prev => ({ ...prev, muslimSect: value as MuslimSect }))}
+          />
+        )}
 
-              <SelectionList
-                title="Religious Background"
-                options={RELIGIONS}
-                selected={formData.religion}
-                onSelect={(value) => setFormData(prev => ({ ...prev, religion: value as Religion }))}
-              />
+        <SelectionList
+          title="Ethnicity"
+          options={ETHNICITIES}
+          selected={formData.ethnicity}
+          onSelect={(value) => setFormData(prev => ({ ...prev, ethnicity: value }))}
+        />
 
-              {formData.religion === "Muslim" && (
-                <SelectionList
-                  title="Muslim Sect"
-                  options={MUSLIM_SECTS}
-                  selected={formData.muslimSect}
-                  onSelect={(value) => setFormData(prev => ({ ...prev, muslimSect: value as MuslimSect }))}
-                />
-              )}
+        <SelectionList
+          title="Languages Spoken"
+          options={LANGUAGES}
+          selected={formData.languages}
+          onSelect={(value) => {
+            const updatedLanguages = formData.languages.includes(value)
+              ? formData.languages.filter(l => l !== value)
+              : [...formData.languages, value];
+            setFormData(prev => ({ ...prev, languages: updatedLanguages }));
+          }}
+          multiSelect
+        />
 
-              <SelectionList
-                title="Ethnicity"
-                options={ETHNICITIES}
-                selected={formData.ethnicity}
-                onSelect={(value) => setFormData(prev => ({ ...prev, ethnicity: value }))}
-              />
+        <SelectionList
+          title="Country of Origin"
+          options={COUNTRIES}
+          selected={formData.country}
+          onSelect={(value) => setFormData(prev => ({ ...prev, country: value }))}
+        />
 
-              <SelectionList
-                title="Languages Spoken"
-                options={LANGUAGES}
-                selected={formData.languages}
-                onSelect={(value) => {
-                  const updatedLanguages = formData.languages.includes(value)
-                    ? formData.languages.filter(l => l !== value)
-                    : [...formData.languages, value];
-                  setFormData(prev => ({ ...prev, languages: updatedLanguages }));
-                }}
-                multiSelect
-              />
+        <SelectionList
+          title="Ages You Can Care For"
+          options={AGE_RANGES}
+          selected={formData.agesServed}
+          onSelect={(value) => {
+            const updatedAges = formData.agesServed.includes(value)
+              ? formData.agesServed.filter(age => age !== value)
+              : [...formData.agesServed, value];
+            setFormData(prev => ({ ...prev, agesServed: updatedAges }));
+          }}
+          multiSelect
+        />
 
-              <SelectionList
-                title="Country of Origin"
-                options={COUNTRIES}
-                selected={formData.country}
-                onSelect={(value) => setFormData(prev => ({ ...prev, country: value }))}
-              />
+        <SelectionList
+          title="How many individuals can you care for at once?"
+          options={["Only one", "Multiple"]}
+          selected={formData.careCapacity}
+          onSelect={(value) => setFormData(prev => ({ ...prev, careCapacity: value as CareCapacity }))}
+        />
 
-              <SelectionList
-                title="Ages You Can Care For"
-                options={AGE_RANGES}
-                selected={formData.agesServed}
-                onSelect={(value) => {
-                  const updatedAges = formData.agesServed.includes(value)
-                    ? formData.agesServed.filter(age => age !== value)
-                    : [...formData.agesServed, value];
-                  setFormData(prev => ({ ...prev, agesServed: updatedAges }));
-                }}
-                multiSelect
-              />
+        <SelectionList
+          title="Type of Care Commitment"
+          options={["Long term caregiver", "Short term caregiver"]}
+          selected={formData.termOfCare}
+          onSelect={(value) => setFormData(prev => ({ ...prev, termOfCare: value as CareLength }))}
+        />
 
-              <SelectionList
-                title="How many individuals can you care for at once?"
-                options={["Only one", "Multiple"]}
-                selected={formData.careCapacity}
-                onSelect={(value) => setFormData(prev => ({ ...prev, careCapacity: value as CareCapacity }))}
-              />
-
-              <SelectionList
-                title="Type of Care Commitment"
-                options={["Long term caregiver", "Short term caregiver"]}
-                selected={formData.termOfCare}
-                onSelect={(value) => setFormData(prev => ({ ...prev, termOfCare: value as CareLength }))}
-              />
-
-              <div className="text-center pt-8">
-                <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  disabled={!isFormComplete()}
-                  className={`
-                    px-8 py-4 rounded-lg font-medium text-lg
-                    focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2
-                    ${isFormComplete()
-                      ? 'bg-slate-800 hover:bg-slate-700 text-white'
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
-                  `}
-                  onClick={handleSubmit}
-                >
-                  Complete Registration
-                </motion.button>
-              </div>
-            </div>
-          </div>
+        <div className="sticky bottom-0 bg-gray-50 pt-4 pb-6">
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            disabled={!isFormComplete()}
+            className={`
+              w-full px-8 py-3 rounded-lg font-medium
+              focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2
+              ${isFormComplete()
+                ? 'bg-slate-800 hover:bg-slate-700 text-white'
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
+            `}
+            onClick={handleSubmit}
+          >
+            Complete Registration
+          </motion.button>
         </div>
       </div>
 

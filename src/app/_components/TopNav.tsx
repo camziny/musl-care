@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaInstagramSquare,
   FaLinkedin,
@@ -17,188 +18,167 @@ import {
   useUser,
 } from "@clerk/nextjs";
 
+const navItems = [
+  { href: "/about", label: "About" },
+  { href: "/caregivers", label: "Caregivers" },
+  { href: "/jobs", label: "Jobs" },
+  { href: "/testimonials", label: "Testimonials" },
+  { href: "/contact", label: "Contact" },
+];
+
+const socialLinks = [
+  { Icon: FaSquareFacebook, href: "", label: "Facebook" },
+  { Icon: FaInstagramSquare, href: "", label: "Instagram" },
+  { Icon: FaLinkedin, href: "", label: "LinkedIn" },
+];
+
 export function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user } = useUser();
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <nav className="bg-stone-100 border-b border-black p-4 text-black">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="flex items-center space-x-8">
-          <div className="text-xl font-semibold">
+    <nav
+      className={`fixed w-full z-50 transition-all duration-300 border-b ${
+        scrolled
+          ? "bg-white/90 backdrop-blur-md shadow-sm border-gray-200"
+          : "bg-white border-gray-200"
+      }`}
+    >
+      <div className="container mx-auto px-4 py-3">
+        <div className="flex justify-between items-center">
+          {/* Left side - Logo and Nav Links */}
+          <div className="flex items-center space-x-8">
             <Link
               href="/"
-              className="hover:text-gray-600 flex items-center justify-center"
+              className="text-xl font-semibold text-slate-800 hover:text-slate-600 transition-colors"
             >
-              <FaHome />
+              <FaHome className="text-2xl" />
             </Link>
-          </div>
-          <div className="hidden md:flex space-x-8">
-            <Link
-              href="/about"
-              className="hover:text-gray-600 flex items-center justify-center"
-            >
-              About
-            </Link>
-            <Link
-              href="/caregivers"
-              className="hover:text-gray-600 flex items-center justify-center"
-            >
-              Caregivers
-            </Link>
-            <Link
-              href="/jobs"
-              className="hover:text-gray-600 flex items-center justify-center"
-            >
-              Jobs
-            </Link>
-            <Link
-              href="/testimonials"
-              className="hover:text-gray-600 flex items-center justify-center"
-            >
-              Testimonials
-            </Link>
-            <Link
-              href="/contact"
-              className="hover:text-gray-600 flex items-center justify-center"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
-        <div className="hidden md:flex items-center space-x-4">
-          <Link
-            href=""
-            target="blank"
-            className="hover:text-gray-600"
-            aria-label="Facebook"
-          >
-            <FaSquareFacebook size={24} />
-          </Link>
-          <Link
-            href=""
-            target="blank"
-            className="hover:text-gray-600"
-            aria-label="Instagram"
-          >
-            <FaInstagramSquare size={24} />
-          </Link>
-          <Link
-            href=""
-            target="blank"
-            className="hover:text-gray-600"
-            aria-label="LinkedIn"
-          >
-            <FaLinkedin size={24} />
-          </Link>
-          <SignedOut>
-            <SignInButton>
-              <button className="bg-slate-600 text-white text-sm font-semibold rounded-md px-6 py-2 shadow-md hover:bg-slate-500 transition-all duration-300 ease-in-out">
-                Sign In
-              </button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <div className="flex items-center space-x-4">
-              {user && (
+            
+            <div className="hidden md:flex space-x-6">
+              {navItems.map((item) => (
                 <Link
-                  href={`/caregiver/${user.id}/profile`}
-                  className="bg-blue-500 text-white text-sm font-semibold rounded-md px-6 py-2 shadow-md hover:bg-blue-400 transition-all duration-300 ease-in-out"
+                  key={item.label}
+                  href={item.href}
+                  className="text-slate-600 hover:text-slate-900 transition-colors text-sm font-medium"
                 >
-                  My Caregiver Profile
+                  {item.label}
                 </Link>
-              )}
-              <UserButton />
+              ))}
             </div>
-          </SignedIn>
-        </div>
-        <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)}>
+          </div>
+
+          {/* Right side - Social and Auth */}
+          <div className="hidden md:flex items-center space-x-6">
+            <div className="flex space-x-4">
+              {socialLinks.map(({ Icon, href, label }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  target="blank"
+                  className="text-slate-500 hover:text-slate-700 transition-colors"
+                  aria-label={label}
+                >
+                  <Icon size={20} />
+                </Link>
+              ))}
+            </div>
+
+            <SignedOut>
+              <SignInButton>
+                <button className="bg-slate-800 text-white text-sm font-medium rounded-full px-6 py-2 hover:bg-slate-700 transition-all duration-200 shadow-sm">
+                  Sign In
+                </button>
+              </SignInButton>
+            </SignedOut>
+
+            <SignedIn>
+              <div className="flex items-center space-x-4">
+                {user && (
+                  <Link
+                    href={`/caregiver/${user.id}/profile`}
+                    className="bg-slate-800 text-white text-sm font-medium rounded-full px-6 py-2 hover:bg-slate-700 transition-all duration-200 shadow-sm"
+                  >
+                    My Profile
+                  </Link>
+                )}
+                <UserButton />
+              </div>
+            </SignedIn>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden text-slate-600 hover:text-slate-900 transition-colors"
+          >
             {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
         </div>
       </div>
-      {isOpen && (
-        <div className="md:hidden mt-4">
-          <div className="flex flex-col items-center space-y-4">
-            <Link
-              href="/"
-              className="hover:text-gray-600"
-              onClick={() => setIsOpen(false)}
-            >
-              Home
-            </Link>
-            <Link
-              href="/about"
-              className="hover:text-gray-600"
-              onClick={() => setIsOpen(false)}
-            >
-              About
-            </Link>
-            <Link
-              href="/caregivers"
-              className="hover:text-gray-600"
-              onClick={() => setIsOpen(false)}
-            >
-              Caregivers
-            </Link>
-            <Link
-              href="/testimonials"
-              className="hover:text-gray-600"
-              onClick={() => setIsOpen(false)}
-            >
-              Testimonials
-            </Link>
-            <Link
-              href="/contact"
-              className="hover:text-gray-600"
-              onClick={() => setIsOpen(false)}
-            >
-              Contact
-            </Link>
-            <div className="flex space-x-4">
-              <Link
-                href=""
-                className="hover:text-gray-600"
-                aria-label="Facebook"
-                onClick={() => setIsOpen(false)}
-              >
-                <FaSquareFacebook size={24} />
-              </Link>
-              <Link
-                href=""
-                target="blank"
-                className="hover:text-gray-600"
-                aria-label="Instagram"
-                onClick={() => setIsOpen(false)}
-              >
-                <FaInstagramSquare size={24} />
-              </Link>
-              <Link
-                href=""
-                target="blank"
-                className="hover:text-gray-600"
-                aria-label="LinkedIn"
-                onClick={() => setIsOpen(false)}
-              >
-                <FaLinkedin size={24} />
-              </Link>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-gray-50 border-t border-gray-200"
+          >
+            <div className="container mx-auto px-4 py-6 space-y-6">
+              <div className="flex flex-col space-y-4">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="text-slate-600 hover:text-slate-900 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+
+              <div className="flex justify-center space-x-6">
+                {socialLinks.map(({ Icon, href, label }) => (
+                  <Link
+                    key={label}
+                    href={href}
+                    className="text-slate-500 hover:text-slate-700 transition-colors"
+                    aria-label={label}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Icon size={20} />
+                  </Link>
+                ))}
+              </div>
+
+              <div className="flex justify-center">
+                <SignedOut>
+                  <SignInButton>
+                    <button className="bg-slate-800 text-white text-sm font-medium rounded-full px-6 py-2 hover:bg-slate-700 transition-all duration-200 shadow-sm">
+                      Sign In
+                    </button>
+                  </SignInButton>
+                </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </div>
             </div>
-            <div className="flex flex-row items-center gap-4">
-              <SignedOut>
-                <SignInButton>
-                  <button className="bg-slate-600 text-white text-sm font-semibold rounded-md px-6 py-2 shadow-md hover:bg-slate-500 transition-all duration-300 ease-in-out">
-                    Sign In
-                  </button>
-                </SignInButton>
-              </SignedOut>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-            </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
