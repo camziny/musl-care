@@ -1,4 +1,3 @@
-// /pages/care-seeker.tsx
 import React from "react";
 import LookingForCare from "@/components/LookingForCare";
 

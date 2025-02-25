@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 interface CareGiverCardProps {
-  careGiver: any; // Replace with proper type
+  careGiver: any;
   index: number;
 }
 
