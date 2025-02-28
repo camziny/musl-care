@@ -4,30 +4,27 @@ import Image from 'next/image'
 
 export default function CareGiverFormPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <div className="sticky top-0 z-30 bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center space-x-4">
+    <div className="min-h-screen bg-gray-50 pt-4 sm:pt-2">
+      <div className="relative bg-white border-b shadow-sm mb-4">
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4 mt-10">
+          <div className="flex items-center space-x-3 sm:space-x-4">
             <Image
               src="https://utfs.io/f/90ba1135-a67e-4dd6-9615-71bb5634ec07-hzt98r.jpeg"
               alt="AyaCare Logo"
-              width={50}
-              height={50}
-              className="rounded-full"
+              width={36}
+              height={36}
+              className="rounded-full w-9 h-9 sm:w-12 sm:h-12"
             />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Become a Caregiver</h1>
-              <p className="text-sm text-gray-600">Join our community of trusted caregivers</p>
+              <h1 className="text-base sm:text-xl md:text-2xl font-bold text-gray-900 leading-tight">Become a Caregiver</h1>
+              <p className="text-xs sm:text-sm text-gray-600">Join our community of trusted caregivers</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid md:grid-cols-12 gap-8">
-          {/* Info Panel */}
           <div className="md:col-span-4">
             <div className="sticky top-[180px] space-y-6">
               <div className="bg-white rounded-lg border p-6">
@@ -61,8 +58,7 @@ export default function CareGiverFormPage() {
               </div>
             </div>
           </div>
-
-          {/* Form Section */}
+          
           <div className="md:col-span-8">
             <CareGiverForm />
           </div>
