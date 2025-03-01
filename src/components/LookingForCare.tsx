@@ -113,13 +113,11 @@ export default function LookingForCare() {
     multiSelect?: boolean;
   }) => {
     const selectedItems = multiSelect 
-      ? selected as string[]
+      ? (selected as string[])
       : selected ? [selected as string] : [];
 
     return (
-      <div className={`rounded-lg border p-6 ${
-        selectedItems.length > 0 ? 'bg-slate-50 border-slate-300' : 'bg-white'
-      }`}>
+      <div className={`rounded-lg border p-6 ${selectedItems.length > 0 ? 'bg-slate-50 border-slate-300' : 'bg-white'}`}>
         <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
         
         {selectedItems.length > 0 && (
@@ -127,11 +125,11 @@ export default function LookingForCare() {
             {selectedItems.map((item) => (
               <span
                 key={item}
-                className="inline-flex items-center px-3 py-1.5 rounded-full 
-                  bg-slate-800 text-white text-sm group"
+                className="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-800 text-white text-sm group"
               >
                 {item}
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     onSelect(item);
@@ -146,47 +144,28 @@ export default function LookingForCare() {
           </div>
         )}
 
-        <ScrollArea className="h-[260px] md:h-[320px] -mx-2 px-2">
-          <div className="space-y-2.5">
-            {options.map((option, index) => {
-              const isSelected = multiSelect 
-                ? (selected as string[]).includes(option)
-                : selected === option;
-
-              return (
-                <motion.div
-                  key={option}
-                  className={`
-                    flex items-center p-3.5 rounded-lg 
-                    transition-all duration-200 ease-in-out
-                    ${isSelected 
-                      ? 'bg-slate-800 text-white shadow-sm' 
-                      : 'bg-white hover:bg-slate-50 border border-gray-200'}
-                  `}
-                  whileHover={{ x: 4 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <button 
-                    onClick={() => onSelect(option)}
-                    className="flex items-center w-full text-left"
-                    aria-pressed={isSelected}
-                  >
-                    <span className="flex-1">{option}</span>
-                    {isSelected && (
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="text-white ml-2"
-                      >
-                        ✓
-                      </motion.span>
-                    )}
-                  </button>
-                </motion.div>
-              );
-            })}
-          </div>
-        </ScrollArea>
+        <div className="space-y-2.5 max-h-[260px] md:max-h-[320px] overflow-y-auto pr-1">
+          {options.map((option) => {
+            const isSelected = multiSelect 
+              ? (selected as string[]).includes(option)
+              : selected === option;
+            
+            return (
+              <motion.button
+                key={option}
+                type="button"
+                whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => onSelect(option)}
+                className={`flex items-center p-3.5 w-full text-left rounded-lg transition-all duration-200 ease-in-out 
+                  ${isSelected ? 'bg-slate-800 text-white shadow-sm' : 'bg-white hover:bg-slate-50 border border-gray-200'}`}
+              >
+                <span className="flex-1">{option}</span>
+                {isSelected && <span className="text-white ml-2">✓</span>}
+              </motion.button>
+            );
+          })}
+        </div>
       </div>
     );
   };
