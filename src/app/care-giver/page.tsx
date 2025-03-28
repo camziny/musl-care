@@ -1,7 +1,7 @@
 import React from "react";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/server/db/schema";
-import { careGivers } from "@/server/db/schema";
+import { careGivers, userTypeEnum } from "@/server/db/schema";
 import type { CareGiver } from "@/utils/types";
 import LanguageSelect from "../_components/LanguageSelect";
 import { SimpleUploadButton } from "../_components/simpleUploadButton";
@@ -14,13 +14,13 @@ export default function CareGiverForm() {
   const handleSubmit = async (formData: FormData) => {
     "use server";
 
-    const data: CareGiver = {
+    const data: Partial<CareGiver> = {
       id: 0,
       name: formData.get("name") as string,
       description: formData.get("description") as string,
       image: {
         url: formData.get("imageUrl") as string,
-        altText: "Profile picture",
+        alt: "Profile picture",
       },
       phoneNumber: formData.get("phoneNumber") as string,
       address: formData.get("address") as string,
@@ -34,7 +34,8 @@ export default function CareGiverForm() {
       languages: (formData.get("languages") as string).split(","),
       sect: formData.get("sect") as string,
       ethnicBackground: (formData.get("ethnicBackground") as string).split(","),
-      hourlyRate: formData.get("hourlyRate") as string,
+      hourlyRateMin: Number(formData.get("hourlyRateMin")) || 0,
+      hourlyRateMax: Number(formData.get("hourlyRateMax")) || 0,
       availability: JSON.parse(formData.get("availability") as string),
       backgroundChecked: formData.get("backgroundChecked") === "true",
     };
@@ -49,26 +50,67 @@ export default function CareGiverForm() {
 
       if (!user) throw new Error("User not found");
 
-      await db.insert(careGivers).values({
-        name: data.name,
-        description: data.description,
-        image: data.image.url,
-        phoneNumber: data.phoneNumber,
-        address: data.address,
-        city: data.city,
-        state: data.state,
-        postalCode: data.postalCode,
-        country: data.country,
-        userType: data.userType,
+      // Cast data to a specific type that matches careGivers schema
+      const careGiverData = {
+        name: data.name || "",
+        description: data.description || "",
+        image: JSON.stringify({
+          url: data.image?.url || "",
+          alt: "Profile picture"
+        }),
+        phoneNumber: data.phoneNumber || "",
+        address: data.address || "",
+        city: data.city || "",
+        state: data.state || "",
+        postalCode: data.postalCode || "",
+        country: data.country || "",
+        userType: userTypeEnum.enumValues[0],
         userId: user.id,
-        subscribed: data.subscribed,
-        languages: data.languages,
-        sect: data.sect,
-        ethnicBackground: data.ethnicBackground,
-        hourlyRate: data.hourlyRate,
-        availability: data.availability,
-        backgroundChecked: data.backgroundChecked,
-      });
+        subscribed: data.subscribed || false,
+        languages: data.languages || [],
+        sect: data.sect || "",
+        ethnicBackground: data.ethnicBackground || [],
+        
+        // Optional fields
+        careType: null,
+        religion: null,
+        muslimSect: null,
+        agesServed: [],
+        careCapacity: null,
+        termOfCare: null,
+        
+        // Rates as strings
+        hourlyRateMin: String(data.hourlyRateMin || 0),
+        hourlyRateMax: String(data.hourlyRateMax || 0),
+        
+        // Default fields
+        yearsExperience: null,
+        aboutMe: null,
+        availability: JSON.stringify(data.availability || []),
+        availabilityType: null,
+        
+        // Services (all default to false)
+        canCook: false,
+        hasTransportation: false,
+        canShopErrands: false,
+        canHelpWithPets: false,
+        canClean: false,
+        canOrganize: false,
+        canTutor: false,
+        canPack: false,
+        canMealPrep: false,
+        
+        // Health & Skills
+        isVaccinated: false,
+        isSmoker: false,
+        firstAidTraining: false,
+        cprTraining: false,
+        specialNeedsCare: false,
+        
+        backgroundChecked: data.backgroundChecked || false
+      };
+      
+      await db.insert(careGivers).values(careGiverData);
     } catch (error) {
       console.error(error);
     }
@@ -279,16 +321,32 @@ export default function CareGiverForm() {
         <input type="hidden" id="ethnicBackground" name="ethnicBackground" />
         <div>
           <label
-            htmlFor="hourlyRate"
+            htmlFor="hourlyRateMin"
             className="block text-sm font-medium text-gray-100 mb-1"
           >
-            Hourly Rate
+            Hourly Rate Min
           </label>
           <input
             type="number"
-            id="hourlyRate"
-            name="hourlyRate"
-            placeholder="Enter hourly rate"
+            id="hourlyRateMin"
+            name="hourlyRateMin"
+            placeholder="Enter hourly rate min"
+            className="border border-gray-600 bg-stone-100 text-gray-800 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="hourlyRateMax"
+            className="block text-sm font-medium text-gray-100 mb-1"
+          >
+            Hourly Rate Max
+          </label>
+          <input
+            type="number"
+            id="hourlyRateMax"
+            name="hourlyRateMax"
+            placeholder="Enter hourly rate max"
             className="border border-gray-600 bg-stone-100 text-gray-800 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />

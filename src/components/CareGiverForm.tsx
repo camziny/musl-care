@@ -1076,4 +1076,130 @@ export default function CareGiverForm() {
       </div>
     );
   };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm py-8">
+      <div className="sticky top-0 z-10 py-4 px-6 bg-white border-b mb-6">
+        <FormProgress
+          totalSteps={totalSteps}
+          completedSteps={completedSteps}
+        />
+      </div>
+      
+      <div className="px-6 space-y-6">
+        <SelectionList
+          title="Type of Care"
+          options={['Child Care', 'Elderly Care', 'Both']}
+          selected={formData.careType}
+          onSelect={(value) => safeSetFormData(prev => ({...prev, careType: value as CareType}))}
+        />
+        
+        <SelectionList
+          title="Religious Background"
+          options={RELIGIONS}
+          selected={formData.religion}
+          onSelect={(value) => safeSetFormData(prev => ({
+            ...prev, 
+            religion: value as Religion,
+            muslimSect: value === 'Muslim' ? prev.muslimSect : ''
+          }))}
+        />
+        
+        {formData.religion === 'Muslim' && (
+          <SelectionList
+            title="Muslim Sect"
+            options={MUSLIM_SECTS}
+            selected={formData.muslimSect}
+            onSelect={(value) => safeSetFormData(prev => ({...prev, muslimSect: value as MuslimSect}))}
+          />
+        )}
+        
+        <SelectionList
+          title="Ethnicity"
+          options={ETHNICITIES}
+          selected={formData.ethnicity}
+          onSelect={(value) => safeSetFormData(prev => ({...prev, ethnicity: value}))}
+        />
+        
+        <SelectionList
+          title="Languages Spoken"
+          options={LANGUAGES}
+          selected={formData.languages}
+          onSelect={(value) => {
+            safeSetFormData(prev => {
+              const newLanguages = prev.languages.includes(value)
+                ? prev.languages.filter(lang => lang !== value)
+                : [...prev.languages, value];
+              return {...prev, languages: newLanguages};
+            });
+          }}
+          multiSelect={true}
+        />
+        
+        <SelectionList
+          title="Country"
+          options={COUNTRIES}
+          selected={formData.country}
+          onSelect={(value) => safeSetFormData(prev => ({...prev, country: value}))}
+        />
+        
+        <SelectionList
+          title="Ages You Can Serve"
+          options={AGE_RANGES}
+          selected={formData.agesServed}
+          onSelect={(value) => {
+            safeSetFormData(prev => {
+              const newAges = prev.agesServed.includes(value)
+                ? prev.agesServed.filter(age => age !== value)
+                : [...prev.agesServed, value];
+              return {...prev, agesServed: newAges};
+            });
+          }}
+          multiSelect={true}
+        />
+        
+        <SelectionList
+          title="Care Capacity"
+          options={['Only one', 'Multiple']}
+          selected={formData.careCapacity}
+          onSelect={(value) => safeSetFormData(prev => ({...prev, careCapacity: value as CareCapacity}))}
+        />
+        
+        <SelectionList
+          title="Term of Care"
+          options={['Long term caregiver', 'Short term caregiver']}
+          selected={formData.termOfCare}
+          onSelect={(value) => safeSetFormData(prev => ({...prev, termOfCare: value as CareTerm}))}
+        />
+        
+        <ProfilePictureUpload />
+        <ProfessionalInfo />
+        <AboutMe />
+        <AvailabilitySection />
+        <AdditionalServices />
+        <HealthAndSkills />
+        
+        <div className="pt-4 pb-8">
+          <button
+            onClick={handleSubmit}
+            disabled={!isFormComplete()}
+            className={`
+              w-full py-3 px-6 rounded-lg text-white font-medium
+              ${isFormComplete() 
+                ? 'bg-slate-800 hover:bg-slate-900' 
+                : 'bg-slate-400 cursor-not-allowed'}
+            `}
+          >
+            {isFormComplete() ? 'Complete Profile' : 'Please fill all required fields'}
+          </button>
+          
+          {!isFormComplete() && (
+            <p className="text-sm text-center mt-2 text-red-500">
+              {`${completedSteps} of ${totalSteps} sections completed`}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
