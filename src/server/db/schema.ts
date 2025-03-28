@@ -13,6 +13,12 @@ import {
 import { sql } from "@vercel/postgres";
 
 export const userTypeEnum = pgEnum("UserType", ["caregiver", "careseeker"]);
+export const careTypeEnum = pgEnum("CareType", ["Child Care", "Elderly Care", "Both"]);
+export const religionEnum = pgEnum("Religion", ["Muslim", "Christian", "Jewish", "Hindu", "Buddhist", "Sikh", "Other", "None"]);
+export const muslimSectEnum = pgEnum("MuslimSect", ["Sunni", "Shia", "Sufi", "Other"]);
+export const careCapacityEnum = pgEnum("CareCapacity", ["Only one", "Multiple"]);
+export const availabilityTypeEnum = pgEnum("AvailabilityType", ["Recurring", "One-time", "Long term"]);
+export const careTermEnum = pgEnum("CareTerm", ["Long term caregiver", "Short term caregiver"]);
 
 export type UserTypeEnum = "caregiver" | "careseeker";
 
@@ -39,12 +45,51 @@ export const careGivers = pgTable("careGivers", {
     .references(() => users.id)
     .notNull(),
   subscribed: boolean("subscribed").notNull().default(false),
+  
+  // Existing cultural fields 
   languages: text("languages").array().notNull().default([]),
   sect: text("sect").notNull().default(""),
   ethnicBackground: text("ethnic_background").array().notNull().default([]),
-  hourlyRate: numeric("hourly_rate").notNull().default("0"),
+  
+  // New form fields
+  careType: careTypeEnum("care_type"),
+  religion: religionEnum("religion"),
+  muslimSect: muslimSectEnum("muslim_sect"),
+  agesServed: text("ages_served").array().default([]),
+  careCapacity: careCapacityEnum("care_capacity"),
+  termOfCare: careTermEnum("term_of_care"),
+  
+  // Professional info
+  hourlyRateMin: numeric("hourly_rate_min").default("0"),
+  hourlyRateMax: numeric("hourly_rate_max").default("0"),
+  yearsExperience: integer("years_experience"),
+  aboutMe: text("about_me"),
+  
+  // Availability
   availability: jsonb("availability").notNull().default({}),
+  availabilityType: availabilityTypeEnum("availability_type"),
+  
+  // Services
+  canCook: boolean("can_cook").default(false),
+  hasTransportation: boolean("has_transportation").default(false),
+  canShopErrands: boolean("can_shop_errands").default(false),
+  canHelpWithPets: boolean("can_help_with_pets").default(false),
+  canClean: boolean("can_clean").default(false),
+  canOrganize: boolean("can_organize").default(false),
+  canTutor: boolean("can_tutor").default(false),
+  canPack: boolean("can_pack").default(false),
+  canMealPrep: boolean("can_meal_prep").default(false),
+  
+  // Health & Skills
+  isVaccinated: boolean("is_vaccinated").default(false),
+  isSmoker: boolean("is_smoker").default(false),
+  firstAidTraining: boolean("first_aid_training").default(false),
+  cprTraining: boolean("cpr_training").default(false),
+  specialNeedsCare: boolean("special_needs_care").default(false),
+  
+  // Verification
   backgroundChecked: boolean("background_checked").notNull().default(false),
+  
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -78,6 +123,12 @@ export const schema = {
   careGivers,
   careSeekers,
   userTypeEnum,
+  careTypeEnum,
+  religionEnum,
+  muslimSectEnum,
+  careCapacityEnum,
+  availabilityTypeEnum,
+  careTermEnum,
   jobListings,
 };
 
