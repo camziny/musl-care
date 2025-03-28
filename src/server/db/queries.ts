@@ -1,11 +1,10 @@
 import "server-only";
 import { db } from "./schema";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { careGivers, users, jobListings, careSeekers } from "./schema";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { CareGiver, ImageData } from "@/utils/types";
-import { currentUser } from "@clerk/nextjs/server";
 
 export async function getCaregivers() {
   const careGiversList = await db.query.careGivers.findMany({
@@ -23,31 +22,63 @@ export async function getCaregiver(id: number) {
   return careGiver;
 }
 
-export async function getCaregiverByClerkUserId(clerkUserId: string) {
+export async function getCaregiverByClerkUserId(clerkUserId: string, throwOnNotFound = true) {
   const user = await db.query.users.findFirst({
     where: (model, { eq }) => eq(model.clerkUserId, clerkUserId),
   });
 
-  if (!user) throw new Error("User not found");
+  if (!user) {
+    if (throwOnNotFound) throw new Error("User not found");
+    return null;
+  }
 
   const careGiver = await db.query.careGivers.findFirst({
     where: (model, { eq }) => eq(model.userId, user.id),
   });
 
-  if (!careGiver) throw new Error("Caregiver not found");
+  if (!careGiver) {
+    if (throwOnNotFound) throw new Error("Caregiver not found");
+    return null;
+  }
 
   return careGiver;
 }
 
 export async function createCaregiver(data: CareGiver) {
-  const user = auth();
-  if (!user.userId) throw new Error("Unauthorized");
+  const { userId: clerkUserId } = auth();
+  if (!clerkUserId) throw new Error("Unauthorized");
 
-  const dbUser = await db.query.users.findFirst({
-    where: (model, { eq }) => eq(model.clerkUserId, user.userId),
+  // Try to find existing user
+  let dbUser = await db.query.users.findFirst({
+    where: (model, { eq }) => eq(model.clerkUserId, clerkUserId),
   });
 
-  if (!dbUser) throw new Error("User not found");
+  // If user doesn't exist in our database, create them
+  if (!dbUser) {
+    console.log("User not found in database. Creating new user for:", clerkUserId);
+    
+    try {
+      // Get user info from Clerk
+      const clerkUser = await currentUser();
+      if (!clerkUser) throw new Error("Could not fetch user data from Clerk");
+      
+      // Create new user in database
+      const [newUser] = await db
+        .insert(users)
+        .values({
+          clerkUserId: clerkUserId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
+      
+      dbUser = newUser;
+      console.log("Successfully created new user:", dbUser);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw new Error("Failed to create user in database");
+    }
+  }
 
   const existingCareGiver = await db.query.careGivers.findFirst({
     where: (model, { eq }) => eq(model.userId, dbUser.id),
@@ -56,6 +87,10 @@ export async function createCaregiver(data: CareGiver) {
   if (existingCareGiver) {
     throw new Error("Caregiver profile already exists for this user");
   }
+
+  // Convert numeric values to strings for database
+  const hourlyRateMin = data.hourlyRateMin !== undefined ? data.hourlyRateMin.toString() : "0";
+  const hourlyRateMax = data.hourlyRateMax !== undefined ? data.hourlyRateMax.toString() : "0";
 
   await db.insert(careGivers).values({
     name: data.name,
@@ -73,8 +108,43 @@ export async function createCaregiver(data: CareGiver) {
     languages: data.languages,
     sect: data.sect,
     ethnicBackground: data.ethnicBackground,
-    hourlyRate: data.hourlyRate,
-    availability: data.availability,
+    
+    // New form fields
+    careType: data.careType || null,
+    religion: data.religion || null,
+    muslimSect: data.muslimSect || null,
+    agesServed: data.agesServed,
+    careCapacity: data.careCapacity || null,
+    termOfCare: data.termOfCare || null,
+    
+    // Professional info
+    hourlyRateMin,
+    hourlyRateMax,
+    yearsExperience: data.yearsExperience,
+    aboutMe: data.aboutMe,
+    
+    // Availability
+    availability: JSON.stringify(data.availability),
+    availabilityType: data.availabilityType || null,
+    
+    // Services
+    canCook: data.canCook,
+    hasTransportation: data.hasTransportation,
+    canShopErrands: data.canShopErrands,
+    canHelpWithPets: data.canHelpWithPets,
+    canClean: data.canClean,
+    canOrganize: data.canOrganize,
+    canTutor: data.canTutor,
+    canPack: data.canPack,
+    canMealPrep: data.canMealPrep,
+    
+    // Health & Skills
+    isVaccinated: data.isVaccinated,
+    isSmoker: data.isSmoker,
+    firstAidTraining: data.professionalSkills.firstAidTraining,
+    cprTraining: data.professionalSkills.cprTraining,
+    specialNeedsCare: data.professionalSkills.specialNeedsCare,
+    
     backgroundChecked: data.backgroundChecked,
   });
 
@@ -91,12 +161,50 @@ export async function updateCareGiver(id: number, data: Partial<CareGiver>) {
 
   if (!user) throw new Error("User not found");
 
-  type UpdateData = Omit<Partial<CareGiver>, "image"> & { image?: string };
-
-  const updatedData: UpdateData = { ...data } as UpdateData;
+  // Create a clean object for the update operation
+  const updatedData: Record<string, any> = {};
+  
+  // Copy primitive fields directly
+  Object.keys(data).forEach(key => {
+    if (key !== 'image' && key !== 'professionalSkills' && 
+        key !== 'hourlyRateMin' && key !== 'hourlyRateMax' && 
+        key !== 'availability') {
+      updatedData[key] = data[key as keyof typeof data];
+    }
+  });
+  
+  // Handle image conversion
   if (data.image) {
     updatedData.image = JSON.stringify(data.image);
   }
+  
+  // Handle professional skills
+  if (data.professionalSkills) {
+    updatedData.firstAidTraining = data.professionalSkills.firstAidTraining;
+    updatedData.cprTraining = data.professionalSkills.cprTraining;
+    updatedData.specialNeedsCare = data.professionalSkills.specialNeedsCare;
+  }
+  
+  // Handle hourly rate
+  if (data.hourlyRateMin !== undefined) {
+    updatedData.hourlyRateMin = data.hourlyRateMin.toString();
+  }
+  if (data.hourlyRateMax !== undefined) {
+    updatedData.hourlyRateMax = data.hourlyRateMax.toString();
+  }
+  
+  // Handle availability
+  if (data.availability) {
+    updatedData.availability = JSON.stringify(data.availability);
+  }
+  
+  // Handle enum types
+  if (data.careType) updatedData.careType = data.careType || null;
+  if (data.religion) updatedData.religion = data.religion || null;
+  if (data.muslimSect) updatedData.muslimSect = data.muslimSect || null;
+  if (data.careCapacity) updatedData.careCapacity = data.careCapacity || null;
+  if (data.termOfCare) updatedData.termOfCare = data.termOfCare || null;
+  if (data.availabilityType) updatedData.availabilityType = data.availabilityType || null;
 
   await db
     .update(careGivers)

@@ -19,6 +19,8 @@ import {
   AGE_RANGES
 } from "@/types/caregivers";
 import Image from "next/image";
+import { useUploadThing } from "@/utils/uploadthing";
+import { toast } from "sonner";
 
 interface FormData {
   careType: CareType | "";
@@ -96,6 +98,8 @@ export default function CareGiverForm() {
       specialNeedsCare: false,
     }
   });
+
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string>("");
 
   const [showBackgroundCheckModal, setShowBackgroundCheckModal] = useState(false);
 
@@ -247,7 +251,7 @@ export default function CareGiverForm() {
       formData.agesServed.length > 0 &&
       formData.careCapacity &&
       formData.termOfCare &&
-      formData.profilePicture &&
+      (formData.profilePicture || uploadedImageUrl) &&
       formData.hourlyRate &&
       formData.yearsExperience &&
       formData.aboutMe.trim().length > 0 &&
@@ -256,9 +260,72 @@ export default function CareGiverForm() {
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (isFormComplete()) {
-      window.location.href = '/background-check';
+      try {
+        const { submitCaregiverForm } = await import('@/app/actions/caregiver');
+        
+        const result = await submitCaregiverForm({
+          userType: 'caregiver',
+          name: '', 
+          description: formData.aboutMe,
+          image: {
+            url: uploadedImageUrl || (formData.profilePicture ? URL.createObjectURL(formData.profilePicture) : ''),
+            alt: 'Profile picture'
+          },
+          phoneNumber: '', 
+          address: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          country: formData.country,
+          subscribed: false,
+          
+          languages: formData.languages,
+          sect: formData.religion === 'Muslim' ? formData.muslimSect : '',
+          ethnicBackground: [formData.ethnicity],
+          
+          careType: formData.careType,
+          religion: formData.religion,
+          muslimSect: formData.religion === 'Muslim' ? formData.muslimSect : undefined,
+          agesServed: formData.agesServed,
+          careCapacity: formData.careCapacity,
+          termOfCare: formData.termOfCare,
+          
+          hourlyRateMin: formData.hourlyRate?.min || 0,
+          hourlyRateMax: formData.hourlyRate?.max || 0,
+          yearsExperience: formData.yearsExperience,
+          aboutMe: formData.aboutMe,
+          
+          availability: formData.availability,
+          availabilityType: formData.availabilityType,
+          
+          canCook: formData.canCook,
+          hasTransportation: formData.hasTransportation,
+          canShopErrands: formData.canShopErrands,
+          canHelpWithPets: formData.canHelpWithPets,
+          canClean: formData.canClean,
+          canOrganize: formData.canOrganize,
+          canTutor: formData.canTutor,
+          canPack: formData.canPack,
+          canMealPrep: formData.canMealPrep,
+          
+          isVaccinated: formData.isVaccinated,
+          isSmoker: formData.isSmoker,
+          professionalSkills: formData.professionalSkills,
+          
+          backgroundChecked: false,
+        });
+        
+        if (result.success) {
+          window.location.href = '/background-check';
+        } else {
+          alert(`Error: ${result.error || 'Something went wrong'}`);
+        }
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('Failed to submit form. Please try again.');
+      }
     }
   };
 
@@ -287,48 +354,87 @@ export default function CareGiverForm() {
   const totalSteps = formData.religion === "Muslim" ? 15 : 14;
   const completedSteps = calculateCompletedSteps();
 
-  const ProfilePictureUpload = () => (
-    <div className="bg-white rounded-lg border p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Picture</h3>
-      <div className="flex flex-col items-center">
-        {formData.profilePicture ? (
-          <div className="mb-4 relative">
-            <Image 
-              src={URL.createObjectURL(formData.profilePicture)} 
-              alt="Profile preview" 
-              width={128}
-              height={128}
-              className="rounded-full object-cover"
+  const ProfilePictureUpload = () => {
+    const { startUpload, isUploading } = useUploadThing("imageUploader", {
+      onClientUploadComplete: (result) => {
+        console.log("Upload complete:", result);
+        if (result && result.length > 0) {
+          const uploadedUrl = result[0].url;
+          setUploadedImageUrl(uploadedUrl);
+          toast.success("Profile picture uploaded successfully");
+        }
+      },
+      onUploadError: (error) => {
+        console.error("Upload error:", error);
+        toast.error("Upload failed. Please try again.");
+      },
+    });
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!e.target.files || e.target.files.length === 0) return;
+      
+      try {
+        const file = e.target.files[0];
+        setFormData(prev => ({...prev, profilePicture: file}));
+        await startUpload([file]);
+      } catch (error) {
+        console.error("Error during file upload:", error);
+      }
+    };
+
+    return (
+      <div className="bg-white rounded-lg border p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Picture</h3>
+        <div className="flex flex-col items-center">
+          {(uploadedImageUrl || formData.profilePicture) ? (
+            <div className="mb-4 relative">
+              <Image 
+                src={uploadedImageUrl || (formData.profilePicture ? URL.createObjectURL(formData.profilePicture) : '')} 
+                alt="Profile preview" 
+                width={128}
+                height={128}
+                className="rounded-full object-cover"
+              />
+              <button
+                onClick={() => {
+                  setFormData(prev => ({...prev, profilePicture: null}));
+                  setUploadedImageUrl("");
+                }}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+              >
+                ×
+              </button>
+            </div>
+          ) : (
+            <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center mb-4">
+              <span className="text-gray-400">No Image</span>
+            </div>
+          )}
+          
+          <label className="cursor-pointer bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700 flex items-center">
+            {isUploading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Uploading...
+              </>
+            ) : (
+              'Upload Photo'
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+              disabled={isUploading}
             />
-            <button
-              onClick={() => setFormData(prev => ({...prev, profilePicture: null}))}
-              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-            >
-              ×
-            </button>
-          </div>
-        ) : (
-          <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center mb-4">
-            <span className="text-gray-400">No Image</span>
-          </div>
-        )}
-        
-        <label className="cursor-pointer bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700">
-          Upload Photo
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                setFormData(prev => ({...prev, profilePicture: e.target.files![0]}));
-              }
-            }}
-          />
-        </label>
+          </label>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
   
   const ProfessionalInfo = () => {
     const [rateInput, setRateInput] = useState({
@@ -936,7 +1042,7 @@ export default function CareGiverForm() {
                     `}
                     disabled={!localTimeSlot.startTime}
                   >
-                    <option value="">Select End Time</option>
+                    <option value="">Not Available</option>
                     {endTimeOptions.map(time => (
                       <option key={`end-${time}`} value={time}>{formatTime(time)}</option>
                     ))}
@@ -947,48 +1053,21 @@ export default function CareGiverForm() {
                     </svg>
                   </div>
                 </div>
-                {!localTimeSlot.startTime && (
-                  <p className="mt-1 text-xs text-gray-500">Select a start time first</p>
-                )}
               </div>
-            </div>
-            
-            <div className="mt-4 flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer" 
-                 onClick={() => setLocalTimeSlot(prev => ({...prev, startTime: "", endTime: ""}))}>
-              <input
-                type="checkbox"
-                id="not-available"
-                checked={!localTimeSlot.startTime && !localTimeSlot.endTime}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setLocalTimeSlot(prev => ({...prev, startTime: "", endTime: ""}));
-                  }
-                }}
-                className="h-4 w-4 text-slate-800 focus:ring-slate-500 border-gray-300 rounded"
-              />
-              <label htmlFor="not-available" className="ml-2 text-sm text-gray-600 cursor-pointer">
-                Not available on this day
-              </label>
             </div>
           </div>
           
-          <div className="flex justify-end space-x-3">
+          <div className="flex justify-end mt-6 space-x-3">
             <button
               onClick={() => setModalState(prev => ({...prev, showTimeModal: false}))}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={!canSave}
-              className={`
-                px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
-                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500
-                ${canSave 
-                  ? 'bg-slate-800 hover:bg-slate-700' 
-                  : 'bg-gray-300 cursor-not-allowed'}
-              `}
+              className={`px-4 py-2 rounded-md text-white ${canSave ? 'bg-slate-800 hover:bg-slate-700' : 'bg-gray-400 cursor-not-allowed'}`}
             >
               Save
             </button>
@@ -999,146 +1078,128 @@ export default function CareGiverForm() {
   };
 
   return (
-    <div className="w-full">
-      <FormProgress totalSteps={totalSteps} completedSteps={completedSteps} />
+    <div className="bg-white rounded-lg shadow-sm py-8">
+      <div className="sticky top-0 z-10 py-4 px-6 bg-white border-b mb-6">
+        <FormProgress
+          totalSteps={totalSteps}
+          completedSteps={completedSteps}
+        />
+      </div>
       
-      <div className="space-y-6">
-        <ProfilePictureUpload />
-        <ProfessionalInfo />
-        <AboutMe />
-        
+      <div className="px-6 space-y-6">
         <SelectionList
-          title="What type of care do you provide?"
-          options={["Child Care", "Elderly Care", "Both"]}
+          title="Type of Care"
+          options={['Child Care', 'Elderly Care', 'Both']}
           selected={formData.careType}
-          onSelect={(value) => setFormData(prev => ({ ...prev, careType: value as CareType }))}
-        />
-
-        <AvailabilitySection />
-        
-        <SelectionList
-          title="Ages You Can Care For"
-          options={AGE_RANGES}
-          selected={formData.agesServed}
-          onSelect={(value) => {
-            const updatedAges = formData.agesServed.includes(value)
-              ? formData.agesServed.filter(age => age !== value)
-              : [...formData.agesServed, value];
-            setFormData(prev => ({ ...prev, agesServed: updatedAges }));
-          }}
-          multiSelect
+          onSelect={(value) => safeSetFormData(prev => ({...prev, careType: value as CareType}))}
         />
         
-        <AdditionalServices />
-        <HealthAndSkills />
-
         <SelectionList
           title="Religious Background"
           options={RELIGIONS}
           selected={formData.religion}
-          onSelect={(value) => setFormData(prev => ({ ...prev, religion: value as Religion }))}
+          onSelect={(value) => safeSetFormData(prev => ({
+            ...prev, 
+            religion: value as Religion,
+            muslimSect: value === 'Muslim' ? prev.muslimSect : ''
+          }))}
         />
-
-        {formData.religion === "Muslim" && (
+        
+        {formData.religion === 'Muslim' && (
           <SelectionList
             title="Muslim Sect"
             options={MUSLIM_SECTS}
             selected={formData.muslimSect}
-            onSelect={(value) => setFormData(prev => ({ ...prev, muslimSect: value as MuslimSect }))}
+            onSelect={(value) => safeSetFormData(prev => ({...prev, muslimSect: value as MuslimSect}))}
           />
         )}
-
+        
         <SelectionList
           title="Ethnicity"
           options={ETHNICITIES}
           selected={formData.ethnicity}
-          onSelect={(value) => setFormData(prev => ({ ...prev, ethnicity: value }))}
+          onSelect={(value) => safeSetFormData(prev => ({...prev, ethnicity: value}))}
         />
-
+        
         <SelectionList
           title="Languages Spoken"
           options={LANGUAGES}
           selected={formData.languages}
           onSelect={(value) => {
-            const updatedLanguages = formData.languages.includes(value)
-              ? formData.languages.filter(l => l !== value)
-              : [...formData.languages, value];
-            setFormData(prev => ({ ...prev, languages: updatedLanguages }));
+            safeSetFormData(prev => {
+              const newLanguages = prev.languages.includes(value)
+                ? prev.languages.filter(lang => lang !== value)
+                : [...prev.languages, value];
+              return {...prev, languages: newLanguages};
+            });
           }}
-          multiSelect
+          multiSelect={true}
         />
-
+        
         <SelectionList
-          title="Country of Origin"
+          title="Country"
           options={COUNTRIES}
           selected={formData.country}
-          onSelect={(value) => setFormData(prev => ({ ...prev, country: value }))}
+          onSelect={(value) => safeSetFormData(prev => ({...prev, country: value}))}
         />
-
+        
         <SelectionList
-          title="How many individuals can you care for at once?"
-          options={["Only one", "Multiple"]}
+          title="Ages You Can Serve"
+          options={AGE_RANGES}
+          selected={formData.agesServed}
+          onSelect={(value) => {
+            safeSetFormData(prev => {
+              const newAges = prev.agesServed.includes(value)
+                ? prev.agesServed.filter(age => age !== value)
+                : [...prev.agesServed, value];
+              return {...prev, agesServed: newAges};
+            });
+          }}
+          multiSelect={true}
+        />
+        
+        <SelectionList
+          title="Care Capacity"
+          options={['Only one', 'Multiple']}
           selected={formData.careCapacity}
-          onSelect={(value) => setFormData(prev => ({ ...prev, careCapacity: value as CareCapacity }))}
+          onSelect={(value) => safeSetFormData(prev => ({...prev, careCapacity: value as CareCapacity}))}
         />
-
+        
         <SelectionList
-          title="Type of Care Commitment"
-          options={["Long term caregiver", "Short term caregiver"]}
+          title="Term of Care"
+          options={['Long term caregiver', 'Short term caregiver']}
           selected={formData.termOfCare}
-          onSelect={(value) => setFormData(prev => ({ ...prev, termOfCare: value as CareTerm }))}
+          onSelect={(value) => safeSetFormData(prev => ({...prev, termOfCare: value as CareTerm}))}
         />
-
-        <div className="sticky bottom-0 bg-gray-50 pt-4 pb-6">
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
+        
+        <ProfilePictureUpload />
+        <ProfessionalInfo />
+        <AboutMe />
+        <AvailabilitySection />
+        <AdditionalServices />
+        <HealthAndSkills />
+        
+        <div className="pt-4 pb-8">
+          <button
+            onClick={handleSubmit}
             disabled={!isFormComplete()}
             className={`
-              w-full px-8 py-3 rounded-lg font-medium
-              focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2
-              ${isFormComplete()
-                ? 'bg-slate-800 hover:bg-slate-700 text-white'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
+              w-full py-3 px-6 rounded-lg text-white font-medium
+              ${isFormComplete() 
+                ? 'bg-slate-800 hover:bg-slate-900' 
+                : 'bg-slate-400 cursor-not-allowed'}
             `}
-            onClick={handleSubmit}
           >
-            Complete Registration
-          </motion.button>
+            {isFormComplete() ? 'Complete Profile' : 'Please fill all required fields'}
+          </button>
+          
+          {!isFormComplete() && (
+            <p className="text-sm text-center mt-2 text-red-500">
+              {`${completedSteps} of ${totalSteps} sections completed`}
+            </p>
+          )}
         </div>
       </div>
-
-      {showBackgroundCheckModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-lg p-8 max-w-md w-full"
-          >
-            <h3 className="text-xl font-bold mb-4">Background Check Required</h3>
-            <p className="text-gray-600 mb-6">
-              To complete your registration, you must pass a background check. 
-              There is a fee associated with this process.
-            </p>
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={() => setShowBackgroundCheckModal(false)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {}}
-                className="px-4 py-2 bg-rose-600 text-white rounded hover:bg-rose-700"
-              >
-                Proceed to Background Check
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-
-      {modalState.showTimeModal && <TimeSelectionModal />}
     </div>
   );
 }

@@ -78,6 +78,13 @@
       "when": 1724345958413,
       "tag": "0010_mighty_spot",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1743168489236,
+      "tag": "0011_last_omega_red",
+      "breakpoints": true
     }
   ]
 }

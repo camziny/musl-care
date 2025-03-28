@@ -1,29 +1,30 @@
-import CareGiverForm from '@/components/CareGiverForm'
-import React from 'react'
-import Image from 'next/image'
+import React from 'react';
+import CareGiverForm from '@/components/CareGiverForm';
 
 export default function CareGiverFormPage() {
   return (
-    <div className="min-h-screen bg-gray-50 pt-4 sm:pt-2">
-      <div className="relative bg-white border-b shadow-sm mb-4">
-        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4 mt-10">
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            <Image
-              src="https://utfs.io/f/90ba1135-a67e-4dd6-9615-71bb5634ec07-hzt98r.jpeg"
-              alt="AyaCare Logo"
-              width={36}
-              height={36}
-              className="rounded-full w-9 h-9 sm:w-12 sm:h-12"
-            />
-            <div>
-              <h1 className="text-base sm:text-xl md:text-2xl font-bold text-gray-900 leading-tight">Become a Caregiver</h1>
-              <p className="text-xs sm:text-sm text-gray-600">Join our community of trusted caregivers</p>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 pt-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Become a Caregiver</h1>
+          <p className="mt-2 text-lg text-gray-600">
+            Fill out the form below to create your caregiver profile
+          </p>
+        </div>
+        
+        <div className="flex justify-center mb-8">
+          <div className="w-full max-w-3xl bg-white p-4 rounded-lg border shadow-sm">
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-gray-500">
+                Let families know about your services and availability
+              </p>
+              <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                Step 1 of 2
+              </span>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid md:grid-cols-12 gap-8">
           <div className="md:col-span-4">
             <div className="sticky top-[180px] space-y-6">
@@ -65,5 +66,5 @@ export default function CareGiverFormPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

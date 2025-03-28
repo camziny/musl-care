@@ -11,16 +11,19 @@ export const dynamic = "force-dynamic";
 
 const HomePage = async () => {
   const { userId: clerkUserId } = auth();
-  let caregiverProfileUrl = "/care-giver";
+  let caregiverProfileUrl = "/care-giver-form";
+  let hasProfile = false;
 
   if (clerkUserId) {
     try {
-      const caregiver = await getCaregiverByClerkUserId(clerkUserId);
+      const caregiver = await getCaregiverByClerkUserId(clerkUserId, false);
       if (caregiver) {
         caregiverProfileUrl = `/caregiver/${caregiver.id}/profile`;
+        hasProfile = true;
       }
     } catch (error) {
-      console.error("Error fetching caregiver profile:", error);
+      // User exists but doesn't have a caregiver profile yet - this is normal
+      console.log("User doesn't have a caregiver profile yet");
     }
   }
 
@@ -50,11 +53,11 @@ const HomePage = async () => {
                       I&apos;m looking for care
                     </button>
                   </Link>
-                  <Link href="/care-giver-form" className="w-full sm:w-auto">
+                  <Link href={caregiverProfileUrl} className="w-full sm:w-auto">
                     <button className="w-full px-6 py-3 bg-white text-slate-800 rounded-lg 
                       border-2 border-slate-800 hover:bg-slate-50 transition-all duration-200 
                       font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-                      I&apos;m a care giver
+                      {hasProfile ? 'View my profile' : 'I\'m a care giver'}
                     </button>
                   </Link>
                 </div>
