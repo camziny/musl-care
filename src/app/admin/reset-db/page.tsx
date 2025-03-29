@@ -7,7 +7,6 @@ export default function ResetDbPage() {
   const router = useRouter()
   
   useEffect(() => {
-    // Redirect to home page after mounting
     router.push('/')
   }, [router])
 

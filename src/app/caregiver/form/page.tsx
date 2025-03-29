@@ -5,7 +5,6 @@ import CareGiverForm from '@/components/CareGiverForm';
 export default function CareGiverFormPage() {
   const { userId } = auth();
   
-  // If not authenticated, redirect to sign-in
   if (!userId) {
     redirect('/sign-in');
   }

@@ -50,7 +50,6 @@ export default function CareGiverForm() {
 
       if (!user) throw new Error("User not found");
 
-      // Cast data to a specific type that matches careGivers schema
       const careGiverData = {
         name: data.name || "",
         description: data.description || "",
@@ -71,7 +70,6 @@ export default function CareGiverForm() {
         sect: data.sect || "",
         ethnicBackground: data.ethnicBackground || [],
         
-        // Optional fields
         careType: null,
         religion: null,
         muslimSect: null,
@@ -79,17 +77,14 @@ export default function CareGiverForm() {
         careCapacity: null,
         termOfCare: null,
         
-        // Rates as strings
         hourlyRateMin: String(data.hourlyRateMin || 0),
         hourlyRateMax: String(data.hourlyRateMax || 0),
         
-        // Default fields
         yearsExperience: null,
         aboutMe: null,
         availability: JSON.stringify(data.availability || []),
         availabilityType: null,
         
-        // Services (all default to false)
         canCook: false,
         hasTransportation: false,
         canShopErrands: false,
@@ -100,7 +95,6 @@ export default function CareGiverForm() {
         canPack: false,
         canMealPrep: false,
         
-        // Health & Skills
         isVaccinated: false,
         isSmoker: false,
         firstAidTraining: false,

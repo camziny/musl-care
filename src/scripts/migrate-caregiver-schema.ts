@@ -5,7 +5,6 @@ async function migrateCaregiverSchema() {
   try {
     console.log("Starting migration of caregiver schema...");
 
-    // Add new enum types
     await sql`
       DO $$ BEGIN
         CREATE TYPE "CareType" AS ENUM ('Child Care', 'Elderly Care', 'Both');
@@ -54,8 +53,6 @@ async function migrateCaregiverSchema() {
       END $$;
     `;
 
-    // Add new columns to careGivers table
-    // Split hourly_rate into min and max
     await sql`
       DO $$ 
       BEGIN
@@ -74,7 +71,6 @@ async function migrateCaregiverSchema() {
       END $$;
     `;
 
-    // Add new form fields
     await sql`
       ALTER TABLE "careGivers" 
       ADD COLUMN IF NOT EXISTS "care_type" "CareType",

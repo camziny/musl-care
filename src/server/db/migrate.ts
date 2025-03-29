@@ -2,10 +2,8 @@ import { migrate } from "drizzle-orm/vercel-postgres/migrator";
 import { db } from "./schema";
 import * as dotenv from 'dotenv';
 
-// Load environment variables
 dotenv.config();
 
-// For debug purposes
 console.log("Using database:", process.env.POSTGRES_URL ? "POSTGRES_URL exists" : "POSTGRES_URL not found");
 
 async function main() {

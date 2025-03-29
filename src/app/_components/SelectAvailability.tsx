@@ -3,13 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { AvailabilityTime } from "@/utils/types";
 
-// Define the interface that was previously imported as DayAvailability
 interface DayAvailability {
   day: string;
   times: string[];
 }
 
-// Define a type for the array of DayAvailability
 type Availability = DayAvailability[];
 
 const daysOfWeek = [
