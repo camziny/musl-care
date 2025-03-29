@@ -10,7 +10,6 @@ interface AvailabilityEditorProps {
 export default function AvailabilityEditor({ initialAvailability = [] }: AvailabilityEditorProps) {
   const [availability, setAvailability] = useState<AvailabilityTime[]>(initialAvailability);
   
-  // Format time for display
   const formatTimeDisplay = (time: string) => {
     if (!time) return "";
     const hour = parseInt(time.split(':')[0]);
@@ -20,7 +19,6 @@ export default function AvailabilityEditor({ initialAvailability = [] }: Availab
     return hour > 12 ? `${hour - 12}:00 PM` : `${hour}:00 AM`;
   };
 
-  // Handle time change
   const handleTimeChange = (day: string, field: 'startTime' | 'endTime', value: string) => {
     setAvailability(prev => {
       const newAvailability = [...prev];
@@ -44,13 +42,11 @@ export default function AvailabilityEditor({ initialAvailability = [] }: Availab
     });
   };
 
-  // Get current time value for a day
   const getTimeValue = (day: string, field: 'startTime' | 'endTime'): string => {
     const dayData = availability.find(a => a.day === day);
     return dayData ? dayData[field] || "" : "";
   };
 
-  // Days of week
   const daysOfWeek = [
     "Monday", "Tuesday", "Wednesday", "Thursday", 
     "Friday", "Saturday", "Sunday"

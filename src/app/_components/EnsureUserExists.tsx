@@ -27,5 +27,5 @@ export default function EnsureUserExists() {
     }
   }, [isLoaded, user]);
 
-  return null; // This component doesn't render anything
+  return null;
 } 

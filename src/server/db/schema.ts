@@ -46,12 +46,10 @@ export const careGivers = pgTable("careGivers", {
     .notNull(),
   subscribed: boolean("subscribed").notNull().default(false),
   
-  // Existing cultural fields 
   languages: text("languages").array().notNull().default([]),
   sect: text("sect").notNull().default(""),
   ethnicBackground: text("ethnic_background").array().notNull().default([]),
   
-  // New form fields
   careType: careTypeEnum("care_type"),
   religion: religionEnum("religion"),
   muslimSect: muslimSectEnum("muslim_sect"),
@@ -59,17 +57,14 @@ export const careGivers = pgTable("careGivers", {
   careCapacity: careCapacityEnum("care_capacity"),
   termOfCare: careTermEnum("term_of_care"),
   
-  // Professional info
   hourlyRateMin: numeric("hourly_rate_min").default("0"),
   hourlyRateMax: numeric("hourly_rate_max").default("0"),
   yearsExperience: integer("years_experience"),
   aboutMe: text("about_me"),
   
-  // Availability
   availability: jsonb("availability").notNull().default({}),
   availabilityType: availabilityTypeEnum("availability_type"),
   
-  // Services
   canCook: boolean("can_cook").default(false),
   hasTransportation: boolean("has_transportation").default(false),
   canShopErrands: boolean("can_shop_errands").default(false),
@@ -80,14 +75,12 @@ export const careGivers = pgTable("careGivers", {
   canPack: boolean("can_pack").default(false),
   canMealPrep: boolean("can_meal_prep").default(false),
   
-  // Health & Skills
   isVaccinated: boolean("is_vaccinated").default(false),
   isSmoker: boolean("is_smoker").default(false),
   firstAidTraining: boolean("first_aid_training").default(false),
   cprTraining: boolean("cpr_training").default(false),
   specialNeedsCare: boolean("special_needs_care").default(false),
   
-  // Verification
   backgroundChecked: boolean("background_checked").notNull().default(false),
   
   createdAt: timestamp("created_at").defaultNow().notNull(),

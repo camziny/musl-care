@@ -23,6 +23,7 @@ import { useUploadThing } from "@/utils/uploadthing";
 import { toast } from "sonner";
 
 interface FormData {
+  name: string;
   careType: CareType | "";
   religion: Religion | "";
   muslimSect: MuslimSect | "";
@@ -63,6 +64,7 @@ declare global {
 
 export default function CareGiverForm() {
   const [formData, setFormData] = useState<FormData>({
+    name: "",
     careType: "",
     religion: "",
     muslimSect: "",
@@ -242,12 +244,12 @@ export default function CareGiverForm() {
 
   const isFormComplete = () => {
     return (
+      formData.name.trim().length > 0 &&
       formData.careType &&
       formData.religion &&
       (formData.religion !== "Muslim" || formData.muslimSect) &&
       formData.ethnicity &&
       formData.languages.length > 0 &&
-      formData.country &&
       formData.agesServed.length > 0 &&
       formData.careCapacity &&
       formData.termOfCare &&
@@ -267,7 +269,7 @@ export default function CareGiverForm() {
         
         const result = await submitCaregiverForm({
           userType: 'caregiver',
-          name: '', 
+          name: formData.name, 
           description: formData.aboutMe,
           image: {
             url: uploadedImageUrl || (formData.profilePicture ? URL.createObjectURL(formData.profilePicture) : ''),
@@ -278,11 +280,11 @@ export default function CareGiverForm() {
           city: '',
           state: '',
           postalCode: '',
-          country: formData.country,
+          country: '',
           subscribed: false,
           
           languages: formData.languages,
-          sect: formData.religion === 'Muslim' ? formData.muslimSect : '',
+          sect: '',
           ethnicBackground: [formData.ethnicity],
           
           careType: formData.careType,
@@ -331,16 +333,16 @@ export default function CareGiverForm() {
 
   const calculateCompletedSteps = () => {
     const steps = [
+      formData.name.trim().length > 0,
       formData.careType !== "",
       formData.religion !== "",
       formData.religion === "Muslim" ? formData.muslimSect !== "" : true,
       formData.ethnicity !== "",
       formData.languages.length > 0,
-      formData.country !== "",
       formData.agesServed.length > 0,
       formData.careCapacity !== "",
       formData.termOfCare !== "",
-      formData.profilePicture !== null,
+      formData.profilePicture !== null || uploadedImageUrl !== "",
       formData.hourlyRate !== null,
       formData.yearsExperience !== null,
       formData.aboutMe.trim().length > 0,
@@ -351,7 +353,7 @@ export default function CareGiverForm() {
     return steps.filter(Boolean).length;
   };
 
-  const totalSteps = formData.religion === "Muslim" ? 15 : 14;
+  const totalSteps = formData.religion === "Muslim" ? 16 : 15;
   const completedSteps = calculateCompletedSteps();
 
   const ProfilePictureUpload = () => {
@@ -646,8 +648,7 @@ export default function CareGiverForm() {
                       <motion.button
                         onClick={() => {
                           scrollRef.current = window.scrollY;
-                          const newModal = {...modalState, showTimeModal: true, selectedDay: day};
-                          setModalState(newModal);
+                          setModalState(prev => ({...prev, showTimeModal: true, selectedDay: day}));
                         }}
                         className="w-full rounded-lg p-2 bg-slate-800 text-white hover:bg-slate-700 shadow-sm transition-all"
                         whileTap={{ scale: 0.98 }}
@@ -661,8 +662,7 @@ export default function CareGiverForm() {
                       <motion.button
                         onClick={() => {
                           scrollRef.current = window.scrollY;
-                          const newModal = {...modalState, showTimeModal: true, selectedDay: day};
-                          setModalState(newModal);
+                          setModalState(prev => ({...prev, showTimeModal: true, selectedDay: day}));
                         }}
                         className="w-full h-full min-h-[60px] rounded-lg border border-dashed border-gray-300 text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-all flex items-center justify-center"
                         whileTap={{ scale: 0.98 }}
@@ -1014,7 +1014,13 @@ export default function CareGiverForm() {
                   >
                     <option value="">Not Available</option>
                     {startTimeOptions.map(time => (
-                      <option key={`start-${time}`} value={time}>{formatTime(time)}</option>
+                      <option 
+                        key={`start-${time}`} 
+                        value={time}
+                        className={localTimeSlot.startTime === time ? "font-bold bg-slate-100" : ""}
+                      >
+                        {formatTime(time)}
+                      </option>
                     ))}
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
@@ -1044,7 +1050,13 @@ export default function CareGiverForm() {
                   >
                     <option value="">Not Available</option>
                     {endTimeOptions.map(time => (
-                      <option key={`end-${time}`} value={time}>{formatTime(time)}</option>
+                      <option 
+                        key={`end-${time}`} 
+                        value={time}
+                        className={localTimeSlot.endTime === time ? "font-bold bg-slate-100" : ""}
+                      >
+                        {formatTime(time)}
+                      </option>
                     ))}
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
@@ -1077,6 +1089,21 @@ export default function CareGiverForm() {
     );
   };
 
+  const NameField = () => {
+    return (
+      <div className="bg-white rounded-lg border p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Name</h3>
+        <input
+          type="text"
+          value={formData.name}
+          onChange={(e) => safeSetFormData(prev => ({...prev, name: e.target.value}))}
+          placeholder="Enter your full name"
+          className="w-full px-3 py-2 border rounded focus:ring-slate-500 focus:border-slate-500"
+        />
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm py-8">
       <div className="sticky top-0 z-10 py-4 px-6 bg-white border-b mb-6">
@@ -1087,16 +1114,19 @@ export default function CareGiverForm() {
       </div>
       
       <div className="px-6 space-y-6">
+        <NameField />
+        <ProfilePictureUpload />
+        
         <SelectionList
           title="Type of Care"
-          options={['Child Care', 'Elderly Care', 'Both']}
+          options={['Child Care', 'Elderly Care', 'Both'].sort()}
           selected={formData.careType}
           onSelect={(value) => safeSetFormData(prev => ({...prev, careType: value as CareType}))}
         />
         
         <SelectionList
           title="Religious Background"
-          options={RELIGIONS}
+          options={RELIGIONS.sort()}
           selected={formData.religion}
           onSelect={(value) => safeSetFormData(prev => ({
             ...prev, 
@@ -1108,22 +1138,22 @@ export default function CareGiverForm() {
         {formData.religion === 'Muslim' && (
           <SelectionList
             title="Muslim Sect"
-            options={MUSLIM_SECTS}
+            options={MUSLIM_SECTS.sort()}
             selected={formData.muslimSect}
             onSelect={(value) => safeSetFormData(prev => ({...prev, muslimSect: value as MuslimSect}))}
           />
         )}
         
         <SelectionList
-          title="Ethnicity"
-          options={ETHNICITIES}
+          title="Ethnic Background"
+          options={ETHNICITIES.sort()}
           selected={formData.ethnicity}
           onSelect={(value) => safeSetFormData(prev => ({...prev, ethnicity: value}))}
         />
         
         <SelectionList
           title="Languages Spoken"
-          options={LANGUAGES}
+          options={LANGUAGES.sort()}
           selected={formData.languages}
           onSelect={(value) => {
             safeSetFormData(prev => {
@@ -1134,13 +1164,6 @@ export default function CareGiverForm() {
             });
           }}
           multiSelect={true}
-        />
-        
-        <SelectionList
-          title="Country"
-          options={COUNTRIES}
-          selected={formData.country}
-          onSelect={(value) => safeSetFormData(prev => ({...prev, country: value}))}
         />
         
         <SelectionList
@@ -1160,19 +1183,18 @@ export default function CareGiverForm() {
         
         <SelectionList
           title="Care Capacity"
-          options={['Only one', 'Multiple']}
+          options={['Only one', 'Multiple'].sort()}
           selected={formData.careCapacity}
           onSelect={(value) => safeSetFormData(prev => ({...prev, careCapacity: value as CareCapacity}))}
         />
         
         <SelectionList
           title="Term of Care"
-          options={['Long term caregiver', 'Short term caregiver']}
+          options={['Long term caregiver', 'Short term caregiver'].sort()}
           selected={formData.termOfCare}
           onSelect={(value) => safeSetFormData(prev => ({...prev, termOfCare: value as CareTerm}))}
         />
         
-        <ProfilePictureUpload />
         <ProfessionalInfo />
         <AboutMe />
         <AvailabilitySection />
@@ -1200,6 +1222,8 @@ export default function CareGiverForm() {
           )}
         </div>
       </div>
+
+      {modalState.showTimeModal && <TimeSelectionModal />}
     </div>
   );
 }

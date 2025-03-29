@@ -40,12 +40,10 @@ export interface CareGiver {
   userId?: number;
   subscribed: boolean;
   
-  // Cultural background
   languages: string[];
   sect: string;
   ethnicBackground: string[];
   
-  // New form fields
   careType: CareType;
   religion: Religion;
   muslimSect?: MuslimSect;
@@ -53,17 +51,14 @@ export interface CareGiver {
   careCapacity: CareCapacity;
   termOfCare: CareTerm;
   
-  // Professional info
   hourlyRateMin: number;
   hourlyRateMax: number;
   yearsExperience: number | null;
   aboutMe: string;
   
-  // Availability
   availability: AvailabilityTime[];
   availabilityType: AvailabilityType;
   
-  // Services
   canCook: boolean;
   hasTransportation: boolean;
   canShopErrands: boolean;
@@ -74,12 +69,10 @@ export interface CareGiver {
   canPack: boolean;
   canMealPrep: boolean;
   
-  // Health & Skills
   isVaccinated: boolean;
   isSmoker: boolean;
   professionalSkills: ProfessionalSkills;
   
-  // Verification
   backgroundChecked: boolean;
   
   createdAt?: Date;

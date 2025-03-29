@@ -22,7 +22,6 @@ const HomePage = async () => {
         hasProfile = true;
       }
     } catch (error) {
-      // User exists but doesn't have a caregiver profile yet - this is normal
       console.log("User doesn't have a caregiver profile yet");
     }
   }

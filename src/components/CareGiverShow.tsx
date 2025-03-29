@@ -69,19 +69,26 @@ export default async function FullPageCaregiverView(props: { id: number }) {
   );
 
   const professionalSkills: string[] = [];
-  if (careGiver.professionalSkills) {
-    let skills: ProfessionalSkills;
-    try {
-      skills = typeof careGiver.professionalSkills === 'string' 
+  
+  try {
+    if (careGiver.professionalSkills) {
+      const skills = typeof careGiver.professionalSkills === 'string' 
         ? JSON.parse(careGiver.professionalSkills) as ProfessionalSkills
         : careGiver.professionalSkills as ProfessionalSkills;
-        
+      
       if (skills.firstAidTraining) professionalSkills.push('First Aid Training');
       if (skills.cprTraining) professionalSkills.push('CPR Certified');
       if (skills.specialNeedsCare) professionalSkills.push('Special Needs Care');
-    } catch (e) {
-      console.error("Error parsing professional skills:", e);
     }
+    
+    const cg = careGiver as any; // Use type assertion to access possible properties
+    if (professionalSkills.length === 0) {
+      if (cg.firstAidTraining) professionalSkills.push('First Aid Training');
+      if (cg.cprTraining) professionalSkills.push('CPR Certified');
+      if (cg.specialNeedsCare) professionalSkills.push('Special Needs Care');
+    }
+  } catch (e) {
+    console.error("Error parsing professional skills:", e);
   }
 
   const languages: string[] = Array.isArray(careGiver.languages) 
@@ -100,15 +107,38 @@ export default async function FullPageCaregiverView(props: { id: number }) {
     ? 'Child & Elderly Care' 
     : careGiver.careType || '';
     
-  const hourlyRate = careGiver.hourlyRate 
-    ? (typeof careGiver.hourlyRate === 'string'
-        ? JSON.parse(careGiver.hourlyRate)
-        : careGiver.hourlyRate)
-    : null;
-    
-  const rateDisplay = hourlyRate 
-    ? `$${hourlyRate.min}-$${hourlyRate.max}/hr` 
-    : 'Rate not specified';
+  let rateDisplay = 'Rate not specified';
+  
+  try {
+    const cg = careGiver as any; 
+
+    if (cg.hourlyRateMin !== undefined && cg.hourlyRateMax !== undefined) {
+      const min = Number(cg.hourlyRateMin);
+      const max = Number(cg.hourlyRateMax);
+      if (min <= max) {
+        rateDisplay = `$${min}-$${max}/hr`;
+      } else {
+        rateDisplay = `$${max}-$${min}/hr`;
+      }
+    } 
+    else if (cg.hourlyRate) {
+      const hourlyRate = typeof cg.hourlyRate === 'string'
+        ? JSON.parse(cg.hourlyRate)
+        : cg.hourlyRate;
+        
+      if (hourlyRate.min !== undefined && hourlyRate.max !== undefined) {
+        const min = Number(hourlyRate.min);
+        const max = Number(hourlyRate.max);
+        if (min <= max) {
+          rateDisplay = `$${min}-$${max}/hr`;
+        } else {
+          rateDisplay = `$${max}-$${min}/hr`;
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Error parsing hourly rate:", e);
+  }
 
   const dayMap: DayMapping = {
     'Monday': 'M',
