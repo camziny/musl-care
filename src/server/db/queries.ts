@@ -48,21 +48,16 @@ export async function createCaregiver(data: CareGiver) {
   const { userId: clerkUserId } = auth();
   if (!clerkUserId) throw new Error("Unauthorized");
 
-  // Try to find existing user
   let dbUser = await db.query.users.findFirst({
     where: (model, { eq }) => eq(model.clerkUserId, clerkUserId),
   });
 
-  // If user doesn't exist in our database, create them
   if (!dbUser) {
-    console.log("User not found in database. Creating new user for:", clerkUserId);
     
     try {
-      // Get user info from Clerk
       const clerkUser = await currentUser();
       if (!clerkUser) throw new Error("Could not fetch user data from Clerk");
       
-      // Create new user in database
       const [newUser] = await db
         .insert(users)
         .values({
@@ -73,7 +68,6 @@ export async function createCaregiver(data: CareGiver) {
         .returning();
       
       dbUser = newUser;
-      console.log("Successfully created new user:", dbUser);
     } catch (error) {
       console.error("Error creating user:", error);
       throw new Error("Failed to create user in database");
@@ -88,7 +82,6 @@ export async function createCaregiver(data: CareGiver) {
     throw new Error("Caregiver profile already exists for this user");
   }
 
-  // Convert numeric values to strings for database
   const hourlyRateMin = data.hourlyRateMin !== undefined ? data.hourlyRateMin.toString() : "0";
   const hourlyRateMax = data.hourlyRateMax !== undefined ? data.hourlyRateMax.toString() : "0";
 
@@ -109,7 +102,6 @@ export async function createCaregiver(data: CareGiver) {
     sect: data.sect,
     ethnicBackground: data.ethnicBackground,
     
-    // New form fields
     careType: data.careType || null,
     religion: data.religion || null,
     muslimSect: data.muslimSect || null,
@@ -117,17 +109,14 @@ export async function createCaregiver(data: CareGiver) {
     careCapacity: data.careCapacity || null,
     termOfCare: data.termOfCare || null,
     
-    // Professional info
     hourlyRateMin,
     hourlyRateMax,
     yearsExperience: data.yearsExperience,
     aboutMe: data.aboutMe,
     
-    // Availability
     availability: JSON.stringify(data.availability),
     availabilityType: data.availabilityType || null,
     
-    // Services
     canCook: data.canCook,
     hasTransportation: data.hasTransportation,
     canShopErrands: data.canShopErrands,
@@ -138,7 +127,6 @@ export async function createCaregiver(data: CareGiver) {
     canPack: data.canPack,
     canMealPrep: data.canMealPrep,
     
-    // Health & Skills
     isVaccinated: data.isVaccinated,
     isSmoker: data.isSmoker,
     firstAidTraining: data.professionalSkills.firstAidTraining,
@@ -161,10 +149,8 @@ export async function updateCareGiver(id: number, data: Partial<CareGiver>) {
 
   if (!user) throw new Error("User not found");
 
-  // Create a clean object for the update operation
   const updatedData: Record<string, any> = {};
   
-  // Copy primitive fields directly
   Object.keys(data).forEach(key => {
     if (key !== 'image' && key !== 'professionalSkills' && 
         key !== 'hourlyRateMin' && key !== 'hourlyRateMax' && 
@@ -173,19 +159,16 @@ export async function updateCareGiver(id: number, data: Partial<CareGiver>) {
     }
   });
   
-  // Handle image conversion
   if (data.image) {
     updatedData.image = JSON.stringify(data.image);
   }
   
-  // Handle professional skills
   if (data.professionalSkills) {
     updatedData.firstAidTraining = data.professionalSkills.firstAidTraining;
     updatedData.cprTraining = data.professionalSkills.cprTraining;
     updatedData.specialNeedsCare = data.professionalSkills.specialNeedsCare;
   }
   
-  // Handle hourly rate
   if (data.hourlyRateMin !== undefined) {
     updatedData.hourlyRateMin = data.hourlyRateMin.toString();
   }
@@ -193,12 +176,10 @@ export async function updateCareGiver(id: number, data: Partial<CareGiver>) {
     updatedData.hourlyRateMax = data.hourlyRateMax.toString();
   }
   
-  // Handle availability
   if (data.availability) {
     updatedData.availability = JSON.stringify(data.availability);
   }
   
-  // Handle enum types
   if (data.careType) updatedData.careType = data.careType || null;
   if (data.religion) updatedData.religion = data.religion || null;
   if (data.muslimSect) updatedData.muslimSect = data.muslimSect || null;
@@ -250,14 +231,12 @@ export async function getOrCreateCareSeekerByClerkUserId(
     throw new Error("User not found");
   }
 
-  console.log("Database user found:", user);
 
   let careSeeker = await db.query.careSeekers.findFirst({
     where: (model, { eq }) => eq(model.userId, user.id),
   });
 
   if (!careSeeker) {
-    console.log("Care Seeker not found, creating new one for userId:", user.id);
     try {
       await db.insert(careSeekers).values({
         userId: user.id,
@@ -275,13 +254,10 @@ export async function getOrCreateCareSeekerByClerkUserId(
         throw new Error("Failed to create Care Seeker");
       }
 
-      console.log("New Care Seeker created:", careSeeker);
     } catch (insertError) {
       console.error("Error inserting Care Seeker:", insertError);
       throw new Error("Error inserting Care Seeker");
     }
-  } else {
-    console.log("Care Seeker found:", careSeeker);
   }
 
   return careSeeker;
@@ -297,9 +273,10 @@ export interface JobFormData {
 }
 
 export async function createJobForm(data: JobFormData) {
+
   const { userId: clerkUserId } = auth();
   if (!clerkUserId) {
-    console.error("Unauthorized: No user ID found.");
+    console.error("[createJobForm] Unauthorized: No user ID found.");
     throw new Error("Unauthorized");
   }
 
@@ -308,7 +285,7 @@ export async function createJobForm(data: JobFormData) {
   });
 
   if (!user) {
-    console.error("User not found for clerkUserId:", clerkUserId);
+    console.error("[createJobForm] User not found for clerkUserId:", clerkUserId);
     throw new Error("User not found");
   }
 
@@ -317,22 +294,33 @@ export async function createJobForm(data: JobFormData) {
   });
 
   if (!careSeeker) {
-    console.error("Care Seeker not found for userId:", user.id);
+    console.error("[createJobForm] Care Seeker not found for userId:", user.id);
     throw new Error("Care Seeker not found");
   }
 
   try {
-    await db.insert(jobListings).values({
-      careSeekerId: careSeeker.id,
+    const firstInsertData = {
+      creator_user_id: clerkUserId,
+      date_posted: new Date(),
+      location: data.location,
+    };
+    
+    await db.insert(jobListings).values(firstInsertData as any);
+    
+    const secondInsertData = {
+      careSeeker_id: careSeeker.id,
       title: data.title,
       description: data.description,
       creator: data.creator,
-      creatorUserId: clerkUserId,
-      datePosted: data.datePosted,
+      creator_user_id: clerkUserId,
+      date_posted: data.datePosted,
       location: data.location,
-    });
+    };
+    
+    await db.insert(jobListings).values(secondInsertData as any);
+    
   } catch (error) {
-    console.error("Error inserting job listing:", error);
+    console.error("[createJobForm] Error inserting job listing:", error);
     throw new Error("Failed to create job listing");
   }
 }
@@ -382,6 +370,13 @@ export async function getJobListings() {
       creator: true,
       creatorUserId: true,
       careSeekerId: true,
+      guardianImage: true,
+      childrenImages: true,
+      careType: true,
+      availabilityType: true,
+      location: true,
+      datePosted: true,
+      metadata: true,
     },
   });
   return jobListingList;
@@ -419,8 +414,6 @@ export async function updateJobListing(id: number, data: Partial<JobFormData>) {
   }
 
   await db.update(jobListings).set(data).where(eq(jobListings.id, id));
-
-  console.log("Job listing updated:", { id, ...data });
 }
 
 export async function deleteJobListing(jobId: number) {
@@ -450,5 +443,4 @@ export async function deleteJobListing(jobId: number) {
 
   await db.delete(jobListings).where(eq(jobListings.id, jobId));
 
-  console.log("Job listing deleted:", { jobId });
 }

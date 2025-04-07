@@ -11,11 +11,14 @@ const DatePicker = dynamic(() => import("./DatePicker"), {
 export default async function CareSeekerForm() {
   const user = await currentUser();
 
+
   const handleSubmit = async (formData: FormData) => {
     "use server";
 
     try {
       const startDateString = formData.get("datePosted") as string;
+      Array.from(formData.entries()).forEach(([key, value]) => {
+      });
 
       const data: JobFormData = {
         title: formData.get("title") as string,
@@ -27,9 +30,13 @@ export default async function CareSeekerForm() {
       };
 
       await createJobForm(data);
-      console.log("Job listing created successfully");
+      return { success: true };
     } catch (error) {
-      console.error("Error during form submission:", error);
+      console.error("[CareSeekerForm:handleSubmit] Error during form submission:", error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      };
     }
   };
 

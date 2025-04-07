@@ -3,7 +3,15 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { hostname: "utfs.io" },
-      { hostname: "via.placeholder.com" }
+      { hostname: "via.placeholder.com" },
+      { hostname: "res.cloudinary.com" },
+      { hostname: "images.unsplash.com" },
+      { hostname: "lh3.googleusercontent.com" },
+      { hostname: "firebasestorage.googleapis.com" },
+      { hostname: "*.amazonaws.com" },
+      { hostname: "*.githubusercontent.com" },
+      { hostname: "uploadthing.com" },
+      { hostname: "*.uploadthing.com" }
     ],
   },
 };

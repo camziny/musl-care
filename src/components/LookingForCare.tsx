@@ -3,52 +3,75 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FormProgress } from "@/components/ui/FormProgress";
-
-type CareType = "Child Care" | "Elderly Care" | "Both";
-type Religion = "Muslim" | "Sikh" | "Hindu" | "Buddhist" | "Jain" | "Christian" | "Zoroastrian" | "no preference";
-type MuslimSect = "Sunni" | "Shia" | "Ahmadiyya" | "Ismaili" | "Ibadi" | "Mahdavia" | "Barelvi" | "Deobandi" | "Alawite" | "Druze" | "Yazidi" | "Alevi" | "just Muslim";
-type CareLength = "Long term care" | "Short term care";
+import { ServiceRequirements, ProfessionalSkills, AvailabilityTime, CareType, Religion, RELIGIONS, ETHNICITIES, LANGUAGES, COUNTRIES, AGE_RANGES } from '@/types/common';
+import { AvailabilitySelector } from '@/components/ui/AvailabilitySelector';
+import { toast } from 'sonner';
+import { useUploadThing } from "@/utils/uploadthing";
+import Image from "next/image";
 
 interface FormData {
+  guardianImage: string;
+  childrenImages: string[];
+  phoneNumber: string;
+  email: string;
+  isPhoneVerified: boolean;
+  isEmailVerified: boolean;
+  isBackgroundChecked: boolean;
   careType: CareType | "";
   religion: Religion | "";
-  muslimSect: MuslimSect | "";
   ethnicities: string[];
   languages: string[];
   countries: string[];
   numberOfPeople: number;
   agesOfPeople: string[];
-  termOfCare: CareLength | "";
+  availabilityType: "Recurring" | "One-time" | "Long term" | "";
+  availability: AvailabilityTime[];
+  serviceRequirements: ServiceRequirements;
+  petDetails: { type: string; description: string; }[];
+  requiredProfessionalSkills: ProfessionalSkills;
 }
-
-const RELIGIONS = ["Muslim", "Sikh", "Hindu", "Buddhist", "Jain", "Christian", "Zoroastrian", "no preference"];
-const MUSLIM_SECTS = ["Sunni", "Shia", "Ahmadiyya", "Ismaili", "Ibadi", "Mahdavia", "Barelvi", "Deobandi", "Alawite", "Druze", "Yazidi", "Alevi", "just Muslim"];
-const ETHNICITIES = ["Pakistani", "Indian", "Bangladeshi", "Sri Lankan", "Nepalese", "Afghan", "Bhutanese", "Maldivian", "Arab", "Kurdish", "Indonesian", "Malaysian", "no preference"];
-const LANGUAGES = ["Urdu", "Turkish", "Arabic", "Hindi", "Kurdish", "Punjabi", "Gujarati", "Bangla", "Balochi", "Farsi", "Dari", "Pashto", "Oriya", "Bhojpuri", "Sindhi", "Singhalese", "Marathi", "Tamil", "Telugu", "Malayalam", "Kannada", "Nepali", "Assamese", "Magahi", "Malay", "no preference"];
-const COUNTRIES = ["Pakistan", "India", "Bangladesh", "Nepal", "Bhutan", "Sri Lanka", "Afghanistan", "Maldives", "Palestine", "Lebanon", "Iraq", "Syria", "UAE", "Saudi Arabia", "Qatar", "Kuwait", "Yemen", "Libya", "Bahrain", "Jordan", "Indonesia", "Malaysia", "Djibouti", "Oman", "Tunisia", "Somalia", "Algeria", "Morocco", "Chad", "no preference"];
-const AGE_RANGES = [
-  "Infant (0-1)",
-  "Toddler (1-3)",
-  "Preschool (3-5)",
-  "School Age (5-12)",
-  "Teenager (13-19)",
-  "Adult (20-40)",
-  "Middle Age (40-65)",
-  "Senior (65+)"
-];
 
 export default function LookingForCare() {
   const [formData, setFormData] = useState<FormData>({
+    guardianImage: "",
+    childrenImages: [],
+    phoneNumber: "",
+    email: "",
+    isPhoneVerified: false,
+    isEmailVerified: false,
+    isBackgroundChecked: false,
     careType: "",
     religion: "",
-    muslimSect: "",
     ethnicities: [],
     languages: [],
     countries: [],
     numberOfPeople: 0,
     agesOfPeople: [],
-    termOfCare: ""
+    availabilityType: "",
+    availability: [],
+    serviceRequirements: {
+      needsCooking: false,
+      needsCare: false,
+      needsFeedingChanging: false,
+      needsShoppingErrands: false,
+      needsPetCare: false,
+      needsCleaning: false,
+      needsOrganizing: false,
+      needsTutoring: false,
+      needsPacking: false,
+      needsMealPrep: false
+    },
+    petDetails: [],
+    requiredProfessionalSkills: {
+      firstAidTraining: false,
+      cprTraining: false,
+      specialNeedsCare: false
+    }
   });
+  
+  const [uploadedGuardianImageUrl, setUploadedGuardianImageUrl] = useState<string>("");
+  const [uploadedChildrenImages, setUploadedChildrenImages] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCareTypeSelect = (type: CareType) => {
     setFormData(prev => ({ ...prev, careType: type }));
@@ -56,10 +79,6 @@ export default function LookingForCare() {
 
   const handleReligionSelect = (religion: Religion) => {
     setFormData(prev => ({ ...prev, religion }));
-  };
-
-  const handleMuslimSectSelect = (sect: MuslimSect) => {
-    setFormData(prev => ({ ...prev, muslimSect: sect }));
   };
 
   const handleMultiSelect = (field: keyof FormData, value: string) => {
@@ -77,26 +96,27 @@ export default function LookingForCare() {
     setFormData(prev => ({ ...prev, numberOfPeople: num }));
   };
 
-  const handleTermSelect = (term: CareLength) => {
-    setFormData(prev => ({ ...prev, termOfCare: term }));
-  };
-
   const calculateCompletedSteps = () => {
     const steps = [
+      formData.guardianImage !== "",
+      formData.phoneNumber !== "" && formData.isPhoneVerified,
+      formData.email !== "" && formData.isEmailVerified,
       formData.careType !== "",
       formData.religion !== "",
-      formData.religion === "Muslim" ? formData.muslimSect !== "" : true,
       formData.ethnicities.length > 0,
       formData.languages.length > 0,
       formData.countries.length > 0,
       formData.agesOfPeople.length > 0,
-      formData.termOfCare !== ""
+      formData.availabilityType !== "",
+      formData.availability.length > 0,
+      Object.values(formData.requiredProfessionalSkills).some(Boolean),
+      Object.values(formData.serviceRequirements).some(Boolean)
     ];
 
     return steps.filter(Boolean).length;
   };
 
-  const totalSteps = formData.religion === "Muslim" ? 8 : 7;
+  const totalSteps = 13;
   const completedSteps = calculateCompletedSteps();
 
   const SelectionList = ({ 
@@ -182,6 +202,299 @@ export default function LookingForCare() {
     </section>
   );
 
+  const handleSubmit = async () => {
+    if (!formData.guardianImage && !uploadedGuardianImageUrl) {
+      toast.error('Please upload a guardian image');
+      return;
+    }
+
+    if (!formData.careType) {
+      toast.error('Please select a care type');
+      return;
+    }
+
+    if (!formData.religion) {
+      toast.error('Please select a religion preference');
+      return;
+    }
+
+    if (formData.ethnicities.length === 0) {
+      toast.error('Please select at least one ethnicity preference');
+      return;
+    }
+
+    if (formData.languages.length === 0) {
+      toast.error('Please select at least one language preference');
+      return;
+    }
+
+    if (formData.agesOfPeople.length === 0) {
+      toast.error('Please select at least one age range');
+      return;
+    }
+
+    if (!formData.availabilityType) {
+      toast.error('Please select an availability type');
+      return;
+    }
+
+    if (formData.availability.length === 0) {
+      toast.error('Please set your availability schedule');
+      return;
+    }
+
+    if (!Object.values(formData.serviceRequirements).some(Boolean)) {
+      toast.error('Please select at least one service requirement');
+      return;
+    }
+
+    setIsSubmitting(true);
+    const loadingId = toast.loading('Submitting your care request...');
+
+    try {
+      const { submitCareSeekingRequest } = await import('@/app/actions/careseeker');
+      
+      console.log('Form availability data:', formData.availability);
+      
+      const requestData = {
+        userType: 'careseeker',
+        guardianName: 'Care Seeker', 
+        guardianImage: uploadedGuardianImageUrl || formData.guardianImage || '',
+        childrenImages: uploadedChildrenImages.length > 0 
+          ? uploadedChildrenImages
+          : formData.childrenImages,
+        phoneNumber: formData.phoneNumber || '555-555-5555',
+        email: formData.email || 'care@example.com',
+        isPhoneVerified: formData.isPhoneVerified,
+        isEmailVerified: formData.isEmailVerified,
+        isBackgroundChecked: formData.isBackgroundChecked,
+        address: '',
+        city: formData.countries.length > 0 ? formData.countries[0] : 'Unknown location',
+        state: '',
+        postalCode: '',
+        country: formData.countries.length > 0 ? formData.countries[0] : '',
+        careType: formData.careType,
+        numberOfPeople: formData.numberOfPeople || 1,
+        agesOfPeople: formData.agesOfPeople,
+        availabilityType: formData.availabilityType,
+        availability: formData.availability.map(slot => ({
+          day: slot.day || '',
+          startTime: slot.startTime || '',
+          endTime: slot.endTime || '',
+          recurring: Boolean(slot.recurring)
+        })),
+        serviceRequirements: formData.serviceRequirements,
+        petDetails: formData.petDetails,
+        requiredProfessionalSkills: formData.requiredProfessionalSkills,
+        preferenceFilters: {
+          preferredEthnicity: formData.ethnicities,
+          preferredLanguages: formData.languages,
+          preferredReligion: formData.religion
+        }
+      };
+      
+      try {
+        const result = await submitCareSeekingRequest(requestData);
+        console.log('Form submission result:', result);
+        
+        toast.dismiss(loadingId);
+        setIsSubmitting(false);
+        
+        if (result.success) {
+          toast.success('Care request submitted successfully!');
+          window.location.href = '/jobs';
+        } else {
+          toast.error(`Error: ${result.error || 'Something went wrong'}`);
+        }
+      } catch (serverError) {
+        console.error('Server error during form submission:', serverError);
+        toast.dismiss(loadingId);
+        setIsSubmitting(false);
+        toast.error('Server error. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.dismiss(loadingId);
+      setIsSubmitting(false);
+      toast.error('Failed to submit form. Please try again.');
+    }
+  };
+
+  const GuardianImageUpload = () => {
+    const { startUpload, isUploading } = useUploadThing("imageUploader", {
+      onClientUploadComplete: (result) => {
+        console.log("Upload complete:", result);
+        if (result && result.length > 0) {
+          const uploadedUrl = result[0].url;
+          setUploadedGuardianImageUrl(uploadedUrl);
+          toast.success("Guardian image uploaded successfully");
+        }
+      },
+      onUploadError: (error) => {
+        console.error("Upload error:", error);
+        toast.error("Upload failed. Please try again.");
+      },
+    });
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!e.target.files || e.target.files.length === 0) return;
+      
+      try {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFormData(prev => ({
+            ...prev,
+            guardianImage: reader.result as string
+          }));
+        };
+        reader.readAsDataURL(file);
+        
+        await startUpload([file]);
+      } catch (error) {
+        console.error("Error during file upload:", error);
+      }
+    };
+
+    return (
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Guardian Image (Required)
+        </label>
+        <div className="flex items-center space-x-4">
+          {(uploadedGuardianImageUrl || formData.guardianImage) && (
+            <div className="relative w-24 h-24">
+              <img
+                src={uploadedGuardianImageUrl || formData.guardianImage}
+                alt="Guardian"
+                className="w-24 h-24 object-cover rounded-lg"
+              />
+              <button
+                onClick={() => {
+                  setFormData(prev => ({ ...prev, guardianImage: "" }));
+                  setUploadedGuardianImageUrl("");
+                }}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+              >
+                ×
+              </button>
+            </div>
+          )}
+          <label className="cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors border-2 border-dashed border-slate-300 rounded-lg p-4 text-center w-24 h-24 flex items-center justify-center">
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+              disabled={isUploading}
+            />
+            {isUploading ? (
+              <div className="flex flex-col items-center">
+                <svg className="animate-spin h-5 w-5 text-slate-700 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span className="text-xs text-gray-600">Uploading</span>
+              </div>
+            ) : (
+              <span className="text-sm text-gray-600">Upload</span>
+            )}
+          </label>
+        </div>
+      </div>
+    );
+  };
+
+  const ChildrenImagesUpload = () => {
+    const { startUpload, isUploading } = useUploadThing("imageUploader", {
+      onClientUploadComplete: (result) => {
+        console.log("Upload complete:", result);
+        if (result && result.length > 0) {
+          const uploadedUrl = result[0].url;
+          setUploadedChildrenImages(prev => [...prev, uploadedUrl]);
+          toast.success("Child image uploaded successfully");
+        }
+      },
+      onUploadError: (error) => {
+        console.error("Upload error:", error);
+        toast.error("Upload failed. Please try again.");
+      },
+    });
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!e.target.files || e.target.files.length === 0) return;
+      
+      try {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFormData(prev => ({
+            ...prev,
+            childrenImages: [...prev.childrenImages, reader.result as string]
+          }));
+        };
+        reader.readAsDataURL(file);
+        
+        await startUpload([file]);
+      } catch (error) {
+        console.error("Error during file upload:", error);
+      }
+    };
+
+    return (
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Children Images (Optional)
+        </label>
+        <div className="flex items-center space-x-4 flex-wrap gap-y-4">
+          {formData.childrenImages.map((image, index) => (
+            <div key={index} className="relative w-24 h-24">
+              <img
+                src={uploadedChildrenImages[index] || image}
+                alt={`Child ${index + 1}`}
+                className="w-24 h-24 object-cover rounded-lg"
+              />
+              <button
+                onClick={() => {
+                  const newImages = [...formData.childrenImages];
+                  newImages.splice(index, 1);
+                  setFormData(prev => ({ ...prev, childrenImages: newImages }));
+                  
+                  const newUploadedImages = [...uploadedChildrenImages];
+                  newUploadedImages.splice(index, 1);
+                  setUploadedChildrenImages(newUploadedImages);
+                }}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+          <label className="cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors border-2 border-dashed border-slate-300 rounded-lg p-4 text-center w-24 h-24 flex items-center justify-center">
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+              disabled={isUploading}
+            />
+            {isUploading ? (
+              <div className="flex flex-col items-center">
+                <svg className="animate-spin h-5 w-5 text-slate-700 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span className="text-xs text-gray-600">Uploading</span>
+              </div>
+            ) : (
+              <span className="text-sm text-gray-600">Add Child</span>
+            )}
+          </label>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pt-2 sm:pt-0">
       <FormProgress totalSteps={totalSteps} completedSteps={completedSteps} />
@@ -234,7 +547,83 @@ export default function LookingForCare() {
 
           <div className="md:col-span-8 order-2">
             <div className="space-y-6">
-              <div className="bg-gradient-to-r from-slate-100 to-white p-4 rounded-lg mb-6">
+              <div className="bg-white p-6 rounded-lg mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Images</h3>
+                <div className="space-y-4">
+                  <GuardianImageUpload />
+                  <ChildrenImagesUpload />
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-slate-100 to-white p-6 rounded-lg mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact & Verification</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="tel"
+                        value={formData.phoneNumber}
+                        onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                        className="flex-1 p-2 border rounded-lg"
+                        placeholder="Enter your phone number"
+                      />
+                      <button
+                        onClick={() => setFormData(prev => ({ ...prev, isPhoneVerified: true }))}
+                        className={`px-4 py-2 rounded-lg ${
+                          formData.isPhoneVerified
+                            ? 'bg-green-500 text-white'
+                            : 'bg-slate-800 text-white hover:bg-slate-700'
+                        }`}
+                        disabled={formData.isPhoneVerified}
+                      >
+                        {formData.isPhoneVerified ? '✓ Verified' : 'Verify'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                        className="flex-1 p-2 border rounded-lg"
+                        placeholder="Enter your email address"
+                      />
+                      <button
+                        onClick={() => setFormData(prev => ({ ...prev, isEmailVerified: true }))}
+                        className={`px-4 py-2 rounded-lg ${
+                          formData.isEmailVerified
+                            ? 'bg-green-500 text-white'
+                            : 'bg-slate-800 text-white hover:bg-slate-700'
+                        }`}
+                        disabled={formData.isEmailVerified}
+                      >
+                        {formData.isEmailVerified ? '✓ Verified' : 'Verify'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2 pt-2">
+                    <div className={`p-2 rounded-lg ${formData.isBackgroundChecked ? 'bg-green-500' : 'bg-gray-200'}`}>
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-gray-600">
+                      {formData.isBackgroundChecked ? 'Background Check Verified' : 'Background Check Pending'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white p-4 rounded-lg mb-6">
                 <SelectionList
                   title="What type of care are you looking for?"
                   options={["Child Care", "Elderly Care", "Both"]}
@@ -252,18 +641,7 @@ export default function LookingForCare() {
                 />
               </div>
 
-              {formData.religion === "Muslim" && (
-                <div className="bg-gradient-to-r from-slate-100 to-white p-4 rounded-lg mb-6">
-                  <SelectionList
-                    title="Muslim Sect Preference"
-                    options={MUSLIM_SECTS}
-                    selected={formData.muslimSect}
-                    onSelect={(value) => handleMuslimSectSelect(value as MuslimSect)}
-                  />
-                </div>
-              )}
-
-              <div className={`${formData.religion === "Muslim" ? 'bg-white' : 'bg-gradient-to-r from-slate-100 to-white'} p-4 rounded-lg mb-6`}>
+              <div className="bg-gradient-to-r from-slate-100 to-white p-4 rounded-lg mb-6">
                 <SelectionList
                   title="Ethnicity Preferences"
                   options={ETHNICITIES}
@@ -273,7 +651,7 @@ export default function LookingForCare() {
                 />
               </div>
 
-              <div className={`${formData.religion === "Muslim" ? 'bg-gradient-to-r from-slate-100 to-white' : 'bg-white'} p-4 rounded-lg mb-6`}>
+              <div className="bg-white p-4 rounded-lg mb-6">
                 <SelectionList
                   title="Language Preferences"
                   options={LANGUAGES}
@@ -283,7 +661,7 @@ export default function LookingForCare() {
                 />
               </div>
 
-              <div className={`${formData.religion === "Muslim" ? 'bg-white' : 'bg-gradient-to-r from-slate-100 to-white'} p-4 rounded-lg mb-6`}>
+              <div className="bg-gradient-to-r from-slate-100 to-white p-4 rounded-lg mb-6">
                 <SelectionList
                   title="Country Preferences"
                   options={COUNTRIES}
@@ -293,7 +671,7 @@ export default function LookingForCare() {
                 />
               </div>
 
-              <div className={`${formData.religion === "Muslim" ? 'bg-gradient-to-r from-slate-100 to-white' : 'bg-white'} p-4 rounded-lg mb-6`}>
+              <div className="bg-white p-4 rounded-lg mb-6">
                 <SelectionList
                   title="Age Range of Care Needed"
                   options={AGE_RANGES}
@@ -303,25 +681,163 @@ export default function LookingForCare() {
                 />
               </div>
 
-              <div className={`${formData.religion === "Muslim" ? 'bg-white' : 'bg-gradient-to-r from-slate-100 to-white'} p-4 rounded-lg mb-6`}>
+              <div className="bg-gradient-to-r from-slate-100 to-white p-4 rounded-lg mb-6">
                 <SelectionList
                   title="Care Duration"
-                  options={["Long term care", "Short term care"]}
-                  selected={formData.termOfCare}
-                  onSelect={(value) => handleTermSelect(value as CareLength)}
+                  options={["Recurring", "One-time", "Long term"]}
+                  selected={formData.availabilityType}
+                  onSelect={(value) => setFormData(prev => ({ ...prev, availabilityType: value as "Recurring" | "One-time" | "Long term" }))}
                 />
               </div>
+
+              <div className={`${formData.availabilityType ? 'bg-gradient-to-r from-slate-100 to-white' : 'bg-white'} p-4 rounded-lg mb-6`}>
+                <AvailabilitySelector 
+                  availability={formData.availability}
+                  availabilityType={formData.availabilityType}
+                  onAvailabilityChange={(newAvailability) => setFormData(prev => ({
+                    ...prev,
+                    availability: newAvailability
+                  }))}
+                  onAvailabilityTypeChange={(newType) => {
+                    const typedType = newType as "Recurring" | "One-time" | "Long term";
+                    setFormData(prev => ({
+                      ...prev,
+                      availabilityType: typedType
+                    }));
+                  }}
+                  scrollRestoreEnabled={false}
+                />
+              </div>
+
+              <div className="bg-gradient-to-r from-slate-100 to-white p-4 rounded-lg mb-6">
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Required Professional Skills</h3>
+                  <div className="space-y-3">
+                    {Object.entries({
+                      firstAidTraining: "First Aid Training",
+                      cprTraining: "CPR Training",
+                      specialNeedsCare: "Special Needs Care"
+                    }).map(([key, label]) => (
+                      <label key={key} className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={formData.requiredProfessionalSkills[key as keyof ProfessionalSkills]}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            requiredProfessionalSkills: {
+                              ...prev.requiredProfessionalSkills,
+                              [key]: e.target.checked
+                            }
+                          }))}
+                          className="form-checkbox h-5 w-5 text-slate-800"
+                        />
+                        <span className="text-gray-700">{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white p-4 rounded-lg mb-6">
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Services Required</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {Object.entries({
+                      needsCooking: "Cooking",
+                      needsCare: "Care",
+                      needsFeedingChanging: "Feeding/Changing",
+                      needsShoppingErrands: "Shopping/Errands",
+                      needsPetCare: "Pet Care",
+                      needsCleaning: "Cleaning",
+                      needsOrganizing: "Organizing",
+                      needsTutoring: "Tutoring",
+                      needsPacking: "Packing",
+                      needsMealPrep: "Meal Prep"
+                    }).map(([key, label]) => (
+                      <label key={key} className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={formData.serviceRequirements[key as keyof ServiceRequirements]}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            serviceRequirements: {
+                              ...prev.serviceRequirements,
+                              [key]: e.target.checked
+                            }
+                          }))}
+                          className="form-checkbox h-5 w-5 text-slate-800"
+                        />
+                        <span className="text-gray-700">{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {formData.serviceRequirements.needsPetCare && (
+                <div className="bg-gradient-to-r from-slate-100 to-white p-4 rounded-lg mb-6">
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Pet Details</h3>
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({
+                        ...prev,
+                        petDetails: [...prev.petDetails, { type: "", description: "" }]
+                      }))}
+                      className="mb-4 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700"
+                    >
+                      Add Pet
+                    </button>
+                    {formData.petDetails.map((pet, index) => (
+                      <div key={index} className="mb-4 p-4 border rounded-lg">
+                        <input
+                          type="text"
+                          placeholder="Pet Type"
+                          value={pet.type}
+                          onChange={(e) => {
+                            const newPetDetails = [...formData.petDetails];
+                            newPetDetails[index].type = e.target.value;
+                            setFormData(prev => ({ ...prev, petDetails: newPetDetails }));
+                          }}
+                          className="mb-2 w-full p-2 border rounded"
+                        />
+                        <textarea
+                          placeholder="Pet Description"
+                          value={pet.description}
+                          onChange={(e) => {
+                            const newPetDetails = [...formData.petDetails];
+                            newPetDetails[index].description = e.target.value;
+                            setFormData(prev => ({ ...prev, petDetails: newPetDetails }));
+                          }}
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="sticky bottom-0 bg-gray-50 pt-4 pb-6 z-10 shadow-lg border-t">
                 <motion.button
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
-                  className="w-full px-8 py-4 bg-slate-800 text-white rounded-lg 
-                    hover:bg-slate-700 transition-all duration-200 font-medium
-                    focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
-                  onClick={() => window.location.href = '/matches'}
+                  className={`w-full px-8 py-4 ${isSubmitting ? 'bg-slate-500' : 'bg-slate-800 hover:bg-slate-700'} 
+                    text-white rounded-lg transition-all duration-200 font-medium
+                    focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2`}
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
                 >
-                  Find Matches
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Submitting...
+                    </div>
+                  ) : (
+                    'Submit Care Request'
+                  )}
                 </motion.button>
               </div>
             </div>
