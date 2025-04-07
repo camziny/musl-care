@@ -1,0 +1,1 @@
+ALTER TABLE "jobListings" ADD COLUMN "metadata" text;

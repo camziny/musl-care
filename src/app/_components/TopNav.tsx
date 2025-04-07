@@ -55,7 +55,6 @@ export function TopNav() {
     >
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
-          {/* Left side - Logo and Nav Links */}
           <div className="flex items-center space-x-8">
             <Link
               href="/"
@@ -77,7 +76,6 @@ export function TopNav() {
             </div>
           </div>
 
-          {/* Right side - Social and Auth */}
           <div className="hidden md:flex items-center space-x-6">
             <div className="flex space-x-4">
               {socialLinks.map(({ Icon, href, label }) => (
@@ -116,7 +114,6 @@ export function TopNav() {
             </SignedIn>
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden text-slate-600 hover:text-slate-900 transition-colors"
@@ -126,7 +123,6 @@ export function TopNav() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -147,6 +143,9 @@ export function TopNav() {
                     {item.label}
                   </Link>
                 ))}
+                
+                <SignedIn>
+                </SignedIn>
               </div>
 
               <div className="flex justify-center space-x-6">

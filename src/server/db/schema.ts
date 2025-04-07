@@ -106,7 +106,54 @@ export const jobListings = pgTable("jobListings", {
   creator: text("creator").notNull().default("Anonymous"),
   creatorUserId: text("creator_user_id").notNull(),
   datePosted: timestamp("date_posted").defaultNow().notNull(),
+  
+  guardianName: text("guardian_name"),
+  guardianImage: text("guardian_image"),
+  childrenImages: text("children_images").array(),
+  
+  phoneNumber: text("phone_number"),
+  email: text("email"),
+  isPhoneVerified: boolean("is_phone_verified").default(false),
+  isEmailVerified: boolean("is_email_verified").default(false),
+  isBackgroundChecked: boolean("is_background_checked").default(false),
+  
   location: text("location").notNull().default("Unknown location"),
+  address: text("address"),
+  city: text("city"),
+  state: text("state"),
+  postalCode: text("postal_code"),
+  country: text("country").default("United States"),
+  
+  careType: careTypeEnum("care_type"),
+  numberOfPeople: integer("number_of_people").default(1),
+  agesOfPeople: text("ages_of_people").array(),
+  availabilityType: availabilityTypeEnum("availability_type"),
+  availability: jsonb("availability").default({}),
+  
+  needsCooking: boolean("needs_cooking").default(false),
+  needsCare: boolean("needs_care").default(false),
+  needsFeedingChanging: boolean("needs_feeding_changing").default(false),
+  needsShoppingErrands: boolean("needs_shopping_errands").default(false),
+  needsPetCare: boolean("needs_pet_care").default(false),
+  needsCleaning: boolean("needs_cleaning").default(false),
+  needsOrganizing: boolean("needs_organizing").default(false),
+  needsTutoring: boolean("needs_tutoring").default(false),
+  needsPacking: boolean("needs_packing").default(false),
+  needsMealPrep: boolean("needs_meal_prep").default(false),
+  
+  petDetails: jsonb("pet_details").default([]),
+  
+  requiresFirstAidTraining: boolean("requires_first_aid_training").default(false),
+  requiresCprTraining: boolean("requires_cpr_training").default(false),
+  requiresSpecialNeedsCare: boolean("requires_special_needs_care").default(false),
+  
+  preferredEthnicity: text("preferred_ethnicity").array(),
+  preferredLanguages: text("preferred_languages").array(),
+  preferredReligion: text("preferred_religion"),
+  preferredMuslimSect: text("preferred_muslim_sect"),
+  
+  metadata: text("metadata"),
+  
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
