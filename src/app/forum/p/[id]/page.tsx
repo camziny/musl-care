@@ -83,7 +83,12 @@ export default async function PostPage({ params }: { params: { id: string } }) {
           </details>
         </div>
         <div className="mt-3 ml-4">
-          <CommentForm postId={postId} parentCommentId={c.id} />
+          <details>
+            <summary className="text-xs text-muted-foreground cursor-pointer">Reply</summary>
+            <div className="mt-2">
+              <CommentForm postId={postId} parentCommentId={c.id} />
+            </div>
+          </details>
         </div>
         {renderThread(c.id, depth + 1)}
       </div>
