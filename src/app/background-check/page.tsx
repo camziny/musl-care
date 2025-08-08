@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   description: 'Placeholder description for background check page',
 };
 import React from 'react';
+import { Button } from '@/components/ui/Button';
 import Image from 'next/image';
 
 export default function BackgroundCheckPage() {
@@ -53,9 +54,7 @@ export default function BackgroundCheckPage() {
             </div>
 
             <div className="space-y-4">
-              <button className="w-full bg-slate-800 text-white py-3 rounded-lg hover:bg-slate-700 transition-colors">
-                Start Background Check ($XX.XX)
-              </button>
+              <Button className="w-full h-12">Start Background Check ($XX.XX)</Button>
               <p className="text-sm text-gray-500 text-center">
                 By proceeding, you agree to our background check terms and conditions
               </p>

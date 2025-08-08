@@ -20,7 +20,7 @@ export async function ForumPostsList({
   const authorById = new Map(authors.map((a) => [a.id, a]));
   if (posts.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center text-slate-600">
+      <div className="rounded-xl border border-dashed border-border bg-card/70 backdrop-blur-sm p-8 text-center text-muted-foreground">
         No posts found
       </div>
     );

@@ -1,6 +1,7 @@
 import { getCaregivers } from "@/server/db/queries";
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
 export default async function CareGiverList() {
   const careGivers = await getCaregivers();
@@ -21,7 +22,7 @@ export default async function CareGiverList() {
           }
 
           return (
-            <div key={careGiver.id} className="group bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-md transition-all">
+            <div key={careGiver.id} className="group rounded-2xl border border-border/50 bg-card/70 backdrop-blur-sm overflow-hidden hover:shadow-md transition-all">
               <Link href={`/caregivers/${careGiver.id}`} className="block">
                 <div className="relative h-40 overflow-hidden">
                   <Image
@@ -34,15 +35,17 @@ export default async function CareGiverList() {
                 </div>
                 <div className="p-4">
                   <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-full bg-slate-100" />
+                    <div className="h-9 w-9 rounded-full bg-muted" />
                     <div className="min-w-0">
-                      <h2 className="text-sm font-semibold text-slate-900 truncate">{careGiver.name}</h2>
-                      <div className="text-xs text-slate-500 truncate">{careGiver.city}, {careGiver.state}</div>
+                      <h2 className="text-sm font-semibold text-foreground truncate">{careGiver.name}</h2>
+                      <div className="text-xs text-muted-foreground truncate">{careGiver.city}, {careGiver.state}</div>
                     </div>
-                    <span className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700">Verified</span>
+                    <span className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary">Verified</span>
                   </div>
-                  <p className="text-slate-600 text-sm line-clamp-2 mt-2">{careGiver.description}</p>
-                  <div className="mt-3 text-sm font-medium text-slate-700 group-hover:text-slate-900">View Profile →</div>
+                  <p className="text-muted-foreground text-sm line-clamp-2 mt-2">{careGiver.description}</p>
+                  <div className="mt-3">
+                    <Button variant="outline" className="w-full">View Profile</Button>
+                  </div>
                 </div>
               </Link>
             </div>

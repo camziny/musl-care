@@ -1,6 +1,7 @@
 import { getJobListing } from "@/server/db/queries";
 import { format } from "date-fns";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 import Image from "next/image";
 
 type Service = {
@@ -256,12 +257,12 @@ export default async function JobShowPage(props: { id: number }) {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+    <div className="bg-gradient-to-b from-muted to-background min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         <div className="mb-6">
           <Link 
             href="/jobs" 
-            className="text-slate-600 hover:text-slate-800 flex items-center gap-1 text-sm font-medium"
+            className="text-muted-foreground hover:text-foreground flex items-center gap-1 text-sm font-medium"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
@@ -270,11 +271,11 @@ export default async function JobShowPage(props: { id: number }) {
           </Link>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-8">
+        <div className="bg-card/70 backdrop-blur-sm border border-border/50 rounded-xl shadow-md overflow-hidden">
+          <div className="bg-primary px-6 py-8">
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
               <div className="shrink-0">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/30">
                   <Image
                     src={guardianImage}
                     alt="Guardian"
@@ -286,8 +287,8 @@ export default async function JobShowPage(props: { id: number }) {
                 </div>
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">{pageTitle}</h1>
-                <div className="flex items-center text-slate-200 text-sm">
+                <h1 className="text-2xl md:text-3xl font-bold text-primary-foreground mb-2">{pageTitle}</h1>
+                <div className="flex items-center text-primary-foreground/80 text-sm">
                   <span className="mr-3">Posted: {format(new Date(job.datePosted), 'MMMM d, yyyy')}</span>
                   <span className="mr-3">•</span>
                   <span>{job.location}</span>
@@ -298,10 +299,10 @@ export default async function JobShowPage(props: { id: number }) {
 
           <div className="grid md:grid-cols-3 gap-6 p-6">
             <div className="md:col-span-2 space-y-6">
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-                <h2 className="text-xl font-semibold text-slate-800 mb-4">Care Request Overview</h2>
+              <div className="bg-card/70 backdrop-blur-sm p-6 rounded-lg shadow-sm border border-border/50">
+                <h2 className="text-xl font-semibold text-foreground mb-4">Care Request Overview</h2>
                 <div className="space-y-4">
-                  <div className="prose max-w-none text-slate-700">
+                  <div className="prose max-w-none text-foreground">
                     {job.description.split('\n').map((paragraph, idx) => (
                       paragraph.trim() ? (
                         <p key={idx} className="mb-2">{paragraph.trim()}</p>
@@ -310,32 +311,32 @@ export default async function JobShowPage(props: { id: number }) {
                   </div>
                   
                   {job.guardianName && (
-                    <div className="mt-4 pt-4 border-t border-slate-100">
-                      <p className="text-sm text-slate-600 mb-1">
-                        <span className="font-medium text-slate-700">Posted by:</span> {job.guardianName}
+                    <div className="mt-4 pt-4 border-t border-border/50">
+                      <p className="text-sm text-muted-foreground mb-1">
+                        <span className="font-medium text-foreground">Posted by:</span> {job.guardianName}
                       </p>
-                      <p className="text-sm text-slate-600">
-                        <span className="font-medium text-slate-700">Posted on:</span> {format(new Date(job.datePosted), 'MMMM d, yyyy')}
+                      <p className="text-sm text-muted-foreground">
+                        <span className="font-medium text-foreground">Posted on:</span> {format(new Date(job.datePosted), 'MMMM d, yyyy')}
                       </p>
                     </div>
                   )}
 
                   {!job.guardianName && (
-                    <div className="mt-4 pt-4 border-t border-slate-100">
-                      <p className="text-sm text-slate-600">
-                        <span className="font-medium text-slate-700">Posted on:</span> {format(new Date(job.datePosted), 'MMMM d, yyyy')}
+                    <div className="mt-4 pt-4 border-t border-border/50">
+                      <p className="text-sm text-muted-foreground">
+                        <span className="font-medium text-foreground">Posted on:</span> {format(new Date(job.datePosted), 'MMMM d, yyyy')}
                       </p>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-                <h2 className="text-xl font-semibold text-slate-800 mb-4">Children</h2>
+              <div className="bg-card/70 backdrop-blur-sm p-6 rounded-lg shadow-sm border border-border/50">
+                <h2 className="text-xl font-semibold text-foreground mb-4">Children</h2>
                 <div className="flex flex-wrap gap-4">
                   {childrenImages.length > 0 ? (
                     childrenImages.map((image: string, index: number) => (
-                      <div key={index} className="w-32 h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden shadow-sm border border-slate-200 hover:shadow-md transition-all duration-200">
+                      <div key={index} className="w-32 h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden shadow-sm border border-border/50 hover:shadow-md transition-all duration-200">
                         <Image
                           src={image}
                           alt={`Child ${index + 1}`}
@@ -347,13 +348,13 @@ export default async function JobShowPage(props: { id: number }) {
                       </div>
                     ))
                   ) : (
-                    <p className="text-slate-500 italic">No children images provided</p>
+                    <p className="text-muted-foreground italic">No children images provided</p>
                   )}
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-                <h2 className="text-xl font-semibold text-slate-800 mb-4">Care Details</h2>
+              <div className="bg-card/70 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-border/50">
+                <h2 className="text-xl font-semibold text-foreground mb-4">Care Details</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-600 mt-0.5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -533,8 +534,8 @@ export default async function JobShowPage(props: { id: number }) {
                 </div>
               )}
 
-              <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 mb-6">
-                <h3 className="font-semibold text-slate-800 mb-3">Preferences</h3>
+              <div className="bg-muted rounded-lg shadow-sm border border-border/50 p-4 mb-6">
+                <h3 className="font-semibold text-foreground mb-3">Preferences</h3>
                 <div className="space-y-4">
                   {(job.preferredReligion || metadata.preferences?.religion || metadata.preferenceFilters?.preferredReligion) && (
                     <div className="px-3 py-2 bg-slate-50 rounded border border-slate-200">
@@ -596,18 +597,13 @@ export default async function JobShowPage(props: { id: number }) {
                 </div>
               </div>
 
-              <div className="bg-slate-50 rounded-lg shadow-sm border border-slate-200 p-4">
-                <h3 className="font-semibold text-slate-800 mb-3">Contact Options</h3>
+              <div className="bg-muted rounded-lg shadow-sm border border-border/50 p-4">
+                <h3 className="font-semibold text-foreground mb-3">Contact Options</h3>
                 <div className="space-y-3">
-                  <Link href="/my-profile" 
-                    className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-slate-800 hover:bg-slate-700">
-                    View Your Profile
+                  <Link href="/my-profile" className="inline-flex w-full">
+                    <Button className="w-full rounded-full">View Your Profile</Button>
                   </Link>
-                  <button
-                    className="w-full flex items-center justify-center px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50"
-                  >
-                    Message Care Seeker
-                  </button>
+                  <Button variant="outline" className="w-full rounded-full">Message Care Seeker</Button>
                 </div>
               </div>
             </div>

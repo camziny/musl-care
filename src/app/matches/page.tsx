@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   description: 'Placeholder description for matches page',
 };
 import React from 'react';
+import { Button } from '@/components/ui/Button';
 import Image from 'next/image';
 
 const MOCK_MATCHES = [
@@ -39,9 +40,7 @@ export default function MatchesPage() {
                 <p className="text-sm text-gray-600">Found {MOCK_MATCHES.length} potential caregivers</p>
               </div>
             </div>
-            <button className="text-sm text-slate-600 hover:text-slate-800">
-              Refine Preferences
-            </button>
+            <Button variant="outline" className="text-sm">Refine Preferences</Button>
           </div>
         </div>
       </div>
@@ -86,9 +85,7 @@ export default function MatchesPage() {
               </div>
 
               <div className="mt-6 flex justify-end">
-                <button className="bg-slate-800 text-white px-6 py-2 rounded-lg hover:bg-slate-700 transition-colors">
-                  View Profile
-                </button>
+                <Button>View Profile</Button>
               </div>
             </div>
           ))}

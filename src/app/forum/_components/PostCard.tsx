@@ -23,16 +23,16 @@ export function PostCard({
   tags?: string[];
 }) {
   return (
-    <Link href={`/forum/p/${id}`} className="block rounded-2xl border border-gray-200 hover:border-gray-300 hover:shadow-md transition group bg-white">
+    <Link href={`/forum/p/${id}`} className="block rounded-2xl border border-border hover:border-border/70 hover:shadow-md transition group bg-card/70 backdrop-blur-sm">
       <div className="p-5">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
             <Avatar name={author?.publicName} />
-            <div className="text-xs text-slate-600">
-              <div className="font-medium text-slate-800">{author?.publicName ?? "Anonymous"}</div>
+            <div className="text-xs text-muted-foreground">
+              <div className="font-medium text-foreground">{author?.publicName ?? "Anonymous"}</div>
               <div className="flex items-center gap-2">
-                {categoryName && <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">{categoryName}</span>}
-                <span className="text-slate-400">•</span>
+                {categoryName && <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary">{categoryName}</span>}
+                <span className="text-muted-foreground">•</span>
                 <span>{new Date(createdAt).toLocaleString()}</span>
               </div>
             </div>
@@ -40,15 +40,15 @@ export function PostCard({
           {tags && tags.length > 0 && (
             <div className="hidden md:flex gap-2">
               {tags.slice(0, 3).map((t) => (
-                <span key={t} className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">#{t}</span>
+                <span key={t} className="px-2 py-0.5 rounded-full bg-secondary/10 text-secondary">#{t}</span>
               ))}
             </div>
           )}
         </div>
-        <div className="text-xl font-semibold text-slate-900 group-hover:text-slate-800 mb-1 tracking-tight">{title}</div>
-        <div className="text-slate-600 line-clamp-2 mb-3">{excerpt}</div>
-        <div className="flex items-center justify-end text-xs text-slate-500">
-          <span className="rounded-full bg-slate-50 px-2 py-1">{commentCount} comments</span>
+        <div className="text-xl font-semibold text-foreground group-hover:text-foreground mb-1 tracking-tight">{title}</div>
+        <div className="text-muted-foreground line-clamp-2 mb-3">{excerpt}</div>
+        <div className="flex items-center justify-end text-xs text-muted-foreground">
+          <span className="rounded-full bg-muted px-2 py-1">{commentCount} comments</span>
         </div>
       </div>
     </Link>

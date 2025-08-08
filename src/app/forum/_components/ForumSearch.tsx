@@ -35,21 +35,21 @@ export function ForumSearch({ placeholder = "Search posts" }: { placeholder?: st
 
   return (
     <div className="relative">
-      <div className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 focus-within:ring-2 focus-within:ring-slate-300">
-        <Search className="h-4 w-4 text-slate-500" />
+      <div className="flex items-center gap-2 rounded-xl border border-border bg-card/70 backdrop-blur-sm px-3 py-2 focus-within:ring-2 focus-within:ring-primary/30">
+        <Search className="h-4 w-4 text-muted-foreground" />
         <input
           aria-label="Search forum posts"
-          className="flex-1 outline-none text-sm text-slate-800 placeholder:text-slate-400"
+          className="flex-1 outline-none text-sm text-foreground placeholder:text-muted-foreground"
           placeholder={placeholder}
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
-        {isPending && <Loader2 className="h-4 w-4 animate-spin text-slate-400" />}
+        {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         {showClear && !isPending && (
           <button
             type="button"
             aria-label="Clear search"
-            className="text-slate-400 hover:text-slate-600"
+            className="text-muted-foreground hover:text-foreground"
             onClick={() => setValue("")}
           >
             <X className="h-4 w-4" />
