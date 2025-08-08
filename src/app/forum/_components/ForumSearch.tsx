@@ -9,19 +9,16 @@ export function ForumSearch({ placeholder = "Search posts" }: { placeholder?: st
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const initial = searchParams.get("q") || "";
-  const [value, setValue] = useState(initial);
-
-  useEffect(() => {
-    setValue(searchParams.get("q") || "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  const [value, setValue] = useState(() => searchParams.get("q") || "");
 
   useEffect(() => {
     const handle = setTimeout(() => {
+      const currentQ = searchParams.get("q") || "";
+      const nextQ = value.trim();
+      if (nextQ === currentQ) return;
       const params = new URLSearchParams(searchParams.toString());
-      if (value && value.trim().length > 0) {
-        params.set("q", value.trim());
+      if (nextQ.length > 0) {
+        params.set("q", nextQ);
       } else {
         params.delete("q");
       }

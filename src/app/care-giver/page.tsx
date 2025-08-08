@@ -1,3 +1,8 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Caregiver Form",
+  description: "Placeholder description for caregiver form page",
+};
 import React from "react";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/server/db/schema";

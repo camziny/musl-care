@@ -1,3 +1,8 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Contact",
+  description: "Placeholder description for contact page",
+};
 import { Mail, Phone, MapPin, Clock, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import Link from "next/link";
 

@@ -1,3 +1,8 @@
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Become a Caregiver',
+  description: 'Placeholder description for become a caregiver page',
+};
 import React from 'react';
 import CareGiverForm from '@/components/CareGiverForm';
 
