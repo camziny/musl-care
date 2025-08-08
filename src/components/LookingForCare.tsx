@@ -363,11 +363,14 @@ export default function LookingForCare() {
         </label>
         <div className="flex items-center space-x-4">
           {(uploadedGuardianImageUrl || formData.guardianImage) && (
-            <div className="relative w-24 h-24">
-              <img
+            <div className="relative w-24 h-24 overflow-hidden rounded-lg">
+              <Image
                 src={uploadedGuardianImageUrl || formData.guardianImage}
                 alt="Guardian"
-                className="w-24 h-24 object-cover rounded-lg"
+                width={96}
+                height={96}
+                className="object-cover"
+                unoptimized
               />
               <button
                 onClick={() => {
@@ -448,11 +451,14 @@ export default function LookingForCare() {
         </label>
         <div className="flex items-center space-x-4 flex-wrap gap-y-4">
           {formData.childrenImages.map((image, index) => (
-            <div key={index} className="relative w-24 h-24">
-              <img
+            <div key={index} className="relative w-24 h-24 overflow-hidden rounded-lg">
+              <Image
                 src={uploadedChildrenImages[index] || image}
                 alt={`Child ${index + 1}`}
-                className="w-24 h-24 object-cover rounded-lg"
+                width={96}
+                height={96}
+                className="object-cover"
+                unoptimized
               />
               <button
                 onClick={() => {

@@ -3,11 +3,11 @@ import {
   deleteCareGiver,
   updateCareGiver,
 } from "@/server/db/queries";
-import { SimpleUploadButton } from "@/app/_components/simpleUploadButton";
+import { SimpleUploadButton } from "@/components/ui/SimpleUploadButton";
 import { redirect } from "next/navigation";
-import LanguageSelect from "@/app/_components/LanguageSelect";
-import SectSelect from "@/app/_components/SectSelect";
-import EthnicBackgroundSelect from "@/app/_components/EthnicBackgroundSelect";
+import LanguageSelect from "@/components/ui/LanguageSelect";
+import SectSelect from "@/components/ui/SectSelect";
+import EthnicBackgroundSelect from "@/components/ui/EthnicBackgroundSelect";
 import { 
   AvailabilityTime, 
   CareType, 
@@ -237,6 +237,7 @@ export default async function CareGiverSettings({
                       id="name"
                       name="name"
                       defaultValue={careGiver.name}
+                      autoComplete="name"
                       className="border border-gray-300 bg-gray-50 text-black p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
                     />
@@ -249,10 +250,11 @@ export default async function CareGiverSettings({
                       Phone Number
                     </label>
                     <input
-                      type="text"
+                      type="tel"
                       id="phoneNumber"
                       name="phoneNumber"
                       defaultValue={careGiver.phoneNumber}
+                      autoComplete="tel"
                       className="border border-gray-300 bg-gray-50 text-black p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
                     />
@@ -735,65 +737,70 @@ export default async function CareGiverSettings({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Address
                 </label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  defaultValue={careGiver.address}
-                  className="border border-gray-300 bg-gray-50 text-black p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    defaultValue={careGiver.address}
+                    autoComplete="street-address"
+                    className="border border-gray-300 bg-gray-50 text-black p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   City
                 </label>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  defaultValue={careGiver.city}
-                  className="border border-gray-300 bg-gray-50 text-black p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    defaultValue={careGiver.city}
+                    autoComplete="address-level2"
+                    className="border border-gray-300 bg-gray-50 text-black p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   State
                 </label>
-                <input
-                  type="text"
-                  id="state"
-                  name="state"
-                  defaultValue={careGiver.state}
-                  className="border border-gray-300 bg-gray-50 text-black p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                  <input
+                    type="text"
+                    id="state"
+                    name="state"
+                    defaultValue={careGiver.state}
+                    autoComplete="address-level1"
+                    className="border border-gray-300 bg-gray-50 text-black p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Postal Code
                 </label>
-                <input
-                  type="text"
-                  id="postalCode"
-                  name="postalCode"
-                  defaultValue={careGiver.postalCode}
-                  className="border border-gray-300 bg-gray-50 text-black p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                  <input
+                    type="text"
+                    id="postalCode"
+                    name="postalCode"
+                    defaultValue={careGiver.postalCode}
+                    autoComplete="postal-code"
+                    className="border border-gray-300 bg-gray-50 text-black p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Country
                 </label>
-                <input
-                  type="text"
-                  id="country"
-                  name="country"
-                  defaultValue={careGiver.country}
-                  className="border border-gray-300 bg-gray-50 text-black p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                  <input
+                    type="text"
+                    id="country"
+                    name="country"
+                    defaultValue={careGiver.country}
+                    autoComplete="country-name"
+                    className="border border-gray-300 bg-gray-50 text-black p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
               </div>
             </div>
           </div>
@@ -828,32 +835,54 @@ export default async function CareGiverSettings({
             </div>
           </div>
           
-          <div className="flex justify-between mt-8">
-            <button
-              type="submit"
-              className="bg-blue-500 text-white py-3 px-8 rounded-lg hover:bg-blue-600 transition duration-200 font-medium"
-            >
-              Update Profile
-            </button>
-            
-            <form
-              action={async () => {
-                "use server";
-                await deleteCareGiver(careGiver.id);
-                redirect("/caregivers");
-              }}
-              className="inline"
-            >
-              <button
-                type="submit"
-                className="bg-red-500 text-white py-3 px-8 rounded-lg hover:bg-red-600 transition duration-200 font-medium"
-              >
-                Delete Profile
-              </button>
-            </form>
-          </div>
+          <ClientSubmitButton />
         </form>
       </div>
+      <DeleteProfileForm caregiverId={careGiver.id} />
     </div>
+  );
+}
+
+function ClientSubmitButton() {
+  "use client";
+  const { useFormStatus } = require("react-dom");
+  const { pending } = useFormStatus();
+  const { toast } = require("sonner");
+  return (
+    <div className="mt-8">
+      <button
+        type="submit"
+        className="inline-flex items-center justify-center bg-slate-900 text-white py-3 px-6 rounded-md hover:bg-slate-800 transition disabled:opacity-60 disabled:cursor-not-allowed"
+        disabled={pending}
+        onClick={() => {
+          setTimeout(() => toast.success("Profile updated"), 0);
+        }}
+      >
+        {pending && (
+          <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+        )}
+        {pending ? "Saving..." : "Update Profile"}
+      </button>
+    </div>
+  );
+}
+
+function DeleteProfileForm({ caregiverId }: { caregiverId: number }) {
+  return (
+    <form
+      action={async () => {
+        "use server";
+        await deleteCareGiver(caregiverId);
+        redirect("/caregivers");
+      }}
+      className="mt-4 flex justify-center"
+    >
+      <button type="submit" className="bg-red-600 text-white py-3 px-6 rounded-md hover:bg-red-700 transition">
+        Delete Profile
+      </button>
+    </form>
   );
 }

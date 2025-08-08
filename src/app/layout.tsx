@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { TopNav } from "./_components/TopNav";
+import { TopNav } from "@/components/layout/TopNav";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
@@ -27,10 +27,8 @@ export default function RootLayout({
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <body className={`font-sans ${inter.className}`}>
           <EnsureUserExists />
-          <div className="grid h-screen grid-rows-[auto,1fr]">
-            <TopNav />
-            <main className="overflow-y-scroll">{children}</main>
-          </div>
+          <TopNav />
+          <main className="min-h-screen pt-20 md:pt-24">{children}</main>
           <div id="modal-root" />
           <Toaster />
         </body>

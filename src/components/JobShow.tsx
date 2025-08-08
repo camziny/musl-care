@@ -275,22 +275,14 @@ export default async function JobShowPage(props: { id: number }) {
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
               <div className="shrink-0">
                 <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white">
-                  {guardianImage.startsWith('data:') ? (
-                    <img
-                      src={guardianImage}
-                      alt="Guardian"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <Image
-                      src={guardianImage}
-                      alt="Guardian"
-                      width={96}
-                      height={96}
-                      className="w-full h-full object-cover"
-                      unoptimized
-                    />
-                  )}
+                  <Image
+                    src={guardianImage}
+                    alt="Guardian"
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-cover"
+                    unoptimized
+                  />
                 </div>
               </div>
               <div>
@@ -344,22 +336,14 @@ export default async function JobShowPage(props: { id: number }) {
                   {childrenImages.length > 0 ? (
                     childrenImages.map((image: string, index: number) => (
                       <div key={index} className="w-32 h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden shadow-sm border border-slate-200 hover:shadow-md transition-all duration-200">
-                        {image.startsWith('data:') ? (
-                          <img
-                            src={image}
-                            alt={`Child ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <Image
-                            src={image}
-                            alt={`Child ${index + 1}`}
-                            width={160}
-                            height={160}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                            unoptimized
-                          />
-                        )}
+                        <Image
+                          src={image}
+                          alt={`Child ${index + 1}`}
+                          width={160}
+                          height={160}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                          unoptimized
+                        />
                       </div>
                     ))
                   ) : (
@@ -508,6 +492,46 @@ export default async function JobShowPage(props: { id: number }) {
                   </ul>
                 </div>
               </div>
+
+              <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+                <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                  <h2 className="font-semibold text-slate-800">Contact & Verification</h2>
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="text-sm text-slate-700">
+                    <span className="font-medium text-slate-800">Phone:</span> {job.phoneNumber || (metadata.phoneNumber as any) || "Not provided"}
+                  </div>
+                  <div className="text-sm text-slate-700">
+                    <span className="font-medium text-slate-800">Email:</span> {job.email || (metadata.email as any) || "Not provided"}
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs border ${job.isPhoneVerified ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-600 border-slate-200"}`}>
+                      {job.isPhoneVerified ? "Phone Verified" : "Phone Unverified"}
+                    </span>
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs border ${job.isEmailVerified ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-600 border-slate-200"}`}>
+                      {job.isEmailVerified ? "Email Verified" : "Email Unverified"}
+                    </span>
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs border ${job.isBackgroundChecked ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-600 border-slate-200"}`}>
+                      {job.isBackgroundChecked ? "Background Checked" : "No Background Check"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {((Array.isArray(job.petDetails) && job.petDetails.length > 0) || (Array.isArray(metadata.petDetails) && metadata.petDetails.length > 0)) && (
+                <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+                  <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                    <h2 className="font-semibold text-slate-800">Pet Details</h2>
+                  </div>
+                  <div className="p-4 space-y-2">
+                    {((job.petDetails as any[]) || (metadata.petDetails as any[]) || []).map((pd: any, idx: number) => (
+                      <div key={idx} className="text-sm text-slate-700 border-b last:border-0 border-slate-100 pb-2">
+                        {typeof pd === "string" ? pd : JSON.stringify(pd)}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 mb-6">
                 <h3 className="font-semibold text-slate-800 mb-3">Preferences</h3>

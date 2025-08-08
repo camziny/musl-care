@@ -1,8 +1,8 @@
 import "server-only";
 import { db } from "./schema";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { careGivers, users, jobListings, careSeekers } from "./schema";
-import { and, eq } from "drizzle-orm";
+import { careGivers, users, jobListings, careSeekers, forumCategories, forumPosts, forumComments, commentLikes, contentReports, notifications, directMessages } from "./schema";
+import { and, eq, or, ilike, sql, inArray } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { CareGiver, ImageData } from "@/utils/types";
 
@@ -443,4 +443,172 @@ export async function deleteJobListing(jobId: number) {
 
   await db.delete(jobListings).where(eq(jobListings.id, jobId));
 
+}
+
+export async function listForumCategories() {
+  const rows = await db.query.forumCategories.findMany({ orderBy: (m, { asc }) => asc(m.name) });
+  return rows;
+}
+
+export async function ensureDefaultForumCategories() {
+  const defaults = [
+    { slug: "parenting", name: "Parenting" },
+    { slug: "elder-care", name: "Elder care" },
+    { slug: "special-needs", name: "Special needs" },
+    { slug: "pregnancy-postpartum", name: "Pregnancy/Postpartum" },
+    { slug: "first-time-caregivers", name: "First-time caregivers" },
+    { slug: "culture-specific", name: "Culture-specific" },
+    { slug: "general", name: "General advice" },
+    { slug: "off-topic", name: "Off-topic" },
+  ];
+  const existing = await db.query.forumCategories.findMany();
+  if (existing.length === 0) {
+    await db.insert(forumCategories).values(defaults.map(d => ({ slug: d.slug, name: d.name })));
+  }
+}
+
+export async function createForumPost(input: { categoryId: number; title: string; content: string; tags?: string[]; attachments?: any[]; }) {
+  const { userId: clerkUserId } = auth();
+  if (!clerkUserId) throw new Error("Unauthorized");
+  const dbUser = await db.query.users.findFirst({ where: (m, { eq }) => eq(m.clerkUserId, clerkUserId) });
+  if (!dbUser) throw new Error("User not found");
+  const [row] = await db.insert(forumPosts).values({
+    categoryId: input.categoryId,
+    authorUserId: dbUser.id,
+    title: input.title,
+    content: input.content,
+    tags: input.tags ?? [],
+    attachments: JSON.stringify(input.attachments ?? []),
+  }).returning();
+  return row;
+}
+
+export async function listForumPosts(params: { categoryId?: number; search?: string; sort?: "recent" | "trending"; tag?: string; }) {
+  const rows = await db.query.forumPosts.findMany({
+    where: (m, { and, eq, ilike, sql }) => {
+      const clauses: any[] = [];
+      if (params.categoryId) clauses.push(eq(m.categoryId, params.categoryId));
+      if (params.search) clauses.push(ilike(m.title, `%${params.search}%`));
+      if (params.tag) clauses.push(sql`${m.tags} @> ARRAY[${params.tag}]::text[]`);
+      return clauses.length ? and(...clauses) : undefined as any;
+    },
+    orderBy: (m, o) => params.sort === "trending" ? o.desc(m.commentCount) : o.desc(m.createdAt),
+  });
+  return rows;
+}
+
+export async function getForumPost(postId: number) {
+  const post = await db.query.forumPosts.findFirst({ where: (m, { eq }) => eq(m.id, postId) });
+  if (!post) throw new Error("Not found");
+  return post;
+}
+
+export async function listForumComments(postId: number) {
+  const comments = await db.query.forumComments.findMany({
+    where: (m, { eq }) => eq(m.postId, postId),
+    orderBy: (m, { asc }) => asc(m.createdAt),
+  });
+  return comments;
+}
+
+export async function addForumComment(input: { postId: number; parentCommentId?: number | null; content: string; }) {
+  const { userId: clerkUserId } = auth();
+  if (!clerkUserId) throw new Error("Unauthorized");
+  const dbUser = await db.query.users.findFirst({ where: (m, { eq }) => eq(m.clerkUserId, clerkUserId) });
+  if (!dbUser) throw new Error("User not found");
+  const [row] = await db.insert(forumComments).values({
+    postId: input.postId,
+    authorUserId: dbUser.id,
+    parentCommentId: (input.parentCommentId ?? null) as any,
+    content: input.content,
+  }).returning();
+  const post = await db.query.forumPosts.findFirst({ where: (m, { eq }) => eq(m.id, input.postId) });
+  if (post) {
+    await db.update(forumPosts).set({ commentCount: (post.commentCount ?? 0) + 1 }).where(eq(forumPosts.id, input.postId));
+  }
+  return row;
+}
+
+export async function toggleLikeComment(commentId: number) {
+  const { userId: clerkUserId } = auth();
+  if (!clerkUserId) throw new Error("Unauthorized");
+  const dbUser = await db.query.users.findFirst({ where: (m, { eq }) => eq(m.clerkUserId, clerkUserId) });
+  if (!dbUser) throw new Error("User not found");
+  const existing = await db.query.commentLikes.findFirst({ where: (m, { and, eq }) => and(eq(m.commentId, commentId), eq(m.userId, dbUser.id)) });
+  if (existing) {
+    await db.delete(commentLikes).where(and(eq(commentLikes.commentId, commentId), eq(commentLikes.userId, dbUser.id)));
+  } else {
+    await db.insert(commentLikes).values({ commentId, userId: dbUser.id });
+  }
+  const likes = await db.query.commentLikes.findMany({ where: (m, { eq }) => eq(m.commentId, commentId) });
+  await db.update(forumComments).set({ likeCount: likes.length }).where(eq(forumComments.id, commentId));
+}
+
+export async function reportContent(input: { targetType: "post" | "comment"; postId?: number; commentId?: number; reason: string; }) {
+  const { userId: clerkUserId } = auth();
+  if (!clerkUserId) throw new Error("Unauthorized");
+  const dbUser = await db.query.users.findFirst({ where: (m, { eq }) => eq(m.clerkUserId, clerkUserId) });
+  if (!dbUser) throw new Error("User not found");
+  await db.insert(contentReports).values({
+    targetType: input.targetType as any,
+    postId: input.postId ?? null as any,
+    commentId: input.commentId ?? null as any,
+    reporterUserId: dbUser.id,
+    reason: input.reason,
+  });
+}
+
+export async function adminListReports() {
+  const rows = await db.query.contentReports.findMany({ orderBy: (m, { desc }) => desc(m.createdAt) });
+  return rows;
+}
+
+export async function adminSetReportStatus(reportId: number, status: "open" | "reviewed" | "dismissed") {
+  await db.update(contentReports).set({ status: status as any }).where(eq(contentReports.id, reportId));
+}
+
+export async function sendDirectMessage(recipientUserId: number, content: string) {
+  const { userId: clerkUserId } = auth();
+  if (!clerkUserId) throw new Error("Unauthorized");
+  const dbUser = await db.query.users.findFirst({ where: (m, { eq }) => eq(m.clerkUserId, clerkUserId) });
+  if (!dbUser) throw new Error("User not found");
+  await db.insert(directMessages).values({ senderUserId: dbUser.id, recipientUserId, content });
+}
+
+export async function listConversations() {
+  const { userId: clerkUserId } = auth();
+  if (!clerkUserId) throw new Error("Unauthorized");
+  const dbUser = await db.query.users.findFirst({ where: (m, { eq }) => eq(m.clerkUserId, clerkUserId) });
+  if (!dbUser) throw new Error("User not found");
+  const messages = await db.query.directMessages.findMany({
+    where: (m, { or, eq }) => or(eq(m.senderUserId, dbUser.id), eq(m.recipientUserId, dbUser.id)),
+    orderBy: (m, { desc }) => desc(m.createdAt),
+  });
+  return messages;
+}
+
+export async function listMessagesWith(userId: number) {
+  const { userId: clerkUserId } = auth();
+  if (!clerkUserId) throw new Error("Unauthorized");
+  const dbUser = await db.query.users.findFirst({ where: (m, { eq }) => eq(m.clerkUserId, clerkUserId) });
+  if (!dbUser) throw new Error("User not found");
+  const messages = await db.query.directMessages.findMany({
+    where: (m, { or, and, eq }) => or(and(eq(m.senderUserId, dbUser.id), eq(m.recipientUserId, userId)), and(eq(m.senderUserId, userId), eq(m.recipientUserId, dbUser.id))),
+    orderBy: (m, { asc }) => asc(m.createdAt),
+  });
+  return messages;
+}
+
+export async function getUsersPublic(userIds: number[]) {
+  if (userIds.length === 0) return [] as Array<{ id: number; publicName: string | null; locationCity: string | null; locationState: string | null }>;
+  const rows = await db.query.users.findMany({
+    where: (m, { inArray }) => inArray(m.id, userIds),
+    columns: {
+      id: true,
+      publicName: true,
+      locationCity: true,
+      locationState: true,
+    },
+  });
+  return rows;
 }

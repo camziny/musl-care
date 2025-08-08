@@ -14,6 +14,12 @@ const nextConfig = {
       { hostname: "*.uploadthing.com" }
     ],
   },
+  async redirects() {
+    return [
+      { source: "/care-giver", destination: "/caregivers/register", permanent: true },
+      { source: "/care-giver-form", destination: "/caregivers/register", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

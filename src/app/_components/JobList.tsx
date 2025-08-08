@@ -5,8 +5,7 @@ import DeleteJobButton from "../_components/DeleteJobButton";
 import Image from "next/image";
 import { format } from "date-fns";
 import dynamic from "next/dynamic";
-
-const SafeImage = dynamic(() => import('./SafeImage'), { ssr: false });
+const SafeImage = dynamic(() => import('@/components/ui/SafeImage'), { ssr: false });
 
 interface JobBasicInfo {
   id: number;
