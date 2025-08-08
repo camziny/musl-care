@@ -142,7 +142,7 @@ async function main() {
   for (const l of likesNow) {
     countsByComment.set(l.commentId, (countsByComment.get(l.commentId) || 0) + 1);
   }
-  for (const [commentId, cnt] of countsByComment.entries()) {
+  for (const [commentId, cnt] of Array.from(countsByComment.entries())) {
     await db.update(forumComments).set({ likeCount: cnt }).where(eq(forumComments.id, commentId));
   }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useUploadThing } from "@/utils/uploadthing";
 import { toast } from "sonner";
@@ -61,7 +62,7 @@ export function SimpleUploadButton({ inputId }: SimpleUploadButtonProps) {
         )}
         {localImageUrl && (
           <div className="mt-2">
-            <img src={localImageUrl} alt="Uploaded Image" className="max-w-full h-auto rounded-md" style={{ maxWidth: "200px" }} />
+            <Image src={localImageUrl} alt="Uploaded Image" width={200} height={200} className="h-auto rounded-md" />
           </div>
         )}
       </label>

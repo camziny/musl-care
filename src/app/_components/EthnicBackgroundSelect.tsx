@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getCountries } from "@/utils/fethCountries";
+import Image from "next/image";
 
 interface EthnicBackgroundSelectProps {
   inputId: string;
@@ -72,11 +73,7 @@ const EthnicBackgroundSelect: React.FC<EthnicBackgroundSelectProps> = ({
         <SelectContent>
           {ethnicBackgroundOptions.map((option) => (
             <SelectItem key={option.value} value={option.value}>
-              <img
-                src={option.flag}
-                alt={option.label}
-                className="inline-block w-5 h-5 mr-2"
-              />
+              <Image src={option.flag} alt={option.label} width={20} height={20} className="inline-block mr-2" />
               {option.label}
             </SelectItem>
           ))}
@@ -88,11 +85,7 @@ const EthnicBackgroundSelect: React.FC<EthnicBackgroundSelectProps> = ({
             key={option.value}
             className="inline-flex items-center bg-gray-200 text-gray-700 rounded-full px-3 py-1 m-1 text-sm font-semibold"
           >
-            <img
-              src={option.flag}
-              alt={option.label}
-              className="inline-block w-4 h-4 mr-1"
-            />
+            <Image src={option.flag} alt={option.label} width={16} height={16} className="inline-block mr-1" />
             {option.label}
             <button
               onClick={() => handleRemoveOption(option)}

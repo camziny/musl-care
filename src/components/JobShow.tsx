@@ -275,22 +275,14 @@ export default async function JobShowPage(props: { id: number }) {
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
               <div className="shrink-0">
                 <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white">
-                  {guardianImage.startsWith('data:') ? (
-                    <img
-                      src={guardianImage}
-                      alt="Guardian"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <Image
-                      src={guardianImage}
-                      alt="Guardian"
-                      width={96}
-                      height={96}
-                      className="w-full h-full object-cover"
-                      unoptimized
-                    />
-                  )}
+                  <Image
+                    src={guardianImage}
+                    alt="Guardian"
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-cover"
+                    unoptimized
+                  />
                 </div>
               </div>
               <div>
@@ -344,22 +336,14 @@ export default async function JobShowPage(props: { id: number }) {
                   {childrenImages.length > 0 ? (
                     childrenImages.map((image: string, index: number) => (
                       <div key={index} className="w-32 h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden shadow-sm border border-slate-200 hover:shadow-md transition-all duration-200">
-                        {image.startsWith('data:') ? (
-                          <img
-                            src={image}
-                            alt={`Child ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <Image
-                            src={image}
-                            alt={`Child ${index + 1}`}
-                            width={160}
-                            height={160}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                            unoptimized
-                          />
-                        )}
+                        <Image
+                          src={image}
+                          alt={`Child ${index + 1}`}
+                          width={160}
+                          height={160}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                          unoptimized
+                        />
                       </div>
                     ))
                   ) : (
