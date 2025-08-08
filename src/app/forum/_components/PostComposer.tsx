@@ -1,9 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createForumPost } from "@/app/actions/forum";
 
-export function PostComposer({ categories }: { categories: Array<{ id: number; name: string }> }) {
+export function PostComposer({ categories, createPost }: { categories: Array<{ id: number; name: string }>; createPost: (input: { categoryId: number; title: string; content: string; tags?: string[] }) => Promise<{ id: number }> }) {
   const router = useRouter();
   const [categoryId, setCategoryId] = useState<number | "">(categories[0]?.id ?? "");
   const [title, setTitle] = useState("");
@@ -16,7 +15,7 @@ export function PostComposer({ categories }: { categories: Array<{ id: number; n
     if (!categoryId || !title.trim() || !content.trim()) return;
     setLoading(true);
     const tagArr = tags.split(",").map((t) => t.trim()).filter(Boolean);
-    const post = await createForumPost({ categoryId: Number(categoryId), title, content, tags: tagArr });
+    const post = await createPost({ categoryId: Number(categoryId), title, content, tags: tagArr });
     router.push(`/forum/p/${post.id}`);
   };
 

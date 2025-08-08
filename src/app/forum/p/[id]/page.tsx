@@ -2,6 +2,8 @@ import { getForumPost, listForumComments, getUsersPublic } from "@/server/db/que
 import { addForumComment, toggleLikeComment, sendDirectMessage, reportContent } from "@/app/actions/forum";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { ClientCommentForm } from "@/app/forum/_components/ClientCommentForm";
+import { LikeClientButton } from "@/app/forum/_components/LikeClientButton";
 
 async function CommentForm({ postId, parentCommentId }: { postId: number; parentCommentId?: number | null }) {
   async function submit(formData: FormData) {
@@ -10,28 +12,7 @@ async function CommentForm({ postId, parentCommentId }: { postId: number; parent
     await addForumComment({ postId, parentCommentId: parentCommentId ?? null, content });
     revalidatePath(`/forum/p/${postId}`);
   }
-  return (
-    <ClientCommentForm action={submit} />
-  );
-}
-
-function ClientCommentForm({ action }: { action: (formData: FormData) => Promise<void> }) {
-  "use client";
-  const [value, setValue] = require("react").useState("");
-  const { toast } = require("sonner");
-  return (
-    <form
-      action={async (fd: FormData) => {
-        await action(fd);
-        setValue("");
-        toast.success("Comment posted");
-      }}
-      className="space-y-2"
-    >
-      <textarea name="content" value={value} onChange={(e: any) => setValue(e.target.value)} className="w-full border rounded px-3 py-2 h-24" placeholder="Write a comment" />
-      <button className="bg-slate-800 text-white text-xs rounded px-3 py-1">Comment</button>
-    </form>
-  );
+  return <ClientCommentForm action={submit} />;
 }
 
 export default async function PostPage({ params }: { params: { id: string } }) {
@@ -87,7 +68,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
         </div>
         <div className="whitespace-pre-wrap mt-2 text-slate-800">{c.content}</div>
         <div className="flex items-center gap-3 mt-2">
-          <form action={async (fd) => { await like(fd); }}>
+          <form action={like}>
             <input type="hidden" name="commentId" value={c.id} />
             <LikeClientButton />
           </form>
@@ -148,20 +129,5 @@ export default async function PostPage({ params }: { params: { id: string } }) {
         {renderThread(null, 0)}
       </div>
     </div>
-  );
-}
-
-function LikeClientButton() {
-  "use client";
-  const { toast } = require("sonner");
-  return (
-    <button
-      className="text-xs text-slate-600 hover:text-slate-800"
-      onClick={() => {
-        toast.success("Liked");
-      }}
-    >
-      Like
-    </button>
   );
 }
