@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { deleteJobAction } from "../actions/jobActions";
+import { Button } from "@/components/ui/Button";
 
 type DeleteJobButtonProps = {
   jobId: number;
@@ -27,12 +28,7 @@ export default function DeleteJobButton({ jobId }: DeleteJobButtonProps) {
   };
 
   return (
-    <button
-      type="button"
-      className="bg-slate-700 text-white py-1.5 px-3 text-xs rounded hover:bg-slate-800 transition duration-200 shadow-sm flex items-center"
-      onClick={handleDelete}
-      disabled={isPending}
-    >
+    <Button type="button" variant="destructive" size="sm" onClick={handleDelete} disabled={isPending} className="text-xs px-3 py-1.5">
       {isPending ? (
         <span className="flex items-center">
           <svg className="animate-spin -ml-1 mr-2 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -49,6 +45,6 @@ export default function DeleteJobButton({ jobId }: DeleteJobButtonProps) {
           Delete
         </span>
       )}
-    </button>
+    </Button>
   );
 }

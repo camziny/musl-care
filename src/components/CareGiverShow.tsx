@@ -1,6 +1,7 @@
 import { getCaregiver } from "@/server/db/queries";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { Button } from "@/components/ui/Button";
 import { Caregiver, AvailabilityTime, ProfessionalSkills, ServiceItem, DayMapping } from "@/types/caregivers";
 
 export default async function FullPageCaregiverView(props: { id: number }) {
@@ -262,12 +263,8 @@ export default async function FullPageCaregiverView(props: { id: number }) {
               </div>
 
               <div className="mt-6 flex gap-4">
-                <button className="flex-1 bg-slate-800 text-white px-6 py-3 rounded-lg hover:bg-slate-900 transition-colors font-medium shadow-sm">
-                  Contact {careGiver.name.split(' ')[0]}
-                </button>
-                <button className="flex-1 bg-white text-slate-800 px-6 py-3 rounded-lg border-2 border-slate-400 hover:bg-slate-50 transition-colors font-medium shadow-sm">
-                  Request Booking
-                </button>
+                <Button className="flex-1 h-12">Contact {careGiver.name.split(' ')[0]}</Button>
+                <Button variant="outline" className="flex-1 h-12">Request Booking</Button>
               </div>
             </div>
           </div>

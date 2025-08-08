@@ -4,7 +4,7 @@ import { toast } from "sonner";
 export function LikeClientButton() {
   return (
     <button
-      className="text-xs text-slate-600 hover:text-slate-800"
+      className="text-xs text-muted-foreground hover:text-foreground"
       onClick={() => {
         toast.success("Liked");
       }}

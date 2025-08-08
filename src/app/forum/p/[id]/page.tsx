@@ -3,6 +3,7 @@ import { addForumComment, toggleLikeComment, sendDirectMessage, reportContent } 
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { ClientCommentForm } from "@/app/forum/_components/ClientCommentForm";
+import { Button } from "@/components/ui/Button";
 import { LikeClientButton } from "@/app/forum/_components/LikeClientButton";
 
 async function CommentForm({ postId, parentCommentId }: { postId: number; parentCommentId?: number | null }) {
@@ -58,25 +59,25 @@ export default async function PostPage({ params }: { params: { id: string } }) {
     const key = String(parentId ?? 0);
     const arr = byParent[key] || [];
     return arr.map(c => (
-      <div key={c.id} className="rounded-lg border border-gray-200 bg-white p-3 mt-3" style={{ marginLeft: depth * 16 }}>
-        <div className="flex items-center justify-between text-xs text-slate-500">
+      <div key={c.id} className="rounded-xl border border-border bg-card/70 backdrop-blur-sm p-3 mt-3" style={{ marginLeft: depth * 16 }}>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-slate-700">{authorById.get(c.authorUserId)?.publicName ?? "User"}</span>
+            <span className="font-medium text-foreground">{authorById.get(c.authorUserId)?.publicName ?? "User"}</span>
             <span>•</span>
             <span>{c.createdAt.toString()}</span>
           </div>
         </div>
-        <div className="whitespace-pre-wrap mt-2 text-slate-800">{c.content}</div>
+        <div className="whitespace-pre-wrap mt-2 text-foreground">{c.content}</div>
         <div className="flex items-center gap-3 mt-2">
           <form action={like}>
             <input type="hidden" name="commentId" value={c.id} />
             <LikeClientButton />
           </form>
           <details>
-            <summary className="text-xs text-slate-600 cursor-pointer">Report</summary>
+            <summary className="text-xs text-muted-foreground cursor-pointer">Report</summary>
             <form action={reportComment} className="mt-2 space-y-2">
               <input type="hidden" name="commentId" value={c.id} />
-              <input name="reason" className="w-full border rounded px-3 py-2" placeholder="Reason" />
+              <input name="reason" className="w-full border border-border rounded-xl bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground" placeholder="Reason" />
               <button className="text-xs bg-red-600 text-white rounded px-2 py-1">Submit</button>
             </form>
           </details>
@@ -90,33 +91,33 @@ export default async function PostPage({ params }: { params: { id: string } }) {
   }
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <div className="rounded-xl border border-gray-200 bg-white p-5 mb-6">
+      <div className="rounded-xl border border-border bg-card/70 backdrop-blur-sm p-5 mb-6">
         <div className="flex items-center gap-3">
-          <div className="rounded-full bg-gradient-to-br from-slate-200 to-slate-300 text-slate-700 flex items-center justify-center font-semibold w-10 h-10">
+          <div className="rounded-full bg-muted text-foreground flex items-center justify-center font-semibold w-10 h-10">
             <span className="text-xs">{(authorById.get(post.authorUserId)?.publicName || "U").slice(0,2).toUpperCase()}</span>
           </div>
-          <div className="text-xs text-slate-600">
-            <div className="font-medium text-slate-800">{authorById.get(post.authorUserId)?.publicName ?? "User"}</div>
+          <div className="text-xs text-muted-foreground">
+            <div className="font-medium text-foreground">{authorById.get(post.authorUserId)?.publicName ?? "User"}</div>
             <div>{post.createdAt.toString()}</div>
           </div>
         </div>
-        <h1 className="text-3xl font-bold mt-3 mb-2 text-slate-900 tracking-tight">{post.title}</h1>
-        <div className="prose max-w-none whitespace-pre-wrap text-slate-800">{post.content}</div>
+        <h1 className="text-3xl font-bold mt-3 mb-2 text-foreground tracking-tight">{post.title}</h1>
+        <div className="prose max-w-none whitespace-pre-wrap text-foreground">{post.content}</div>
         {userId && (
           <details className="mt-4">
-            <summary className="cursor-pointer text-sm text-slate-600">Message author</summary>
+            <summary className="cursor-pointer text-sm text-muted-foreground">Message author</summary>
             <form action={messageAuthor} className="mt-2 space-y-2">
               <input type="hidden" name="recipient" value={post.authorUserId} />
-              <textarea name="content" className="w-full border rounded px-3 py-2 h-24" placeholder="Write a private message" />
-              <button className="bg-slate-800 text-white text-xs rounded px-3 py-1">Send</button>
+              <textarea name="content" className="w-full border border-border rounded-xl bg-background px-3 py-2 h-24 text-foreground placeholder:text-muted-foreground" placeholder="Write a private message" />
+              <Button className="text-xs px-3 py-1">Send</Button>
             </form>
           </details>
         )}
         <details className="mt-2">
-          <summary className="cursor-pointer text-sm text-slate-600">Report post</summary>
+          <summary className="cursor-pointer text-sm text-muted-foreground">Report post</summary>
           <form action={reportPost} className="mt-2 space-y-2">
-            <input name="reason" className="w-full border rounded px-3 py-2" placeholder="Reason" />
-            <button className="text-xs bg-red-600 text-white rounded px-2 py-1">Submit</button>
+            <input name="reason" className="w-full border border-border rounded-xl bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground" placeholder="Reason" />
+            <Button variant="destructive" className="text-xs px-2 py-1">Submit</Button>
           </form>
         </details>
       </div>
@@ -124,7 +125,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
         {userId ? (
           <CommentForm postId={postId} />
         ) : (
-          <div className="rounded-lg border border-gray-200 bg-white p-4 text-sm text-slate-700">Sign in to join the discussion. <a href="/sign-in" className="underline">Sign in</a></div>
+          <div className="rounded-xl border border-border bg-card/70 backdrop-blur-sm p-4 text-sm text-muted-foreground">Sign in to join the discussion. <a href="/sign-in" className="underline">Sign in</a></div>
         )}
         {renderThread(null, 0)}
       </div>

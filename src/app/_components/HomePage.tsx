@@ -3,6 +3,7 @@
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 import CareGiverList from "./CareGiverList";
 import { FeatureTiles } from "./FeatureTiles";
 import { auth } from "@clerk/nextjs/server";
@@ -32,37 +33,35 @@ const HomePage = async () => {
   return (
     <div className="min-h-screen">
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-50 to-white" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-muted to-background" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
                 Find trusted Muslim caregivers
               </h1>
-              <p className="mt-4 text-lg text-slate-600 max-w-xl">
+              <p className="mt-4 text-lg text-muted-foreground max-w-xl">
                 Matching families with vetted caregivers who understand your values, culture, and needs.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <Link href="/care-seeker" className="w-full sm:w-auto">
-                  <button className="w-full px-6 py-3 rounded-full bg-slate-900 text-white text-sm font-medium hover:bg-slate-800">
-                    I&apos;m looking for care
-                  </button>
+                  <Button className="w-full rounded-full">I&apos;m looking for care</Button>
                 </Link>
                 <Link href={caregiverProfileUrl} className="w-full sm:w-auto">
-                  <button className="w-full px-6 py-3 rounded-full border border-slate-900 text-slate-900 text-sm font-medium hover:bg-slate-50">
+                  <Button variant="outline" className="w-full rounded-full border-primary text-primary hover:bg-primary/10">
                     {hasProfile ? 'View my profile' : 'I\'m a care giver'}
-                  </button>
+                  </Button>
                 </Link>
               </div>
-              <div className="mt-6 flex items-center gap-6 text-sm text-slate-600">
-                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-green-500" /> Verified caregivers</div>
-                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-blue-500" /> Cultural alignment</div>
-                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-purple-500" /> Easy matching</div>
+              <div className="mt-6 flex items-center gap-6 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-primary" /> Verified caregivers</div>
+                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-secondary" /> Cultural alignment</div>
+                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-accent" /> Easy matching</div>
               </div>
             </div>
             <div className="relative w-full h-[420px] sm:h-[520px]">
-              <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-slate-100 to-slate-200 blur-2xl" />
-              <div className="relative w-full h-full rounded-[2rem] overflow-hidden border border-slate-200 bg-white">
+              <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-muted to-accent/30 blur-2xl" />
+              <div className="relative w-full h-full rounded-[2rem] overflow-hidden border border-primary/20 bg-primary/10 backdrop-blur-sm">
                 <Image src={logoUrl} alt="AyaCare" fill className="object-cover" priority />
               </div>
             </div>
@@ -76,11 +75,11 @@ const HomePage = async () => {
         </div>
       </section>
 
-      <section className="border-t bg-white">
+      <section className="border-t border-border bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Featured caregivers</h2>
-            <Link href="/caregivers" className="text-sm text-slate-700 underline">View all</Link>
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground">Featured caregivers</h2>
+            <Link href="/caregivers" className="text-sm text-primary underline">View all</Link>
           </div>
           <CareGiverList />
         </div>

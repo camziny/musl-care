@@ -1,4 +1,5 @@
 import { listForumCategories, createForumPost } from "@/server/db/queries";
+import { Button } from "@/components/ui/Button";
 import { redirect } from "next/navigation";
 
 export default async function NewPostPage() {
@@ -26,7 +27,7 @@ export default async function NewPostPage() {
         <input name="title" className="w-full border rounded px-3 py-2" placeholder="Title" />
         <textarea name="content" className="w-full border rounded px-3 py-2 h-48" placeholder="Share your question or experience" />
         <input name="tags" className="w-full border rounded px-3 py-2" placeholder="Tags (comma separated)" />
-        <button className="bg-slate-800 text-white text-sm font-medium rounded-full px-4 py-2">Post</button>
+        <Button className="rounded-full px-4 py-2 text-sm">Post</Button>
       </form>
     </div>
   );

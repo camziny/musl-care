@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "@/components/ui/Button";
 import { auth } from "@clerk/nextjs/server";
 import { db, careGivers, userTypeEnum } from "@/server/db/schema";
 import ClientRegisterForm from "./ClientRegisterForm";
@@ -215,8 +216,8 @@ function ClientRegisterForm_() {
 function SubmitButton({ pending }: { pending: boolean }) {
   "use client";
   return (
-    <button type="submit" disabled={pending} className="w-full mt-2 px-4 py-2 rounded-md bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed">
+    <Button type="submit" disabled={pending} className="w-full mt-2">
       {pending ? "Submitting..." : "Create Profile"}
-    </button>
+    </Button>
   );
 }

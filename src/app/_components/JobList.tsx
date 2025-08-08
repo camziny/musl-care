@@ -250,11 +250,11 @@ export default async function JobList() {
   };
 
   return (
-    <div className="bg-slate-50 min-h-screen pb-16">
+    <div className="bg-gradient-to-b from-muted to-background min-h-screen pb-16">
       <div className="z-10 w-full max-w-5xl mx-auto pt-4 sm:pt-6 md:pt-8 pb-6 sm:pb-8 px-4 sm:px-6">
         <div className="flex flex-col items-center mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 text-center mb-2 sm:mb-3">Care Requests</h1>
-          <p className="text-slate-600 text-center mb-5 sm:mb-6 max-w-2xl text-sm sm:text-base px-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground text-center mb-2 sm:mb-3">Care Requests</h1>
+          <p className="text-muted-foreground text-center mb-5 sm:mb-6 max-w-2xl text-sm sm:text-base px-2">
             Browse available care requests or post your own care needs to find the perfect caregiver match.
           </p>
         </div>
@@ -267,10 +267,10 @@ export default async function JobList() {
                 href={`/jobs/${job.id}`}
                 className="block"
               >
-                <div className="bg-white shadow rounded-xl overflow-hidden border border-slate-100 hover:shadow-md transition-all duration-200 hover:-translate-y-1 transform">
+                <div className="bg-card/70 backdrop-blur-sm shadow rounded-xl overflow-hidden border border-border/50 hover:shadow-md transition-all duration-200 hover:-translate-y-1 transform">
                   <div className="flex flex-row">
-                    <div className="w-1/5 sm:w-1/6 bg-gradient-to-br from-indigo-50 to-slate-100 flex items-center justify-center p-3 sm:p-4 self-stretch">
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-indigo-100 shadow-md bg-white flex items-center justify-center relative hover:shadow-lg transition-all duration-200">
+                    <div className="w-1/5 sm:w-1/6 bg-gradient-to-br from-secondary/10 to-secondary/20 flex items-center justify-center p-3 sm:p-4 self-stretch">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-primary/20 shadow-md bg-card flex items-center justify-center relative hover:shadow-lg transition-all duration-200">
                         <SafeImage 
                           src={getGuardianImage(job)}
                           alt={job.careType || "Care"}
@@ -286,24 +286,24 @@ export default async function JobList() {
                     </div>
 
                     <div className="flex-1 p-4 pl-3 sm:pl-4">
-                      <div className="mb-2 text-lg font-medium text-slate-800 group-hover:text-indigo-600 transition-colors">
+                      <div className="mb-2 text-lg font-medium text-foreground group-hover:text-primary transition-colors">
                         {job.title}
                       </div>
 
                       <div className="flex flex-wrap gap-2 mb-2">
                         {job.careType && (
-                          <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
+                          <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
                             {job.careType}
                           </span>
                         )}
                         {job.availabilityType && (
-                          <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700">
+                          <span className="inline-flex items-center rounded-full bg-secondary/10 px-2 py-1 text-xs font-medium text-secondary">
                             {job.availabilityType}
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center text-sm text-slate-500 mb-2">
+                      <div className="flex items-center text-sm text-muted-foreground mb-2">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-4 w-4 mr-1"
@@ -327,7 +327,7 @@ export default async function JobList() {
                         {job.location}
                       </div>
 
-                      <div className="flex items-center text-xs text-slate-400">
+                      <div className="flex items-center text-xs text-muted-foreground">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-4 w-4 mr-1"
@@ -346,7 +346,7 @@ export default async function JobList() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-center justify-center px-4 bg-slate-50 text-slate-400">
+                    <div className="flex flex-col items-center justify-center px-4 bg-muted text-muted-foreground">
                       <svg 
                         xmlns="http://www.w3.org/2000/svg" 
                         className="h-6 w-6" 
@@ -368,24 +368,28 @@ export default async function JobList() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-10 sm:py-12 bg-white rounded-lg shadow-sm border border-slate-200 mx-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 sm:h-10 sm:w-10 mx-auto text-slate-400 mb-2 sm:mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="text-center py-10 sm:py-12 bg-card/70 backdrop-blur-sm rounded-lg shadow-sm border border-border/50 mx-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 sm:h-10 sm:w-10 mx-auto text-muted-foreground mb-2 sm:mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
-            <h3 className="text-base sm:text-lg font-medium text-slate-700 mb-1.5 sm:mb-2">No care requests yet</h3>
-            <p className="text-slate-500 text-xs sm:text-sm mb-4 sm:mb-5">Be the first to post a care request</p>
+            <h3 className="text-base sm:text-lg font-medium text-foreground mb-1.5 sm:mb-2">No care requests yet</h3>
+            <p className="text-muted-foreground text-xs sm:text-sm mb-4 sm:mb-5">Be the first to post a care request</p>
             
             {user ? (
-              <Link href="/looking-for-care">
-                <button className="bg-slate-700 hover:bg-slate-800 text-white font-medium py-1.5 px-4 sm:py-2 sm:px-5 rounded-lg transition-colors shadow-sm text-xs sm:text-sm">
-                  Post Your Care Request
-                </button>
+              <Link href="/looking-for-care" className="inline-flex">
+                <span className="w-full inline-flex items-center justify-center">
+                  <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ring-offset-background bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                    Post Your Care Request
+                  </button>
+                </span>
               </Link>
             ) : (
-              <Link href="/sign-in">
-                <button className="bg-slate-700 hover:bg-slate-800 text-white font-medium py-1.5 px-4 sm:py-2 sm:px-5 rounded-lg transition-colors shadow-sm text-xs sm:text-sm">
-                  Sign In to Post Care Requests
-                </button>
+              <Link href="/sign-in" className="inline-flex">
+                <span className="w-full inline-flex items-center justify-center">
+                  <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ring-offset-background bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                    Sign In to Post Care Requests
+                  </button>
+                </span>
               </Link>
             )}
           </div>

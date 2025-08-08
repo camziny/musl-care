@@ -31,7 +31,7 @@ export default function RootLayout({
         <body className={`font-sans ${inter.className}`}>
           <EnsureUserExists />
           <TopNav />
-          <main className="min-h-screen pt-20 md:pt-24">{children}</main>
+          <main className="min-h-screen pt-12 md:pt-12 bg-gradient-to-b from-muted to-background">{children}</main>
           <div id="modal-root" />
           <Toaster />
         </body>
