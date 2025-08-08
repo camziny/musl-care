@@ -4,7 +4,7 @@ import { db } from "@/server/db/schema";
 import { careGivers, userTypeEnum } from "@/server/db/schema";
 import type { CareGiver } from "@/utils/types";
 import LanguageSelect from "../_components/LanguageSelect";
-import { SimpleUploadButton } from "../_components/simpleUploadButton";
+import { SimpleUploadButton } from "@/components/ui/SimpleUploadButton";
 import SectSelect from "../_components/SectSelect";
 import EthnicBackgroundSelect from "../_components/EthnicBackgroundSelect";
 import SelectAvailability from "../_components/SelectAvailability";

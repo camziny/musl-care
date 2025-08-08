@@ -4,6 +4,7 @@ import Image from "next/image";
 import React from "react";
 import Link from "next/link";
 import CareGiverList from "./CareGiverList";
+import { FeatureTiles } from "./FeatureTiles";
 import { auth } from "@clerk/nextjs/server";
 import { getCaregiverByClerkUserId } from "@/server/db/queries";
 
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 const HomePage = async () => {
   const { userId: clerkUserId } = auth();
-  let caregiverProfileUrl = "/care-giver-form";
+  let caregiverProfileUrl = "/caregivers/register";
   let hasProfile = false;
 
   if (clerkUserId) {
@@ -30,89 +31,60 @@ const HomePage = async () => {
 
   return (
     <div className="min-h-screen">
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-4 sm:py-8 md:py-16">
-            <div className="flex flex-col-reverse md:grid md:grid-cols-2 gap-6 md:gap-12 items-center">
-              <div className="space-y-6 text-center md:text-left">
-                <div className="space-y-3">
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                    Find Your Perfect Care Match
-                  </h1>
-                  <p className="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto md:mx-0">
-                    Connecting care-seekers with dedicated, background checked Muslim caregivers for a harmonious home.
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                  <Link href="/care-seeker" className="w-full sm:w-auto">
-                    <button className="w-full px-6 py-3 bg-slate-800 text-white rounded-lg 
-                      hover:bg-slate-700 transition-all duration-200 font-medium
-                      focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-                      I&apos;m looking for care
-                    </button>
-                  </Link>
-                  <Link href={caregiverProfileUrl} className="w-full sm:w-auto">
-                    <button className="w-full px-6 py-3 bg-white text-slate-800 rounded-lg 
-                      border-2 border-slate-800 hover:bg-slate-50 transition-all duration-200 
-                      font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-                      {hasProfile ? 'View my profile' : 'I\'m a care giver'}
-                    </button>
-                  </Link>
-                </div>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-50 to-white" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+            <div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900">
+                Find trusted Muslim caregivers
+              </h1>
+              <p className="mt-4 text-lg text-slate-600 max-w-xl">
+                Matching families with vetted caregivers who understand your values, culture, and needs.
+              </p>
+              <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                <Link href="/care-seeker" className="w-full sm:w-auto">
+                  <button className="w-full px-6 py-3 rounded-full bg-slate-900 text-white text-sm font-medium hover:bg-slate-800">
+                    I&apos;m looking for care
+                  </button>
+                </Link>
+                <Link href={caregiverProfileUrl} className="w-full sm:w-auto">
+                  <button className="w-full px-6 py-3 rounded-full border border-slate-900 text-slate-900 text-sm font-medium hover:bg-slate-50">
+                    {hasProfile ? 'View my profile' : 'I\'m a care giver'}
+                  </button>
+                </Link>
               </div>
-
-              <div className="relative w-full aspect-square max-w-sm md:max-w-none md:h-[450px] rounded-2xl overflow-hidden">
-                <Image
-                  src={logoUrl}
-                  alt="AyaCare"
-                  fill
-                  className="object-cover"
-                  priority
-                />
+              <div className="mt-6 flex items-center gap-6 text-sm text-slate-600">
+                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-green-500" /> Verified caregivers</div>
+                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-blue-500" /> Cultural alignment</div>
+                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-purple-500" /> Easy matching</div>
+              </div>
+            </div>
+            <div className="relative w-full h-[420px] sm:h-[520px]">
+              <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-slate-100 to-slate-200 blur-2xl" />
+              <div className="relative w-full h-full rounded-[2rem] overflow-hidden border border-slate-200 bg-white">
+                <Image src={logoUrl} alt="AyaCare" fill className="object-cover" priority />
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {[
-            {
-              title: "Verified Caregivers",
-              description: "Every caregiver undergoes a thorough background check",
-              icon: "🔒"
-            },
-            {
-              title: "Cultural Alignment",
-              description: "Find caregivers who share your values and traditions",
-              icon: "🤝"
-            },
-            {
-              title: "Easy Matching",
-              description: "Our platform makes it simple to find the perfect match",
-              icon: "✨"
-            }
-          ].map((feature, index) => (
-            <div key={index} className="bg-white p-6 rounded-lg border hover:border-slate-300 transition-colors">
-              <div className="text-2xl sm:text-3xl mb-3">{feature.icon}</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 text-sm sm:text-base">
-                {feature.description}
-              </p>
-            </div>
-          ))}
+      <section className="py-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FeatureTiles />
         </div>
-      </div>
+      </section>
 
-      <div className="border-t bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <section className="border-t bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Featured caregivers</h2>
+            <Link href="/caregivers" className="text-sm text-slate-700 underline">View all</Link>
+          </div>
           <CareGiverList />
         </div>
-      </div>
+      </section>
     </div>
   );
 };

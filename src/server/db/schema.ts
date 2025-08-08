@@ -19,12 +19,18 @@ export const muslimSectEnum = pgEnum("MuslimSect", ["Sunni", "Shia", "Sufi", "Ot
 export const careCapacityEnum = pgEnum("CareCapacity", ["Only one", "Multiple"]);
 export const availabilityTypeEnum = pgEnum("AvailabilityType", ["Recurring", "One-time", "Long term"]);
 export const careTermEnum = pgEnum("CareTerm", ["Long term caregiver", "Short term caregiver"]);
+export const reportTargetEnum = pgEnum("ReportTarget", ["post", "comment"]);
+export const reportStatusEnum = pgEnum("ReportStatus", ["open", "reviewed", "dismissed"]);
+export const notificationTypeEnum = pgEnum("NotificationType", ["reply", "mention"]);
 
 export type UserTypeEnum = "caregiver" | "careseeker";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   clerkUserId: text("clerk_user_id").notNull(),
+  publicName: text("public_name"),
+  locationCity: text("location_city"),
+  locationState: text("location_state"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -158,6 +164,79 @@ export const jobListings = pgTable("jobListings", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const forumCategories = pgTable("forum_categories", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const forumPosts = pgTable("forum_posts", {
+  id: serial("id").primaryKey(),
+  categoryId: integer("category_id").references(() => forumCategories.id).notNull(),
+  authorUserId: integer("author_user_id").references(() => users.id).notNull(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  tags: text("tags").array().default([]),
+  attachments: jsonb("attachments").default([]),
+  isHidden: boolean("is_hidden").default(false).notNull(),
+  likeCount: integer("like_count").default(0).notNull(),
+  commentCount: integer("comment_count").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const forumComments = pgTable("forum_comments", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id").references(() => forumPosts.id).notNull(),
+  authorUserId: integer("author_user_id").references(() => users.id).notNull(),
+  parentCommentId: integer("parent_comment_id"),
+  content: text("content").notNull(),
+  isHidden: boolean("is_hidden").default(false).notNull(),
+  likeCount: integer("like_count").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const commentLikes = pgTable("comment_likes", {
+  id: serial("id").primaryKey(),
+  commentId: integer("comment_id").references(() => forumComments.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const contentReports = pgTable("content_reports", {
+  id: serial("id").primaryKey(),
+  targetType: reportTargetEnum("target_type").notNull(),
+  postId: integer("post_id"),
+  commentId: integer("comment_id"),
+  reporterUserId: integer("reporter_user_id").references(() => users.id).notNull(),
+  reason: text("reason").notNull(),
+  status: reportStatusEnum("status").default("open").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const directMessages = pgTable("direct_messages", {
+  id: serial("id").primaryKey(),
+  senderUserId: integer("sender_user_id").references(() => users.id).notNull(),
+  recipientUserId: integer("recipient_user_id").references(() => users.id).notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  readAt: timestamp("read_at"),
+});
+
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  type: notificationTypeEnum("type").notNull(),
+  postId: integer("post_id"),
+  commentId: integer("comment_id"),
+  actorUserId: integer("actor_user_id").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  readAt: timestamp("read_at"),
+});
+
 export const schema = {
   users,
   careGivers,
@@ -170,6 +249,16 @@ export const schema = {
   availabilityTypeEnum,
   careTermEnum,
   jobListings,
+  reportTargetEnum,
+  reportStatusEnum,
+  notificationTypeEnum,
+  forumCategories,
+  forumPosts,
+  forumComments,
+  commentLikes,
+  contentReports,
+  directMessages,
+  notifications,
 };
 
 export const db = drizzle(sql, { schema });
