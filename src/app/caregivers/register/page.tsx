@@ -178,15 +178,18 @@ function ClientRegisterForm() {
         <legend className="text-sm font-semibold text-slate-900 mb-2 md:col-span-2">Background</legend>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">Languages</label>
-          <LanguageSelect />
+          <LanguageSelect inputId="languages" />
+          <input type="hidden" id="languages" name="languages" />
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">Sect</label>
-          <SectSelect />
+          <SectSelect inputId="sect" />
+          <input type="hidden" id="sect" name="sect" />
         </div>
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-slate-700 mb-1">Ethnic Background</label>
-          <EthnicBackgroundSelect />
+          <EthnicBackgroundSelect inputId="ethnicBackground" />
+          <input type="hidden" id="ethnicBackground" name="ethnicBackground" />
         </div>
       </fieldset>
       <fieldset className="grid grid-cols-1 md:grid-cols-2 gap-4">
