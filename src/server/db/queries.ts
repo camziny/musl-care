@@ -485,14 +485,14 @@ export async function createForumPost(input: { categoryId: number; title: string
 
 export async function listForumPosts(params: { categoryId?: number; search?: string; sort?: "recent" | "trending"; tag?: string; }) {
   const rows = await db.query.forumPosts.findMany({
-    where: (m, { and, eq, ilike, sql }) => {
+    where: (m, { and, eq, ilike, or, sql }) => {
       const clauses: any[] = [];
       if (params.categoryId) clauses.push(eq(m.categoryId, params.categoryId));
-      if (params.search) clauses.push(ilike(m.title, `%${params.search}%`));
+      if (params.search) clauses.push(or(ilike(m.title, `%${params.search}%`), ilike(m.content, `%${params.search}%`)));
       if (params.tag) clauses.push(sql`${m.tags} @> ARRAY[${params.tag}]::text[]`);
       return clauses.length ? and(...clauses) : undefined as any;
     },
-    orderBy: (m, o) => params.sort === "trending" ? o.desc(m.commentCount) : o.desc(m.createdAt),
+    orderBy: (m, o) => (params.sort === "trending" ? o.desc(m.commentCount) : o.desc(m.createdAt)),
   });
   return rows;
 }
