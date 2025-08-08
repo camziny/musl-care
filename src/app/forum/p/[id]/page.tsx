@@ -71,7 +71,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
         <div className="flex items-center gap-3 mt-2">
           <form action={like}>
             <input type="hidden" name="commentId" value={c.id} />
-            <LikeClientButton />
+            <LikeClientButton count={c.likeCount as any} />
           </form>
           <details>
             <summary className="text-xs text-muted-foreground cursor-pointer">Report</summary>

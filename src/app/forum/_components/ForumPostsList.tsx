@@ -34,6 +34,7 @@ export async function ForumPostsList({
           title={p.title}
           excerpt={p.content}
           createdAt={p.createdAt.toString()}
+          likeCount={p.likeCount}
           commentCount={p.commentCount}
           categoryName={categoryName}
           author={authorById.get(p.authorUserId) || null}

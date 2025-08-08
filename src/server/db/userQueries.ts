@@ -18,6 +18,14 @@ export const createUserFromClerk = async (data: any) => {
     });
 
     if (existingUser) {
+      if (!existingUser.publicName && data.name) {
+        const [updated] = await db
+          .update(users)
+          .set({ publicName: data.name, updatedAt: new Date() })
+          .where(eq(users.clerkUserId, data.clerkUserId))
+          .returning();
+        return updated;
+      }
       return existingUser;
     }
 
@@ -25,6 +33,7 @@ export const createUserFromClerk = async (data: any) => {
       .insert(users)
       .values({
         clerkUserId: data.clerkUserId,
+        publicName: data.name ?? null,
         createdAt: new Date(),
         updatedAt: new Date(),
       })

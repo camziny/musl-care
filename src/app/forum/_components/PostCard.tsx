@@ -8,6 +8,7 @@ export function PostCard({
   title,
   excerpt,
   createdAt,
+  likeCount,
   commentCount,
   categoryName,
   author,
@@ -17,6 +18,7 @@ export function PostCard({
   title: string;
   excerpt: string;
   createdAt: string;
+  likeCount: number;
   commentCount: number;
   categoryName?: string;
   author?: Author | null;
@@ -47,7 +49,8 @@ export function PostCard({
         </div>
         <div className="text-xl font-semibold text-foreground group-hover:text-foreground mb-1 tracking-tight">{title}</div>
         <div className="text-muted-foreground line-clamp-2 mb-3">{excerpt}</div>
-        <div className="flex items-center justify-end text-xs text-muted-foreground">
+        <div className="flex items-center justify-end text-xs text-muted-foreground gap-2">
+          <span className="rounded-full bg-muted px-2 py-1">{likeCount} likes</span>
           <span className="rounded-full bg-muted px-2 py-1">{commentCount} comments</span>
         </div>
       </div>
