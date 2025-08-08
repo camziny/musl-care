@@ -1,3 +1,8 @@
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Background Check',
+  description: 'Placeholder description for background check page',
+};
 import React from 'react';
 import Image from 'next/image';
 

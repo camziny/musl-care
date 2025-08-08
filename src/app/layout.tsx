@@ -12,8 +12,11 @@ import EnsureUserExists from "./_components/EnsureUserExists";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Muslim Care",
-  description: "Welcome to Muslim Care",
+  title: {
+    default: "Ayah Care",
+    template: "%s | Ayah Care",
+  },
+  description: "Placeholder site description",
 };
 
 export default function RootLayout({

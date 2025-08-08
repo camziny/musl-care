@@ -1,3 +1,8 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "About",
+  description: "Placeholder description for about page",
+};
 import React from "react";
 import Image from "next/image";
 
