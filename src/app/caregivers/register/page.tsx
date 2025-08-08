@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { db, careGivers, userTypeEnum } from "@/server/db/schema";
 import ClientRegisterForm from "./ClientRegisterForm";
 
-type FormState = { ok: boolean; message?: string };
+export type FormState = { ok: boolean; message?: string };
 
 async function registerAction(_: FormState, formData: FormData): Promise<FormState> {
   "use server";
@@ -93,7 +93,7 @@ export default function CareGiverRegisterPage() {
         <p className="text-slate-600 mt-1">Create your caregiver profile</p>
       </div>
       <div className="rounded-2xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm">
-        <ClientRegisterForm />
+        <ClientRegisterForm registerAction={registerAction} />
       </div>
     </div>
   );
