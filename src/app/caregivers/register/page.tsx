@@ -2,6 +2,11 @@ import React from "react";
 import { auth } from "@clerk/nextjs/server";
 import { db, careGivers, userTypeEnum } from "@/server/db/schema";
 import ClientRegisterForm from "./ClientRegisterForm";
+import { SimpleUploadButton } from "@/components/ui/SimpleUploadButton";
+import LanguageSelect from "@/components/ui/LanguageSelect";
+import SectSelect from "@/components/ui/SectSelect";
+import EthnicBackgroundSelect from "@/components/ui/EthnicBackgroundSelect";
+import SelectAvailability from "@/components/caregivers/SelectAvailability";
 
 export type FormState = { ok: boolean; message?: string };
 
@@ -99,7 +104,7 @@ export default function CareGiverRegisterPage() {
   );
 }
 
-function ClientRegisterForm() {
+function ClientRegisterForm_() {
   "use client";
   const ReactNS = require("react");
   const { useFormState, useFormStatus } = require("react-dom");
