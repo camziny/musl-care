@@ -18,6 +18,7 @@ const navItems = [
   { href: "/caregivers", label: "Caregivers" },
   { href: "/jobs", label: "Jobs" },
   { href: "/forum", label: "Forum" },
+  { href: "/businesses", label: "Directory" },
   { href: "/testimonials", label: "Testimonials" },
   { href: "/contact", label: "Contact" },
 ];

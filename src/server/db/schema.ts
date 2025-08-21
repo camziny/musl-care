@@ -23,6 +23,25 @@ export const reportTargetEnum = pgEnum("ReportTarget", ["post", "comment"]);
 export const reportStatusEnum = pgEnum("ReportStatus", ["open", "reviewed", "dismissed"]);
 export const notificationTypeEnum = pgEnum("NotificationType", ["reply", "mention"]);
 
+export const businessCategoryEnum = pgEnum("BusinessCategory", [
+  "Daycare",
+  "Tutoring",
+  "Senior recreation",
+  "Products",
+  "Clothing & Accessories",
+  "Catering",
+  "Food/restaurant",
+  "Umrah/Hajj booking",
+  "Legal services",
+  "Therapists",
+]);
+
+export const businessStatusEnum = pgEnum("BusinessStatus", [
+  "pending",
+  "approved",
+  "rejected",
+]);
+
 export type UserTypeEnum = "caregiver" | "careseeker";
 
 export const users = pgTable("users", {
@@ -164,6 +183,36 @@ export const jobListings = pgTable("jobListings", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const businesses = pgTable("businesses", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  ownerName: text("owner_name"),
+  category: businessCategoryEnum("category").notNull(),
+  description: text("description"),
+  addressLine: text("address_line"),
+  city: text("city"),
+  state: text("state"),
+  zip: text("zip"),
+  country: text("country").default("United States"),
+  website: text("website"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  socialLinks: jsonb("social_links").default({}),
+  imageKey: text("image_key"),
+  imageUrl: text("image_url"),
+  isMuslimOwned: boolean("is_muslim_owned").default(false).notNull(),
+  isArabOwned: boolean("is_arab_owned").default(false).notNull(),
+  isSouthAsianOwned: boolean("is_south_asian_owned").default(false).notNull(),
+  status: businessStatusEnum("status").default("pending").notNull(),
+  reviewNote: text("review_note"),
+  publishedAt: timestamp("published_at"),
+  createdByUserId: integer("created_by_user_id").references(() => users.id).notNull(),
+  viewsCount: integer("views_count").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const forumCategories = pgTable("forum_categories", {
   id: serial("id").primaryKey(),
   slug: text("slug").notNull(),
@@ -259,6 +308,9 @@ export const schema = {
   contentReports,
   directMessages,
   notifications,
+  businessCategoryEnum,
+  businessStatusEnum,
+  businesses,
 };
 
 export const db = drizzle(sql, { schema });
