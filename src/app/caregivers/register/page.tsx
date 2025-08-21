@@ -124,7 +124,7 @@ function ClientRegisterForm_() {
     } else if (state?.message) {
       toast.error(state.message);
     }
-  }, [state?.ok, state?.message, router]);
+  }, [state?.ok, state?.message, router, toast]);
 
   return (
     <form id="caregiver-form" action={formAction} method="post" className="space-y-8">

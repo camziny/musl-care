@@ -28,7 +28,7 @@ export default function ClientBusinessForm({ submitAction }: { submitAction: (st
           <input name="name" required className="w-full rounded-md border px-3 py-2" />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Owner's Name</label>
+          <label className="block text-sm font-medium mb-1">Owner&apos;s Name</label>
           <input name="ownerName" className="w-full rounded-md border px-3 py-2" />
         </div>
         <div>
